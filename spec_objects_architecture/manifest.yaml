@@ -1,0 +1,126 @@
+manifest_version: 1.0.0
+name: spec-objects-architecture
+version: 0.1.0
+description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, integration, rate_limit)'
+archetypes: []
+grammars: []
+artifact_types: []
+lint_rules: []
+object_types:
+- name: api_endpoint
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: &id001
+          from: frontmatter_field
+          path:
+          - id
+          required: false
+        title: &id002
+          from: frontmatter_field
+          path:
+          - title
+          required: false
+        artifact_type: &id003
+          from: frontmatter_field
+          path:
+          - artifact_type
+          required: false
+        endpoint:
+          from: section_body
+          after_heading: Endpoint
+          required: false
+        routes:
+          from: section_body
+          after_heading: Routes
+          required: false
+        api_contract:
+          from: section_body
+          after_heading: 2. API Contract
+          required: false
+- name: data_schema
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        schema_json:
+          from: code_block
+          after_heading: Schema
+          required: false
+          language: json
+- name: queue
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        message_schema:
+          from: code_block
+          after_heading: Message Format
+          required: false
+          language: json
+- name: action
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        inputs:
+          from: section_body
+          after_heading: Inputs
+          required: false
+- name: ui_component
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        props:
+          from: section_body
+          after_heading: Props
+          required: false
+- name: integration
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        endpoints:
+          from: section_body
+          after_heading: Endpoints
+          required: false
+        behavior:
+          from: section_body
+          after_heading: Behavior
+          required: false
+- name: rate_limit
+  data_schema:
+    type: object
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        artifact_type: *id003
+        thresholds:
+          from: section_body
+          after_heading: Thresholds
+          required: false
