@@ -1,4 +1,5 @@
 """Auto-generated test: manifest loads + object_types are well-formed."""
+
 from __future__ import annotations
 
 import pathlib
