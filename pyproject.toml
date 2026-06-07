@@ -8,6 +8,9 @@ version = "0.1.0"  # Placeholder, dynamically replaced
 description = "Filament Module: tier-2 architecture ObjectTypes (api_endpoint, ui_component, data_schema, action, queue, integration, dto, middleware)"
 authors = ["Agent IX <agents@agent-ix.dev>"]
 packages = [{ include = "spec_objects_architecture" }]
+include = [
+    { path = "spec_objects_architecture/manifest.yaml", format = ["sdist", "wheel"] },
+]
 
 [tool.poetry.dependencies]
 python = ">=3.13,<3.14"
