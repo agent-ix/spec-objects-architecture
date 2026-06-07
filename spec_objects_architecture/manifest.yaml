@@ -2,6 +2,12 @@ manifest_version: 1.0.0
 name: spec-objects-architecture
 version: 0.1.0
 description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, integration, rate_limit)'
+nav:
+  category:
+    slug: architecture
+    label: Architecture
+    icon: Network
+    order: 52
 archetypes: []
 grammars: []
 artifact_types: []
