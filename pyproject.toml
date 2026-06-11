@@ -10,6 +10,7 @@ authors = ["Agent IX <agents@agent-ix.dev>"]
 packages = [{ include = "spec_objects_architecture" }]
 include = [
     { path = "spec_objects_architecture/manifest.yaml", format = ["sdist", "wheel"] },
+    { path = "spec_objects_architecture/skeletons/*.md", format = ["sdist", "wheel"] },
 ]
 
 [tool.poetry.dependencies]

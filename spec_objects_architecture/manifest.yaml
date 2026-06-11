@@ -23,25 +23,25 @@ object_types:
           from: frontmatter_field
           path:
           - id
-          required: false
+          required: true
         title: &id002
           from: frontmatter_field
           path:
           - title
-          required: false
+          required: true
         artifact_type: &id003
           from: frontmatter_field
           path:
           - artifact_type
-          required: false
+          required: true
         endpoint:
           from: section_body
           after_heading: Endpoint
-          required: false
+          required: true
         routes:
           from: section_body
           after_heading: Routes
-          required: false
+          required: true
         api_contract:
           from: section_body
           after_heading: 2. API Contract
@@ -58,7 +58,7 @@ object_types:
         schema_json:
           from: code_block
           after_heading: Schema
-          required: false
+          required: true
           language: json
 - name: queue
   data_schema:
@@ -72,7 +72,7 @@ object_types:
         message_schema:
           from: code_block
           after_heading: Message Format
-          required: false
+          required: true
           language: json
 - name: action
   data_schema:
@@ -86,7 +86,7 @@ object_types:
         inputs:
           from: section_body
           after_heading: Inputs
-          required: false
+          required: true
 - name: ui_component
   data_schema:
     type: object
@@ -99,7 +99,7 @@ object_types:
         props:
           from: section_body
           after_heading: Props
-          required: false
+          required: true
 - name: integration
   data_schema:
     type: object
@@ -112,11 +112,11 @@ object_types:
         endpoints:
           from: section_body
           after_heading: Endpoints
-          required: false
+          required: true
         behavior:
           from: section_body
           after_heading: Behavior
-          required: false
+          required: true
 - name: rate_limit
   data_schema:
     type: object
@@ -129,4 +129,4 @@ object_types:
         thresholds:
           from: section_body
           after_heading: Thresholds
-          required: false
+          required: true
