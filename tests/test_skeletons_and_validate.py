@@ -39,13 +39,16 @@ _PLACEHOLDER_TOKENS = ("TODO", "TBD", "{{", "}}", "placeholder", "none specified
 # The defining body field(s) of each object type — these MUST be
 # ``required: true`` in the manifest so `quire validate` is non-trivial.
 _REQUIRED_BODY_FIELDS = {
-    "api_endpoint": {"endpoint", "routes"},
+    "api_endpoint": {"endpoint"},
     "data_schema": {"schema_json"},
     "queue": {"message_schema"},
     "action": {"inputs"},
     "ui_component": {"props"},
-    "integration": {"endpoints", "behavior"},
     "rate_limit": {"thresholds"},
+    "interface": {"contract_yaml"},
+    "external_contract": {"contract"},
+    "extension_point": {"contract"},
+    "binary_format": {"layout_yaml"},
 }
 
 

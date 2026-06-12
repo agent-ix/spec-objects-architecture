@@ -8,8 +8,10 @@ artifact_type: api_endpoint
      asserts):
      - Frontmatter MUST carry id, title, artifact_type; artifact_type is
        api_endpoint (quire resolves the archetype from it).
-     - "## Endpoint" (H2, required): what the endpoint does and why.
-     - "## Routes" (H2, required): the concrete method + path routes.
+     - "## Endpoint" (H2, required): what the endpoint does and why, plus
+       the concrete method + path routes (multi-route surfaces list every
+       route here — there is no separate Routes section; format-walkthrough
+       decision #20).
      - "## 2. API Contract" (H2, optional): request/response detail; the
        numbered heading text "2. API Contract" is matched verbatim.
      - Keep headings unique per level. -->
@@ -22,7 +24,7 @@ SHA-256 digest and persists the artifact to the store once the computed
 digest matches the declared digest. Mismatches are rejected before anything
 is written.
 
-## Routes
+Routes:
 
 - `POST /artifacts` — upload a new artifact (multipart body + digest field)
 - `GET /artifacts/{artifact_id}` — fetch artifact metadata by id
