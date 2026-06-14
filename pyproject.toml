@@ -1,6 +1,7 @@
 [project]
 name = "spec_objects_architecture"
 dynamic = ["version"]
+license = "MIT"
 
 [tool.poetry]
 name = "spec_objects_architecture"
