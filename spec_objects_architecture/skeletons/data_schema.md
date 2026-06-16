@@ -1,12 +1,12 @@
 ---
 id: data-schema-001
 title: "Artifact record"
-artifact_type: data_schema
+type: data_schema
 ---
 <!-- data_schema authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
      asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        data_schema (quire resolves the archetype from it).
      - "## Schema" (H2, required): MUST contain a fenced ```json code block
        holding the JSON Schema for the record.

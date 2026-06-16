@@ -1,12 +1,12 @@
 ---
 id: api-endpoint-001
 title: "Upload artifact"
-artifact_type: api_endpoint
+type: api_endpoint
 ---
 <!-- api_endpoint authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
      asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        api_endpoint (quire resolves the archetype from it).
      - "## Endpoint" (H2, required): what the endpoint does and why, plus
        the concrete method + path routes (multi-route surfaces list every

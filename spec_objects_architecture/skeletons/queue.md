@@ -1,11 +1,11 @@
 ---
 id: queue-001
 title: "Artifact ingest queue"
-artifact_type: queue
+type: queue
 ---
 <!-- queue authoring skeleton (spec-objects-architecture). Fill every section
      with substantive content. Contract (manifest body_extraction asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        queue (quire resolves the archetype from it).
      - "## Message Format" (H2, required): MUST contain a fenced ```json code
        block holding an example message payload (or its schema).

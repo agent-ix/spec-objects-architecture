@@ -1,12 +1,12 @@
 ---
 id: interface-001
 title: "QuantCodec scoring contract"
-artifact_type: interface
+type: interface
 ---
 <!-- interface authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
      asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        interface (quire resolves the archetype from it).
      - "## Contract" (H2, required): MUST contain a fenced ```yaml code
        block holding the language-neutral operations contract — name,

@@ -1,12 +1,12 @@
 ---
 id: external-contract-001
 title: "Identity service contract"
-artifact_type: external_contract
+type: external_contract
 ---
 <!-- external_contract authoring skeleton (spec-objects-architecture). Fill
      every section with substantive content. Contract (manifest
      body_extraction asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        external_contract (quire resolves the archetype from it).
      - "## Contract" (H2, required): the contract with the EXTERNAL system —
        what it provides/expects, invariants, versioning expectations.

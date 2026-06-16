@@ -1,12 +1,12 @@
 ---
 id: rate-limit-001
 title: "Artifact upload rate limit"
-artifact_type: rate_limit
+type: rate_limit
 ---
 <!-- rate_limit authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
      asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        rate_limit (quire resolves the archetype from it).
      - "## Thresholds" (H2, required): the concrete limits, windows, and the
        response when a limit is exceeded.

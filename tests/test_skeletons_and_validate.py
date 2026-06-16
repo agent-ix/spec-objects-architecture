@@ -15,7 +15,7 @@ Covered here:
 * parity, reverse: skeleton headings at asserted levels cannot drift ahead of
   the manifest contract;
 * every ``section_body`` section carries substantive, non-placeholder body;
-* the frontmatter anchors (``id``/``title``/``artifact_type``) and each
+* the frontmatter anchors (``id``/``title``/``type``) and each
   type's defining body locator are ``required: true`` in the manifest;
 * roundtrip via the quire Python wheel: each skeleton passes
   ``validate_document`` and a required-section deletion fails (skipped
@@ -152,23 +152,23 @@ def test_skeleton_exists(name: str) -> None:
 
 @pytest.mark.parametrize("name", _names(), ids=lambda n: n)
 def test_skeleton_frontmatter_matches_anchors(name: str) -> None:
-    """Frontmatter seeds id/title/artifact_type; artifact_type names the type
-    (quire resolves the archetype from ``artifact_type``)."""
+    """Frontmatter seeds id/title/type; type names the type
+    (quire resolves the archetype from ``type``)."""
     fm = _frontmatter(_skeleton_text(name))
-    for field in ("id", "title", "artifact_type"):
+    for field in ("id", "title", "type"):
         assert fm.get(field), f"{name}: frontmatter lacks {field!r}"
-    assert fm["artifact_type"] == name, (
-        f"{name}: frontmatter artifact_type is {fm['artifact_type']!r}; "
+    assert fm["type"] == name, (
+        f"{name}: frontmatter type is {fm['type']!r}; "
         f"it must equal the object type name"
     )
 
 
 def test_frontmatter_anchor_locators_required() -> None:
-    """The shared id/title/artifact_type anchors are ``required: true`` for
+    """The shared id/title/type anchors are ``required: true`` for
     every object type (the YAML anchors are reused across all seven)."""
     for ot in _object_types():
         match = _match(ot)
-        for field in ("id", "title", "artifact_type"):
+        for field in ("id", "title", "type"):
             loc = match[field]
             assert loc["from"] == "frontmatter_field", (ot["name"], field)
             assert (

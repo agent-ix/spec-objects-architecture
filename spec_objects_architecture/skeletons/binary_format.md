@@ -1,12 +1,12 @@
 ---
 id: binary-format-001
 title: "Index metadata block layout"
-artifact_type: binary_format
+type: binary_format
 ---
 <!-- binary_format authoring skeleton (spec-objects-architecture). Fill
      every section with substantive content. Contract (manifest
      body_extraction asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        binary_format (quire resolves the archetype from it).
      - "## Layout" (H2, required): MUST contain a fenced ```yaml code block
        describing the persisted binary layout — one or more record types,

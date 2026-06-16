@@ -1,11 +1,11 @@
 ---
 id: action-001
 title: "Verify artifact checksum"
-artifact_type: action
+type: action
 ---
 <!-- action authoring skeleton (spec-objects-architecture). Fill every section
      with substantive content. Contract (manifest body_extraction asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        action (quire resolves the archetype from it).
      - "## Inputs" (H2, required): every input the action consumes, with type
        and source.

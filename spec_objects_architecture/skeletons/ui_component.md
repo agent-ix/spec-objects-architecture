@@ -1,12 +1,12 @@
 ---
 id: ui-component-001
 title: "ArtifactTable"
-artifact_type: ui_component
+type: ui_component
 ---
 <!-- ui_component authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
      asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        ui_component (quire resolves the archetype from it).
      - "## Props" (H2, required): every prop with name, type, and behavior.
      - Keep headings unique per level. -->

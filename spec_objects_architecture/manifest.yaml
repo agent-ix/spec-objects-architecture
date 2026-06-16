@@ -29,10 +29,10 @@ object_types:
           path:
           - title
           required: true
-        artifact_type: &id003
+        type: &id003
           from: frontmatter_field
           path:
-          - artifact_type
+          - type
           required: true
         # Format-walkthrough decision #20 (2026-06-11): `routes` dropped —
         # `Endpoint` is the sole canonical anchor (~80/90 FRs in the wild;
@@ -54,7 +54,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         schema_json:
           from: code_block
           after_heading: Schema
@@ -68,7 +68,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         message_schema:
           from: code_block
           after_heading: Message Format
@@ -82,7 +82,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         inputs:
           from: section_body
           after_heading: Inputs
@@ -95,7 +95,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         props:
           from: section_body
           after_heading: Props
@@ -113,7 +113,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         # Language-neutral operations contract (trait / TS interface /
         # ABC / hexagonal port). YAML, not source code — specs are
         # human-readable design (decision #7). Implementations are NOT
@@ -132,7 +132,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         # Contract with an EXTERNAL system (the concept `integration`
         # squatted on). Boundary vs `interface`: interface = contracts
         # within the system; external_contract = contracts with systems
@@ -157,7 +157,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         # Pluggability as a first-class node: names the interface it
         # exposes plus registration/stability guarantees.
         contract:
@@ -180,7 +180,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         # Persisted binary layout (decision #11): YAML vocabulary for
         # what JSON Schema cannot express — record types with per-field
         # name/offset/size/type/endianness. `data_schema` stays for
@@ -198,7 +198,7 @@ object_types:
       match:
         id: *id001
         title: *id002
-        artifact_type: *id003
+        type: *id003
         thresholds:
           from: section_body
           after_heading: Thresholds

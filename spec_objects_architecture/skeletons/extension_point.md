@@ -1,12 +1,12 @@
 ---
 id: extension-point-001
 title: "Renderer registry extension point"
-artifact_type: extension_point
+type: extension_point
 ---
 <!-- extension_point authoring skeleton (spec-objects-architecture). Fill
      every section with substantive content. Contract (manifest
      body_extraction asserts):
-     - Frontmatter MUST carry id, title, artifact_type; artifact_type is
+     - Frontmatter MUST carry id, title, type; type is
        extension_point (quire resolves the archetype from it).
      - "## Contract" (H2, required): the interface the extension point
        exposes to plug-ins (name the `interface` object it publishes).
