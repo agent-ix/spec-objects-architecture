@@ -5,21 +5,18 @@ type: StR
 ---
 # [StR-001] Tier-2 architecture objects
 
-## Stakeholder
+## Stakeholder Need
 
-Filament platform / spec authors / agent CLI generators.
+The Filament platform, spec authors, and agent CLI generators **SHALL** be able to extract graph entities for technical architecture concerns — API endpoints, UI components, data schemas, queues, actions, and integrations — from architecture specs. The need is stated from the consumers' perspective and avoids prescribing a mechanism.
 
-## Need
+## Rationale
 
-Architecture specs need extractable graph entities for API endpoints, UI components, data schemas, queues, actions, integrations.
+Spec authors and agent CLI generators (minijinja-cli) are accountable for producing valid, machine-extractable architecture artifacts. Without a shared set of tier-2 object types and the templates and schemas to produce them, each consumer would reinvent the entity model, and Module activation against filament-core could not register a consistent set of contributions. A single Module supplying these object types preserves consistency across the platform.
 
-## Acceptance Criteria
+## Validation Criteria
 
-| ID | Criteria |
-|----|----------|
-| StR-001-AC-1 | A Module activation against filament-core registers the contents this module declares. |
-| StR-001-AC-2 | Agent CLI generators (minijinja-cli) can produce valid artifacts using the templates and schemas this module ships. |
+This need is considered satisfied when a Module activation against filament-core registers the contents this module declares, and when agent CLI generators (minijinja-cli) can produce valid artifacts using the templates and schemas this module ships. Satisfaction is judged by demonstrating both outcomes against a live filament-core instance and a generator run.
 
 ## Dependencies
 
-- **Upstream**: filament-core-service FR-035 (Module Manifest Schema)
+Relationships at the stakeholder level. **Upstream**: filament-core-service FR-035 (Module Manifest Schema).
