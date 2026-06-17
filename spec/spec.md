@@ -52,4 +52,4 @@ The requirement classes that make up this specification — Stakeholder Requirem
 
 - ISO/IEC/IEEE 29148 — Requirements engineering.
 - The component's source repository and README.
-- filament-core-service FR-035 (Module Manifest Schema), the upstream contract this module's manifest conforms to.
+- filament-core-service [FR-035](ix://agent-ix/filament-core-service/FR-035) (Module Manifest Schema), the upstream contract this module's manifest conforms to.

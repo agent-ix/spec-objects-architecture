@@ -19,4 +19,4 @@ This need is considered satisfied when a Module activation against filament-core
 
 ## Dependencies
 
-Relationships at the stakeholder level. **Upstream**: filament-core-service FR-035 (Module Manifest Schema).
+Relationships at the stakeholder level. **Upstream**: filament-core-service [FR-035](ix://agent-ix/filament-core-service/FR-035) (Module Manifest Schema).
