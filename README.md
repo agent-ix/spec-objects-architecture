@@ -2,7 +2,7 @@
 
 > Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format)
 
-This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/agent-ix/quire-cli) and [`ix-spec`](https://github.com/agent-ix/ix-spec). It provides tier-2 embedded `object_types` — a `manifest.yaml` plus per-kind authoring `skeletons/` used to author and validate Markdown spec artifacts.
+This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/agent-ix/quire-cli) and [`quoin`](https://github.com/agent-ix/quoin). It provides tier-2 embedded `object_types` — a `manifest.yaml` plus per-kind authoring `skeletons/` used to author and validate Markdown spec artifacts.
 
 ## Installing quire-cli
 
@@ -38,18 +38,18 @@ See [quire-cli#install](https://github.com/agent-ix/quire-cli#install) for full 
 
 ## How this module is used
 
-### With ix-spec (recommended)
+### With quoin (recommended)
 
 Install this module as a plugin, then author and review spec artifacts:
 
 ```bash
-ix-spec plugin install path:../spec-objects-architecture
-ix-spec catalog list
-ix-spec write . --types api_endpoint,data_schema
-ix-spec review
+quoin plugin install path:../spec-objects-architecture
+quoin catalog list
+quoin write . --types api_endpoint,data_schema
+quoin review
 ```
 
-See [ix-spec](https://github.com/agent-ix/ix-spec) for details.
+See [quoin](https://github.com/agent-ix/quoin) for details.
 
 ### With quire-cli directly
 
