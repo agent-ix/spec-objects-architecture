@@ -86,7 +86,3 @@ Common Makefile targets:
 | `use-local p=<name>` | Switch a dep to local `pypi.ix` |
 | `use-upstream p=<name>` | Switch a dep back to upstream |
 | `local-publish` | Build and publish to local PyPI (`pypi.ix`) |
-
-CI requires the `GCP_SERVICE_ACCOUNT_KEY` secret plus the `GCP_REGION`, `GCP_PROJECT_NAME`, and `GCP_PYPI` variables for Artifact Registry publishing.
-
-Licensed under MIT — see [LICENSE](./LICENSE).
