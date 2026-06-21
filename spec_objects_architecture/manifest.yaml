@@ -117,6 +117,7 @@ object_types:
   roles: [externally-exposed, deployable]
   allowed_links:
     contains: [ui_component]
+    contained_by: [ui_component]
     calls: [api_endpoint, action]
     renders: [data_schema]
     realizes: [business-intent]
