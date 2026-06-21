@@ -14,6 +14,17 @@ artifact_types: []
 lint_rules: []
 object_types:
 - name: api_endpoint
+  roles: [externally-exposed, deployable, measurable, configurable]
+  allowed_links:
+    exposes: [domain-object]
+    operates_on: [domain-object]
+    reads: [data_schema, aggregate_root, entity]
+    writes: [data_schema, aggregate_root, entity]
+    calls: [api_endpoint, external_contract]
+    publishes: [queue]
+    implements: [interface]
+    requires: [permission, auth_flow]
+    realizes: [business-intent]
   data_schema:
     type: object
   body_extraction:
@@ -47,6 +58,10 @@ object_types:
           after_heading: 2. API Contract
           required: false
 - name: data_schema
+  allowed_links:
+    contains: [data_schema, enumeration]
+    represents: [domain-object]
+    references: [data_schema]
   data_schema:
     type: object
   body_extraction:
@@ -61,6 +76,10 @@ object_types:
           required: true
           language: json
 - name: queue
+  roles: [externally-exposed, deployable, configurable]
+  allowed_links:
+    carries: [data_schema, event]
+    references: [data_schema]
   data_schema:
     type: object
   body_extraction:
@@ -75,6 +94,13 @@ object_types:
           required: true
           language: json
 - name: action
+  roles: [externally-exposed]
+  allowed_links:
+    triggers: [process, action]
+    reads: [data_schema]
+    writes: [data_schema]
+    calls: [api_endpoint]
+    operates_on: [domain-object]
   data_schema:
     type: object
   body_extraction:
@@ -88,6 +114,12 @@ object_types:
           after_heading: Inputs
           required: true
 - name: ui_component
+  roles: [externally-exposed, deployable]
+  allowed_links:
+    contains: [ui_component]
+    calls: [api_endpoint, action]
+    renders: [data_schema]
+    realizes: [business-intent]
   data_schema:
     type: object
   body_extraction:
@@ -106,6 +138,10 @@ object_types:
 # 9 users. Internal contracts -> `interface`; external-system contracts
 # -> `external_contract`; service-client FRs -> relationship edges.
 - name: interface
+  roles: [externally-exposed]
+  allowed_links:
+    contains: [api_endpoint]
+    references: [data_schema]
   data_schema:
     type: object
   body_extraction:
@@ -125,6 +161,11 @@ object_types:
           language: yaml
           required: true
 - name: external_contract
+  roles: [externally-exposed]
+  allowed_links:
+    implements: [interface]
+    conforms_to: [external_contract]
+    references: [data_schema]
   data_schema:
     type: object
   body_extraction:
@@ -150,6 +191,9 @@ object_types:
           after_heading: Behavior
           required: false
 - name: extension_point
+  allowed_links:
+    extends: [interface]
+    references: [interface]
   data_schema:
     type: object
   body_extraction:
@@ -173,6 +217,9 @@ object_types:
           after_heading: Stability
           required: false
 - name: binary_format
+  allowed_links:
+    serializes: [data_schema]
+    references: [data_schema]
   data_schema:
     type: object
   body_extraction:
@@ -191,6 +238,8 @@ object_types:
           language: yaml
           required: true
 - name: rate_limit
+  allowed_links:
+    throttles: [api_endpoint, action]
   data_schema:
     type: object
   body_extraction:
