@@ -1,7 +1,7 @@
 [project]
 name = "spec_objects_architecture"
 dynamic = ["version"]
-license = "MIT"
+license = "AGPL-3.0-or-later"
 
 [tool.poetry]
 name = "spec_objects_architecture"
