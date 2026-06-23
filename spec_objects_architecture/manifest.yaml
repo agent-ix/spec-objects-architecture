@@ -253,3 +253,109 @@ object_types:
           from: section_body
           after_heading: Thresholds
           required: true
+
+# FR-043: concrete-term lexicon — API / web / UI / data-shape / computing
+# objects the EARS object-aware vague-response check accepts as verifiable
+# responses (so `the system shall provide an endpoint` is not flagged).
+lexicon:
+  endpoint: {definition: a network-addressable HTTP path + method serving a capability}
+  route: {definition: a URL path pattern dispatched to a handler}
+  operation: {definition: a named, invokable unit of behavior (e.g. a CRUD operation)}
+  method: {definition: an HTTP verb or a callable on an interface}
+  api: {definition: an application programming interface surface}
+  command: {definition: an imperative request to perform an action}
+  request: {definition: an inbound message asking for work}
+  response: {definition: an outbound message returning a result}
+  header: {definition: a key/value pair carried on a request or response}
+  payload: {definition: the body/content of a message}
+  query: {definition: a parameterized read request over a data source}
+  webhook: {definition: an outbound HTTP callback invoked on an event}
+  handler: {definition: code that processes a request, event, or signal}
+  interface: {definition: a contract a component exposes or depends on}
+  gateway: {definition: an entry-point service routing to backends}
+  contract: {definition: an agreed request/response or data shape between parties}
+  schema: {definition: a typed structure describing data}
+  field: {definition: a named member of a record or schema}
+  record: {definition: a structured data row/entry}
+  mapping: {definition: an association from keys to values}
+  index: {definition: a lookup structure over records}
+  cursor: {definition: an opaque token encoding a position for stable iteration}
+  pagination: {definition: splitting a result set into pages}
+  stream: {definition: an ordered, possibly unbounded sequence of items}
+  streaming: {definition: incremental delivery of data as it is produced}
+  parallelism: {definition: concurrent execution of independent work}
+  queue: {definition: an ordered buffer of pending work items}
+  channel: {definition: a typed conduit for passing messages}
+  connection: {definition: an established link between two endpoints}
+  session: {definition: a bounded interaction context between client and server}
+  parser: {definition: code that turns input text into a structured form}
+  renderer: {definition: code that turns a structure into output}
+  serializer: {definition: code that encodes a value to a transport form}
+  adapter: {definition: code bridging one interface to another}
+  primitive: {definition: a small reusable building-block type or operation}
+  component: {definition: a self-contained UI or system building block}
+  panel: {definition: a bounded UI region}
+  button: {definition: a clickable UI control}
+  dropdown: {definition: a UI control selecting from a list}
+  menu: {definition: a UI list of actions}
+  form: {definition: a UI grouping of inputs}
+  dialog: {definition: a modal UI surface}
+  tab: {definition: a switchable UI section}
+  widget: {definition: a discrete UI element}
+  picker: {definition: a UI control for selecting a value}
+  column: {definition: a vertical field in a table}
+  row: {definition: a horizontal record in a table}
+  cell: {definition: a single table position}
+  page: {definition: a routed UI view}
+  view: {definition: a rendered presentation of data}
+  graph: {definition: a set of nodes and edges}
+  node: {definition: a vertex in a graph or tree}
+  edge: {definition: a connection between two nodes}
+  frame: {definition: a unit of streamed or rendered content}
+  attachment: {definition: a file or object linked to a record}
+  template: {definition: a reusable parameterized form}
+  # CRUD verbs + general-computing objects (cross-cutting software vocabulary).
+  create: {definition: an operation that adds a new record}
+  read: {definition: an operation that retrieves a record}
+  update: {definition: an operation that modifies a record}
+  delete: {definition: an operation that removes a record}
+  event: {definition: a recorded occurrence emitted for consumers}
+  file: {definition: a named unit of stored bytes}
+  step: {definition: one ordered unit of a procedure or pipeline}
+  layer: {definition: one tier of a layered structure}
+  state: {definition: the current condition of a stateful entity}
+  lifecycle: {definition: the ordered phases of an entity's existence}
+  transition: {definition: a move from one state to another}
+  signal: {definition: an asynchronous notification}
+  log: {definition: an append-only record of events}
+  config: {definition: externalized settings governing behavior}
+  overlay: {definition: a layered configuration applied over a base}
+  digest: {definition: a hash summarizing content}
+  report: {definition: a generated summary document}
+  module: {definition: a packaged, reusable unit of functionality}
+  plugin: {definition: an installable extension contributing capability}
+  object: {definition: a typed, identifiable data instance}
+  artifact: {definition: a produced, versioned output}
+  document: {definition: an authored, structured file}
+  content: {definition: the substantive body of a document or message}
+  parameter: {definition: a named input governing behavior}
+  reply: {definition: a response in a thread or conversation}
+  thread: {definition: an ordered conversation of messages}
+  comment: {definition: an authored note attached to a target}
+  review: {definition: a structured assessment of an artifact}
+  workflow: {definition: an orchestrated sequence of steps}
+  account: {definition: an identity's registration with a system}
+  provider: {definition: an external system supplying a capability}
+  label: {definition: a short classifying tag}
+  status: {definition: a discrete condition value}
+  flag: {definition: a boolean configuration toggle}
+  job: {definition: a unit of scheduled or queued work}
+  task: {definition: a discrete unit of work}
+  result: {definition: the produced outcome of an operation}
+  entry: {definition: one item in a list or log}
+  key: {definition: a unique identifier or lookup token}
+  list: {definition: an ordered collection / a list operation}
+  spec: {definition: an authored specification artifact}
+  crud: {definition: the create-read-update-delete operation set}
+  pointer: {definition: a reference to a location or value}
+  reference: {definition: a link to another artifact or entity}
