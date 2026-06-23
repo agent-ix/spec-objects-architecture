@@ -359,3 +359,17 @@ lexicon:
   crud: {definition: the create-read-update-delete operation set}
   pointer: {definition: a reference to a location or value}
   reference: {definition: a link to another artifact or entity}
+  # Top-up: common concrete objects surfaced by the corpus re-baseline (FR-043).
+  path: {definition: a code path, file path, or route path}
+  pattern: {definition: a recurring structural or matching template}
+  loop: {definition: a repeated control-flow construct}
+  function: {definition: a named callable unit of code}
+  database: {definition: a persistent structured data store}
+  error: {definition: a failure condition or error value}
+  action: {definition: a discrete invokable behavior}
+  version: {definition: an identified revision of an artifact}
+  input: {definition: data supplied to an operation}
+  tracing: {definition: distributed request/span instrumentation}
+  observability: {definition: logs/metrics/traces instrumentation surface}
+  boundary: {definition: a delimiting interface between contexts}
+  branching: {definition: conditional control flow}
