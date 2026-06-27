@@ -2,7 +2,7 @@
   "name": "@agent-ix/spec-objects-architecture",
   "version": "0.0.0-managed",
   "description": "Filament Module: tier-2 architecture ObjectTypes (api_endpoint, ui_component, data_schema, action, queue, integration, dto, middleware)",
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "author": "Agent IX <agents@agent-ix.dev>",
   "keywords": [
     "agent-ix",
