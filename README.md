@@ -6,20 +6,31 @@ This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/a
 
 ## Installing quire-cli
 
-The `quire` binary is published to GitHub Packages under the `@agent-ix` scope. Add an `.npmrc` pointing the scope at GitHub Packages with an auth token:
-
-```ini
-@agent-ix:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=${GITHUB_TOKEN}
-```
-
-Then install it globally:
+`@agent-ix` packages are published to public npm. Install the CLI globally:
 
 ```bash
 npm install -g @agent-ix/quire-cli
 ```
 
-See [quire-cli#install](https://github.com/agent-ix/quire-cli#install) for full installation instructions.
+See https://github.com/agent-ix/quire-cli#install for details.
+
+## Install this module via npm
+
+This module is also published as a config-only npm package: `@agent-ix/spec-objects-architecture`.
+The package root **is** the Filament module (`manifest.yaml` + schemas/skeletons),
+so it works directly as a `--module` target or via quoin's `package:` source.
+
+```bash
+npm install @agent-ix/spec-objects-architecture
+```
+
+```bash
+# quoin — resolve the module from npm by name
+quoin plugin install package:@agent-ix/spec-objects-architecture
+
+# or point any tool at the installed package root
+quire validate spec/**/*.md --module node_modules/@agent-ix/spec-objects-architecture
+```
 
 ## Object types provided
 
