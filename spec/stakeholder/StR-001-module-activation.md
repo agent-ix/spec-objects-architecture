@@ -15,7 +15,13 @@ Spec authors and agent CLI generators (minijinja-cli) are accountable for produc
 
 ## Validation Criteria
 
-This need is considered satisfied when a Module activation against filament-core registers the contents this module declares, and when agent CLI generators (minijinja-cli) can produce valid artifacts using the templates and schemas this module ships. Satisfaction is judged by demonstrating both outcomes against a live filament-core instance and a generator run.
+
+| ID | Criteria | Validation |
+|----|----------|------------|
+| StR-001-VC-1 | A Module activation against filament-core registers the contents this module declares. | Inspection |
+| StR-001-VC-2 | Agent CLI generators (minijinja-cli) can produce valid artifacts using the templates and schemas this module ships. | Demonstration |
+
+Satisfaction is judged by demonstrating both outcomes against a live filament-core instance and a generator run.
 
 ## Dependencies
 
