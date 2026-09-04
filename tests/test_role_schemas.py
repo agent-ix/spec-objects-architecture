@@ -16,6 +16,7 @@ import json
 import pytest
 
 from tests.conftest import (
+    FIXTURES_DIR,
     MODEL_OF,
     OBJECT_TYPES,
     PROFILE_KEYS,
@@ -274,6 +275,36 @@ def test_the_empty_record_fails_every_one_of_the_ten_types(schema_registry):
 
 
 @pytest.mark.trace("TC-042", "FR-004-AC-13")
+def test_the_extractor_reports_an_unresolvable_token_as_unresolved_type(
+    quire_engine, semantic_module, bundle_index
+):
+    """The extractor half of FR-004-AC-13, asserted under this criterion's own
+    row rather than borrowed from FR-006-AC-5: a token no declaration carries
+    is reported as `semantic.unresolved-type` and placed under the module's
+    `unresolved/` namespace."""
+    path = FIXTURES_DIR / "api_endpoint-unresolved-return.md"
+    record = quire_engine.extract_semantic(
+        {
+            "markdown": path.read_text(),
+            "module": semantic_module,
+            "path": str(path),
+            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/unresolved-001",
+            "bundle": bundle_index,
+        }
+    )
+    findings = [
+        d
+        for d in record.get("diagnostics", [])
+        if d.get("code") == "semantic.unresolved-type"
+    ]
+    assert len(findings) == 1, record.get("diagnostics")
+    assert "MysteryRecord" in findings[0]["message"]
+    assert record["operations"][0]["returns"]["target"].startswith(
+        "ix://agent-ix/spec-objects-architecture/unresolved/"
+    )
+
+
+@pytest.mark.trace("TC-042", "FR-004-AC-13")
 def test_an_unresolved_placeholder_target_is_a_semantic_id_and_a_bare_token_is_not(
     schema_registry,
 ):
@@ -359,3 +390,81 @@ def test_an_api_endpoint_and_a_rate_limit_record_are_distinguishable_by_schema_a
     assert not valid(schema_registry, "RateLimit", endpoint)
     assert valid(schema_registry, "RateLimit", limit)
     assert not valid(schema_registry, "ApiEndpoint", limit)
+
+
+#: Key-name shapes that would mark a record as an *observation* of running code
+#: rather than a declaration. The ticket's second acceptance criterion, and the
+#: Project 17 resource-vocabulary alignment, reduce to keeping these out.
+OBSERVATION_MARKERS = (
+    "observed",
+    "discovered",
+    "measured",
+    "runtime",
+    "actual",
+    "sampled",
+    "detected",
+    "instance",
+    "call_count",
+    "hit_count",
+    "last_seen",
+    "resource_id",
+    "trace_id",
+    "span_id",
+)
+
+
+@pytest.mark.trace("TC-045", "FR-004-AC-15")
+def test_no_shipped_schema_declares_an_observation_key():
+    """The ticket's "definition objects remain distinct from observed routes,
+    calls, queues, and runtime resources", made checkable: a declaration record
+    carries no key that names an observation, so it can never be read as an
+    extraction from running code. This is also the Project 17 alignment — the
+    module contributes declaration vocabulary and takes none of the measured
+    extraction vocabulary for itself."""
+    offenders = []
+    for path in sorted(SCHEMAS_DIR.glob("*.json")):
+        if path.name == "toolchain.json":
+            continue
+        doc = json.loads(path.read_text())
+        for key in doc.get("properties", {}):
+            lowered = key.lower()
+            for marker in OBSERVATION_MARKERS:
+                if marker in lowered:
+                    offenders.append(f"{path.name}.{key} (matches {marker!r})")
+    assert offenders == [], offenders
+
+
+@pytest.mark.trace("TC-046", "FR-004-AC-16")
+def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry):
+    """FR-004 admits `relations` where a type is reached through an edge and
+    refuses it on the four reached through what they carry, expose, serialize or
+    throttle. Both halves are asserted, so the Behavior rule and the table
+    cannot drift apart again."""
+    admits = {
+        "ApiEndpoint": {"operations": [RETURNING_OP]},
+        "DataSchema": {"fields": [FIELD]},
+        "Action": {"operations": [OP]},
+        "UiComponent": {"fields": [FIELD]},
+        "Interface": {"operations": [OP]},
+        "ExternalContract": {"operations": [GUARANTEED_OP], "clauses": [CLAUSE]},
+    }
+    refuses = {
+        "Queue": {"fields": [IDENTITY_FIELD]},
+        "ExtensionPoint": {"operations": [OP], "clauses": [CLAUSE]},
+        "BinaryFormat": {"clauses": [CLAUSE]},
+        "RateLimit": {"clauses": [CLAUSE]},
+    }
+    assert set(admits) | set(refuses) == set(MODELS)
+    relation = {
+        "verb": "contains",
+        "category": "structural",
+        "target": "ix://agent-ix/spec-objects-architecture/type/ArtifactRecord",
+    }
+    for model, core in admits.items():
+        assert valid(schema_registry, model, core), model
+        assert valid(schema_registry, model, {**core, "relations": [relation]}), model
+    for model, core in refuses.items():
+        assert valid(schema_registry, model, core), model
+        assert not valid(
+            schema_registry, model, {**core, "relations": [relation]}
+        ), model

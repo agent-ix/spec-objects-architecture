@@ -74,6 +74,11 @@ fails the build.
 - The Python package SHALL include `spec_objects_architecture/schemas/*.json` in the wheel and sdist.
 - The repository SHALL mark `*.json` and `*.tsp` as `eol=lf` in `.gitattributes`, so a checkout with `autocrlf` cannot change the digested bytes.
 - `scripts/stage-npm.mjs` SHALL copy `schemas/` beside `manifest.yaml` at pack time, so the npm tarball ships the schemas the manifest references.
+- `scripts/stage-npm.mjs --clean` SHALL run from `postpack` and remove the staged copies again, because a `manifest.yaml` left at the repository root makes every Filament tool discover the root as a second module and stop merging the installed module set.
+- When `GITHUB_REF_NAME` names a `vX.Y.Z` tag, `scripts/stage-npm.mjs` SHALL stamp that version into `package.json`, so the tarball is published at the tag version.
+- With no such variable set, `scripts/stage-npm.mjs` SHALL leave `package.json` unchanged.
+- The generator SHALL accept only the argument `--check`.
+- Given any other argument, the generator SHALL exit non-zero rather than fall through to the write path.
 
 ## Constraints
 
@@ -98,6 +103,7 @@ fails the build.
 | FR-002-AC-7 | The npm tarball produced by `npm pack` contains `manifest.yaml` and a sibling `schemas/<Model>.json` for every exported object type, so a manifest-relative `schema:` path resolves inside the tarball. | Test |
 | FR-002-AC-8 | Bumping the manifest `version` and the `@jsonSchema` base together and re-running the generator yields every `$id` and every sibling `$ref` at the new version, `toolchain.json` recording the new base, and manifest digests equal to the new bytes; `make schemas-check` then exits zero, while bumping only one of the pair exits non-zero. | Test |
 | FR-002-AC-9 | `make schemas-check` on a committed tree carrying an extra `spec_objects_architecture/schemas/Stale.json` with no emitted counterpart exits non-zero naming that file, and writes nothing. | Test |
+| FR-002-AC-10 | The generator refuses an unrecognised argument rather than treating it as a write run; `npm pack` leaves no staged payload at the repository root. | Test |
 
 ## Dependencies
 

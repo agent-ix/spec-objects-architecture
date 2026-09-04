@@ -28,13 +28,13 @@ schemas (US-001, FR-002..FR-006, NFR-001, IT-002). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **130/130 rows backed
-(100%)**: 71 `TC-` rows from the Test Case Summary below plus 59 criterion
-rows minted from the requirements (4 FR-001, 9 FR-002, 8 FR-003, 14 FR-004,
+What the numbers count. `quire coverage` reports **141/141 rows backed
+(100%)**: 79 `TC-` rows from the Test Case Summary below plus 62 criterion
+rows minted from the requirements (4 FR-001, 10 FR-002, 8 FR-003, 16 FR-004,
 10 FR-005, 6 FR-006, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is
 a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **153 passed, 7 skipped, 4 xfailed**. The 7 skips are the
+reports **163 passed, 7 skipped, 4 xfailed**. The 7 skips are the
 environment-gated rows (4 need a running `filament-core-service`, 3 are the
 opt-in Quoin roundtrip, which was run separately and passed); the 4 xfails are
 the expected failures named under Test Environment. No row is green because a
@@ -68,9 +68,9 @@ test was skipped.
 | Functional Req | Acceptance Criteria | Test Cases | Coverage Status |
 |---|---|---|---|
 | FR-001 | FR-001-AC-1..4 | TC-001..TC-004 | 🚧 AC-1 is an expected failure on filament-core-service#25; AC-2..AC-4 need a running filament-core |
-| FR-002 | FR-002-AC-1..9, FR-002-CON-1..5 | TC-010..TC-019, TC-071..TC-074 | ✅ |
+| FR-002 | FR-002-AC-1..10, FR-002-CON-1..5 | TC-010..TC-019, TC-071..TC-079, TC-087 | ✅ |
 | FR-003 | FR-003-AC-1..8, FR-003-CON-1..2 | TC-020..TC-028, TC-090 | ✅ AC-6's naming half is an expected failure |
-| FR-004 | FR-004-AC-1..14, FR-004-CON-1..3 | TC-030..TC-044 | ✅ |
+| FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
 
@@ -132,6 +132,8 @@ test was skipped.
 | TC-042 | Placeholder `unresolved` target is accepted by the schema and reported by the extractor; a bare token is refused | Integration | P1 | FR-004-AC-13 | ✅ |
 | TC-043 | Every optional profile key can be removed without invalidating the record, and no profile key is required anywhere | Integration | P1 | FR-004-AC-14, FR-004-CON-3 | ✅ |
 | TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1 | ✅ |
+| TC-045 | No shipped schema declares an observation key, so a declaration record cannot be read as an extraction from running code | Unit | P0 | FR-004-AC-15 | ✅ |
+| TC-046 | `relations` is admitted by six object types and refused by four, both halves asserted | Integration | P1 | FR-004-AC-16 | ✅ |
 | TC-050 | Every skeleton (ten plus three alternates) validates with no error | Integration | P0 | FR-005-AC-1 | ✅ |
 | TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
 | TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
@@ -140,7 +142,7 @@ test was skipped.
 | TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6 | ✅ |
 | TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7 | ✅ |
 | TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
-| TC-058 | No corpus repository or vendored fixture is edited by the change (diff over the branch) | Static | P2 | FR-005-CON-1 | ✅ |
+| TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1 | ✅ falsified three ways and restored: a `corpus/` probe, a `fixtures/semantic-module` probe and a `.gitmodules` each turn it red |
 | TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8 | ✅ |
 | TC-060 | Zero 0.2.0 locators changed | Unit | P0 | NFR-001-AC-1 | ✅ |
 | TC-061 | Every checked-in 0.2.0 skeleton validates under 0.3.0 with zero errors; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
@@ -153,6 +155,11 @@ test was skipped.
 | TC-072 | A coordinated version bump re-emits every `$id`/`$ref` at the new version with matching digests; bumping one half of the pair fails the check | Integration | P1 | FR-002-AC-8, FR-002-CON-5 | ✅ |
 | TC-073 | `make schemas-check` names a stale committed schema with no emitted counterpart and writes nothing | Integration | P1 | FR-002-AC-9 | ✅ |
 | TC-074 | No acceptance test hard-codes the `$id` version segment; each reads it from the manifest `version` | Unit | P2 | FR-002-CON-5 | ✅ |
+| TC-075 | A Node older than 20 fails the generator naming the required version | Integration | P2 | FR-002-AC-4 | ✅ |
+| TC-076 | An unresolvable `@typespec/compiler` fails the generator naming the missing binary | Integration | P2 | FR-002-AC-4 | ✅ |
+| TC-077 | A `tsp compile` failure exits non-zero and leaves the committed schemas and manifest byte-identical | Integration | P1 | FR-002-AC-4 | ✅ |
+| TC-078 | A source emitting no module model exits non-zero naming the base it found nothing under | Integration | P1 | FR-002-AC-4 | ✅ |
+| TC-079 | A manifest `schema:` path with no emitted counterpart, and one with no digest line, are each named | Integration | P1 | FR-002-AC-4 | ✅ |
 | TC-080 | The interface `## Contract` YAML and its extracted `OperationDecl[]` agree on names, params, and returns | Integration | P0 | FR-006-AC-1 | ✅ |
 | TC-081 | The data-schema `## Schema` fence and its `## Properties` table agree on property names and the required set | Integration | P0 | FR-006-AC-2 | ✅ |
 | TC-082 | The queue `## Message Format` fence and its `## Properties` table agree on the key set | Integration | P1 | FR-006-AC-3 | ✅ |
@@ -160,6 +167,7 @@ test was skipped.
 | TC-084 | An api-endpoint fixture returning an undeclared token yields exactly one `semantic.unresolved-type` finding and the `unresolved` placeholder target | Integration | P1 | FR-006-AC-5 | ✅ |
 | TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are byte-identical to 0.2.0 and still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1 | ✅ |
 | TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2 | ✅ |
+| TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
 | TC-090 | The Filament snapshot path refuses all ten reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
 | TC-091 | The bundle index holds one entry per declaration id; a per-file index makes an alternate-bearing declaration ambiguous with itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ the per-file half is an expected failure on quire-rs#398 |
 
@@ -202,6 +210,17 @@ by this matrix: no `SuiteRegistry` document declares a producer for the `Unit`,
 `Integration`, `Static`, and `Manual` evidence kinds, and no `Inspections`
 document exists to discharge the `Static` rows (TC-017, TC-018, TC-058,
 TC-086). `quire coverage` reports every declared row backed.
+
+One check the coverage engine performs is **disabled** on this matrix and is
+not claimed: `quire coverage` reports `status-column-matches-nothing`, because
+the `TestMatrix` archetype asserts a `Coverage Status` column on the
+requirement-level tables while `traceability.status.column` is configured as
+`Status`. The two cannot both be satisfied — renaming the column to match the
+config fails `quire validate` structurally — so status classification is
+skipped and complete-but-unbacked rows are not machine-checked here.
+`agent-ix/spec-artifacts-process#83` owns reconciling them. The backed
+figure is unaffected: it counts trace-tag binding, which is measured
+independently of the status column.
 
 Five rows stay `🚧` and none of them is a coverage claim: TC-001 (the expected
 failure above), and TC-002, TC-003, TC-004 and TC-005, which need a running

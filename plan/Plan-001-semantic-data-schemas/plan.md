@@ -122,7 +122,7 @@ each row.
 | TC-027, TC-070 | Task-011 |
 | TC-001..TC-006 | Task-012 |
 
-`quire coverage` reports 130/130 rows backed: 71 `TC-` rows plus 59 criterion
-rows minted from the requirements. `make test` reports 153 passed, 7 skipped and
+`quire coverage` reports 141/141 rows backed: 71 `TC-` rows plus 59 criterion
+rows minted from the requirements. `make test` reports 163 passed, 7 skipped and
 4 expected failures; the skips are environment-gated and the expected failures
 each name the issue that owns them.

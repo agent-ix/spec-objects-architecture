@@ -105,9 +105,21 @@ def test_the_same_schemas_resolved_into_snapshots_are_accepted(quire_engine):
 def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
     """FR-005-CON-3: one entry per declaration, not per file. The three
     `*.sysml.md` alternates declare the same object as their table skeleton and
-    share its `id` and `title` by intent."""
+    share its `id` and `title` by intent.
+
+    The comparison is against the ids the *files* carry, not against the
+    fixture's own output: asserting that a de-duplicated list has no duplicate
+    would test the fixture rather than the rule.
+    """
+    per_file = [
+        frontmatter(path.read_text())["id"]
+        for path in sorted(SKELETONS_DIR.glob("*.md"))
+    ]
+    assert len(per_file) == 13, per_file
+    assert len(set(per_file)) == len(OBJECT_TYPES)
+
     ids = [entry["id"] for entry in bundle_index["objects"]]
-    assert len(ids) == len(set(ids))
+    assert ids == sorted(set(per_file)), ids
     assert len(ids) == len(OBJECT_TYPES)
 
 

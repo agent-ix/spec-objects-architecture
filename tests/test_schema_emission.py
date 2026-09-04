@@ -170,22 +170,27 @@ def test_a_base_version_differing_from_the_manifest_version_fails_naming_both(tm
 
 @pytest.mark.trace("TC-015", "FR-002-AC-6")
 def test_the_built_wheel_and_sdist_carry_every_exported_schema(tmp_path):
-    dist = tmp_path / "dist"
+    # FR-002-AC-6 names `make build`, which runs `build-tools build` through
+    # poe — not `poetry build` directly. Running the criterion's own path means
+    # a build-tools regression that dropped `schemas/*.json` turns this red.
+    dist = REPO_ROOT / "dist"
+    before = {p.name for p in dist.glob("*")} if dist.is_dir() else set()
     build = subprocess.run(
-        ["poetry", "build", "--output", str(dist)],
+        ["make", "build"],
         cwd=str(REPO_ROOT),
         capture_output=True,
         text=True,
         check=False,
     )
     if build.returncode != 0:
-        pytest.fail(f"`poetry build` failed:\n{build.stdout}\n{build.stderr}")
-    wheel = next(dist.glob("*.whl"))
+        pytest.fail(f"`make build` failed:\n{build.stdout}\n{build.stderr}")
+    produced = sorted(p for p in dist.glob("*") if p.name not in before)
+    wheel = next(p for p in produced if p.suffix == ".whl")
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
     for name in OBJECT_TYPES:
         assert f"spec_objects_architecture/schemas/{MODEL_OF[name]}.json" in names
-    sdist = next(dist.glob("*.tar.gz"))
+    sdist = next(p for p in produced if p.name.endswith(".tar.gz"))
     with tarfile.open(sdist) as archive:
         members = {pathlib.PurePosixPath(m).parts[1:] for m in archive.getnames()}
     for name in OBJECT_TYPES:
@@ -363,3 +368,126 @@ def test_no_test_hard_codes_the_id_version_segment():
         assert (
             literal not in path.read_text()
         ), f"{path} hard-codes the $id version segment"
+
+
+# ---------------------------------------------------------------------------
+# Generator error branches (FR-002 Behavior). The coverage gate measures the
+# Python package only, so the generator — the actual implementation of FR-002 —
+# is covered by these behavioural rows rather than by a line counter.
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.trace("TC-075", "FR-002-AC-4")
+def test_the_generator_refuses_a_node_older_than_it_requires(tmp_path):
+    """FR-002 Behavior: "If `node` is older than 20 … exit non-zero naming the
+    required Node version". Asserted by running the check the generator makes,
+    against a stubbed `process.versions`, rather than by installing Node 18."""
+    tree = worktree_copy(tmp_path)
+    script = tree / "scripts" / "generate-schemas.mjs"
+    source = script.read_text()
+    assert "MIN_NODE_MAJOR = 20" in source
+    probe = tmp_path / "probe.mjs"
+    probe.write_text(
+        source.replace(
+            'const major = Number(process.versions.node.split(".")[0]);',
+            "const major = 18;",
+        )
+    )
+    result = subprocess.run(
+        ["node", str(probe)], cwd=str(tree), capture_output=True, text=True, check=False
+    )
+    assert result.returncode != 0
+    assert "Node 20 or later" in result.stderr
+
+
+@pytest.mark.trace("TC-076", "FR-002-AC-4")
+def test_the_generator_refuses_a_missing_toolchain(tmp_path):
+    """FR-002 Behavior: a toolchain that is not installed exits non-zero naming
+    the missing package and the command that installs it."""
+    tree = worktree_copy(tmp_path)
+    (tree / "node_modules").unlink()
+    (tree / "node_modules").mkdir()
+    result = run_generator(cwd=tree)
+    assert result.returncode != 0
+    assert "npm ci" in result.stderr or "not resolvable" in result.stderr
+
+
+@pytest.mark.trace("TC-077", "FR-002-AC-4")
+def test_a_compile_failure_leaves_the_committed_output_untouched(tmp_path):
+    """FR-002 Behavior: "If `tsp compile` fails … exit non-zero without
+    touching the committed output"."""
+    tree = worktree_copy(tmp_path)
+    source = tree / "typespec" / "main.tsp"
+    source.write_text(source.read_text() + "\nmodel Broken { this is not typespec }\n")
+    out = tree / "spec_objects_architecture" / "schemas"
+    before = {p.name: p.read_bytes() for p in out.iterdir()}
+    manifest_before = (
+        tree / "spec_objects_architecture" / "manifest.yaml"
+    ).read_bytes()
+    result = run_generator(cwd=tree)
+    assert result.returncode != 0
+    assert "tsp compile failed" in result.stderr
+    assert {p.name: p.read_bytes() for p in out.iterdir()} == before
+    assert (
+        tree / "spec_objects_architecture" / "manifest.yaml"
+    ).read_bytes() == manifest_before
+
+
+@pytest.mark.trace("TC-078", "FR-002-AC-4")
+def test_a_source_that_emits_no_module_model_is_refused(tmp_path):
+    """FR-002 Behavior: "If `tsp compile` … emits no module model, then the
+    generator SHALL exit non-zero without touching the committed output"."""
+    tree = worktree_copy(tmp_path)
+    source = tree / "typespec" / "main.tsp"
+    text = source.read_text()
+    head, _, _ = text.partition("// ---")
+    source.write_text(head)
+    result = run_generator(cwd=tree)
+    assert result.returncode != 0
+    assert "emitted no schema under" in result.stderr
+
+
+@pytest.mark.trace("TC-079", "FR-002-AC-4")
+def test_a_manifest_referencing_an_unemitted_schema_is_named(tmp_path):
+    """FR-002 Behavior: the generator edits `manifest.yaml` only at
+    `data_schema.digest`, and a `schema:` path with no emitted counterpart is
+    named rather than silently skipped."""
+    tree = worktree_copy(tmp_path)
+    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
+    manifest.write_text(
+        manifest.read_text().replace(
+            "schema: schemas/ApiEndpoint.json", "schema: schemas/Nowhere.json", 1
+        )
+    )
+    result = run_generator(cwd=tree)
+    assert result.returncode != 0
+    assert "Nowhere.json" in result.stderr
+
+
+@pytest.mark.trace("TC-079", "FR-002-AC-4")
+def test_a_schema_line_with_no_digest_line_is_named(tmp_path):
+    """The digest rewrite pairs each `digest:` with the `schema:` line directly
+    above it. A `schema:` line whose digest is missing is named, rather than
+    claiming the next unrelated `digest:` key in the file."""
+    tree = worktree_copy(tmp_path)
+    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
+    lines = manifest.read_text().split("\n")
+    index = next(i for i, line in enumerate(lines) if "schema: schemas/" in line)
+    del lines[index + 1]
+    manifest.write_text("\n".join(lines))
+    result = run_generator(cwd=tree)
+    assert result.returncode != 0
+    assert "with no digest line" in result.stderr
+
+
+@pytest.mark.trace("TC-087", "FR-002-AC-10")
+def test_the_generator_refuses_an_unrecognised_argument(tmp_path):
+    """FR-002 Behavior: only `--check` is recognised. A typo must not fall
+    through to the write path and exit zero as though it had checked."""
+    tree = worktree_copy(tmp_path)
+    out = tree / "spec_objects_architecture" / "schemas"
+    before = {p.name: p.read_bytes() for p in out.iterdir()}
+    result = run_generator("--dry-run", cwd=tree)
+    assert result.returncode != 0
+    assert "unknown argument" in result.stderr
+    assert {p.name: p.read_bytes() for p in out.iterdir()} == before

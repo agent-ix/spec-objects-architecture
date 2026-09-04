@@ -101,7 +101,7 @@ SUPPORT_MODELS = (
     "ExceedResponse",
 )
 
-#: The optional profile keys FR-004-CON-3 keeps out of every required list.
+#: The optional protocol-profile keys that must stay out of every required list.
 PROFILE_KEYS = ("delivery", "versioning", "registration", "stability", "endianness")
 
 KERNEL_SCALARS = (

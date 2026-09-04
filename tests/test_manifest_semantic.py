@@ -169,10 +169,16 @@ def test_an_unknown_semantic_key_and_an_altered_digest_are_refused(
 
     text = (SKELETONS_DIR / "data_schema.md").read_text()
     for search_path in (unknown, altered):
-        with pytest.raises(Exception):
+        # Narrowed to the engine's own error family: a bare `Exception` would
+        # also pass on a TypeError from the call signature, which is not the
+        # refusal this row observes.
+        with pytest.raises(quire_engine.QuireBaseError) as error:
             quire_engine.validate_document(
                 "data_schema", str(search_path / "module"), text
             )
+        assert (
+            "data_schema" in str(error.value) or "archetype" in str(error.value).lower()
+        ), str(error.value)
 
 
 @pytest.mark.trace("TC-026", "FR-003-AC-6")
@@ -192,6 +198,6 @@ def test_the_refusal_names_the_offending_key_and_path(quire_engine, tmp_path):
         data["semantic"]["foo"] = "bar"
 
     unknown = module_copy(tmp_path / "named-key", add_unknown_key)
-    with pytest.raises(Exception) as error:
+    with pytest.raises(quire_engine.QuireBaseError) as error:
         quire_engine.Registry.load_from([str(unknown)])
     assert "foo" in str(error.value)

@@ -71,7 +71,7 @@ refuse.
 
 | ID | Constraint | Type | Validation |
 |----|------------|------|------------|
-| FR-005-CON-1 | The module SHALL keep the skeletons and negatives in this repository only, editing no corpus repository and no vendored quoin/quire fixture. | Boundary | Inspection |
+| FR-005-CON-1 | The module SHALL keep the skeletons and negatives in this repository only, editing no corpus repository and no vendored quoin/quire fixture. Verified as a **tree** assertion over `git ls-files` — no `corpus/` path, no `fixtures/semantic-module` path, no `/vendor/` path and no `.gitmodules` exists in the repository, and every tracked path is part of the module's own surface — never as a diff against a moving ref, which would change meaning the moment the branch merges. | Boundary | Test |
 | FR-005-CON-2 | A skeleton SHALL carry one Properties form; the alternate form is a separate file, never a second block in the same artifact. | Integrity | Test |
 | FR-005-CON-3 | The bundle index SHALL hold one entry per declaration `id`, not one per file, so the three alternate-form skeletons do not list their declaration twice. | Integrity | Test |
 

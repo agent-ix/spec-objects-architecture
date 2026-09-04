@@ -77,9 +77,20 @@ def test_the_interface_contract_yaml_and_its_typed_operations_agree(
         assert yaml_op["inputs"] == [p["name"] for p in typed_op["params"]], yaml_op[
             "name"
         ]
-        assert bool(yaml_op.get("output")) == bool(typed_op.get("returns")), yaml_op[
-            "name"
-        ]
+        declared_output = yaml_op.get("output")
+        typed_return = typed_op.get("returns")
+        assert bool(declared_output) == bool(typed_return), yaml_op["name"]
+        if declared_output:
+            # The two forms agree on the return *type token*, not merely on
+            # whether a return exists: a derived view that named a different
+            # type would be a second, contradicting declaration.
+            target = typed_return["target"]
+            token = target.rsplit("/", 1)[-1] if target.startswith("ix://") else target
+            assert declared_output.split("(")[0] == token, (
+                yaml_op["name"],
+                declared_output,
+                token,
+            )
 
 
 @pytest.mark.trace("TC-081", "FR-006-AC-2")

@@ -34,8 +34,8 @@ one clause-shaped — must survive the whole path.
 
 ## Deliverables
 
-- The passing suite: 153 passed, 7 skipped, 4 expected failures
-- `quire validate`: structurally clean; `quire coverage`: 130/130 rows backed
+- The passing suite: 163 passed, 7 skipped, 4 expected failures
+- `quire validate`: structurally clean; `quire coverage`: 141/141 rows backed
 
 ## Notes
 

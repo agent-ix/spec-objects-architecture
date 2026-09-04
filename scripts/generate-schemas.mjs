@@ -93,11 +93,22 @@ function moduleBase() {
 }
 
 function compile(scratch) {
+  // FR-002 Behavior: an unresolvable `tsp` exits non-zero *naming the missing
+  // binary*. Without this check the failure surfaces as a Node
+  // `MODULE_NOT_FOUND` stack inside "tsp compile failed", which names the
+  // symptom rather than the missing toolchain.
+  const cli = resolve(repoRoot, "node_modules/@typespec/compiler/entrypoints/cli.js");
+  if (!existsSync(cli)) {
+    fail(
+      `@typespec/compiler is not resolvable at ${relative(repoRoot, cli)}; ` +
+        "run `npm ci` before `make schemas`.",
+    );
+  }
   try {
     execFileSync(
       process.execPath,
       [
-        resolve(repoRoot, "node_modules/@typespec/compiler/entrypoints/cli.js"),
+        cli,
         "compile",
         sourceDir,
         "--output-dir",
@@ -114,11 +125,31 @@ function compile(scratch) {
 /**
  * Rewrite a relative `$id`/`$ref` to an absolute one: a file this module emits
  * resolves under the module base, anything else under the semantic-core base.
+ *
+ * Only a bare `<File>.json` is rewritten. A fragment (`#/$defs/Foo`) and a
+ * file-plus-fragment (`Foo.json#/$defs/Bar`) are refused rather than guessed:
+ * prefixing a base onto a fragment produces a URI that resolves to nothing and
+ * that no downstream check would catch, so the generator stops instead of
+ * emitting it. Neither shape occurs today — `toolchain.json` records
+ * `applied: false` — and this is the guard for the day the emitter changes.
  */
 function normalize(schemas, base, moduleFiles) {
   const rewritten = new Set();
   const absolutize = (name, value) => {
     if (typeof value !== "string" || /^https?:\/\//.test(value)) return value;
+    if (value.includes("#")) {
+      fail(
+        `${name} carries a relative reference with a fragment (${value}); the ` +
+          "normalizer rewrites bare file names only. Fix the source or extend " +
+          "the normalizer deliberately — the committed output was not touched.",
+      );
+    }
+    if (!value.endsWith(".json")) {
+      fail(
+        `${name} carries a relative reference that is not a schema file name ` +
+          `(${value}); the committed output was not touched.`,
+      );
+    }
     rewritten.add(name);
     return moduleFiles.has(value) ? `${base}${value}` : `${SEMANTIC_CORE_BASE}${value}`;
   };
@@ -217,25 +248,38 @@ function manifestWithDigests(digests) {
   const lines = readFileSync(manifestPath, "utf8").split("\n");
   const problems = [];
   let pending = null;
+  // A `digest:` belongs to the `schema:` line immediately above it. Carrying
+  // `pending` any further would let an unrelated `digest:` key elsewhere in the
+  // manifest be overwritten with that schema's hash, and would let a `schema:`
+  // line with no digest pass unnoticed.
   const out = lines.map((line) => {
     const schema = line.match(/^(\s*)schema:\s*schemas\/(\S+)\s*$/);
     if (schema) {
+      if (pending) {
+        problems.push(`manifest declares schemas/${pending} with no digest line`);
+      }
       pending = schema[2];
       return line;
     }
     const digest = line.match(/^(\s*)digest:\s*(\S*)\s*$/);
-    if (digest && pending) {
-      const expected = digests.get(pending);
+    const claimed = pending;
+    pending = null;
+    if (digest && claimed) {
+      const expected = digests.get(claimed);
       if (!expected) {
-        problems.push(`manifest references schemas/${pending}, which is not emitted`);
-        pending = null;
+        problems.push(`manifest references schemas/${claimed}, which is not emitted`);
         return line;
       }
-      pending = null;
       return `${digest[1]}digest: ${expected}`;
+    }
+    if (claimed) {
+      problems.push(`manifest declares schemas/${claimed} with no digest line`);
     }
     return line;
   });
+  if (pending) {
+    problems.push(`manifest declares schemas/${pending} with no digest line`);
+  }
   if (problems.length > 0) fail(problems.join("\n"));
   return out.join("\n");
 }
@@ -287,7 +331,14 @@ function write(rendered, toolchain, manifestText) {
 }
 
 function main() {
-  const checking = process.argv.includes("--check");
+  // Only `--check` is recognised. A typo (`--dry-run`, `-check`) must not fall
+  // through to the write path and exit 0 as though it had checked something.
+  const args = process.argv.slice(2);
+  const unknown = args.filter((arg) => arg !== "--check");
+  if (unknown.length > 0) {
+    fail(`unknown argument(s): ${unknown.join(" ")}. The only option is --check.`);
+  }
+  const checking = args.includes("--check");
   const { rendered, toolchain, digests } = emit();
   const manifestText = manifestWithDigests(digests);
   if (checking) {

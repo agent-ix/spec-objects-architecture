@@ -111,6 +111,8 @@ handled by a manifest version bump, not by widening a rule.
 | FR-004-AC-12 | The empty record `{}` fails all ten object-type schemas. | Test |
 | FR-004-AC-13 | A `type.target` of `ix://agent-ix/spec-objects-architecture/unresolved/Mystery` is accepted by the schema (it is a `SemanticId`) and reported by the extractor as `semantic.unresolved-type`; a bare `Mystery` string is rejected by the schema. | Test |
 | FR-004-AC-14 | Removing an optional profile key (`delivery`, `versioning`, `registration`, `stability`, `endianness`) from an otherwise valid record leaves it valid, and no profile key appears in any model's required list. | Test |
+| FR-004-AC-15 | No shipped schema declares an observation key — a measured call count, a discovered route, a live resource id, a timestamp of an observation, or any key whose name marks it as extracted from running code — so a declaration record cannot be read as an observation. This is the ticket's "definition objects remain distinct from observed routes, calls, queues and runtime resources" and the Project 17 resource-vocabulary alignment, expressed as a rule a test can check. | Test |
+| FR-004-AC-16 | `relations` is admitted by `ApiEndpoint`, `DataSchema`, `Action`, `UiComponent`, `Interface` and `ExternalContract`, and refused by `Queue`, `ExtensionPoint`, `BinaryFormat` and `RateLimit`. | Test |
 
 ## Dependencies
 

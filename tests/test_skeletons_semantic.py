@@ -170,7 +170,21 @@ def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_dema
 @pytest.mark.trace("TC-054", "FR-005-AC-5")
 def test_every_negative_fixture_fails_for_its_own_reason(quire_engine):
     fixtures = sorted(NEGATIVE_DIR.glob("*.md"))
-    assert len(fixtures) >= 10, "the ten named negative cases are not all present"
+    # The ten cases FR-005 Behavior names, pinned by file so that deleting one
+    # and duplicating another cannot keep this row green.
+    named = {
+        "api_endpoint-no-returning-operation.md",
+        "data_schema-with-operations.md",
+        "queue-no-identity-row.md",
+        "action-two-operations.md",
+        "ui_component-identity-row.md",
+        "external_contract-no-invariants.md",
+        "rate_limit-no-invariants.md",
+        "properties-both-forms.md",
+        "operation-dangling-post-clause.md",
+        "type-token-not-identifier.md",
+    }
+    assert named <= {p.name for p in fixtures}, named - {p.name for p in fixtures}
     expected_codes = {
         "semantic.record-invalid",
         "semantic.properties-both-forms",
@@ -238,6 +252,22 @@ def test_every_skeleton_is_placeholder_free():
             assert token.lower() not in body.lower(), (path.name, token)
         assert len(body.strip()) > 200, path.name
 
+        # Every asserted section body is non-empty, per section — a whole-file
+        # length check would pass a skeleton that shipped an empty
+        # `## Invariants` or `## Operations` under a long neighbour.
+        name = frontmatter(path.read_text())["object"]
+        asserted = {
+            loc.get("after_heading") or loc.get("under_section")
+            for loc in locators(object_type(name)).values()
+        } - {None}
+        sections = dict(
+            re.findall(r"^## (.+?)[ \t]*$\n(.*?)(?=^## |\Z)", body, re.DOTALL | re.M)
+        )
+        for heading in sections:
+            if heading not in asserted:
+                continue
+            assert sections[heading].strip(), (path.name, heading)
+
 
 @pytest.mark.trace("TC-057", "FR-005-CON-2")
 def test_a_properties_section_with_both_forms_is_refused(quire_engine):
@@ -253,27 +283,38 @@ def test_a_properties_section_with_both_forms_is_refused(quire_engine):
 
 
 @pytest.mark.trace("TC-058", "FR-005-CON-1")
-def test_the_branch_edits_no_corpus_repository_or_vendored_fixture():
-    """FR-005-CON-1, over the branch diff against `main`.
+def test_the_repository_carries_no_corpus_or_vendored_fixture():
+    """FR-005-CON-1, as a **tree** assertion over `git ls-files`.
 
-    What this row counts: every path the branch changes. The constraint's
-    subject is other repositories, which a diff of this one cannot observe —
-    so the check is the strongest thing this repo *can* assert: the change is
-    confined to this repository, and inside it to the seven directories the
-    module owns. A stray edit to a vendored quoin/quire fixture, a corpus
-    checkout, or a git submodule would land outside that set and fail here.
+    Deliberately not a diff. A `git diff origin/main...HEAD` guard is
+    merge-degrading: a merged change's path set is a fixed historical fact, but
+    the range is computed against a moving ref, so the day the branch merges
+    `origin/main...HEAD` empties and an `assert changed` turns main red for a
+    branch that is no longer a branch. `spec-objects-business` main has been red
+    on exactly that shape since `567e5c4`.
+
+    The tree form is equivalent in intent here and strictly stronger: none of
+    `corpus/`, `fixtures/semantic-module` or `/vendor/` exists anywhere in this
+    repository, so asserting their **absence from the tree** says more than
+    asserting one branch left them alone — and it means the same thing before
+    and after a merge. The liveness assertion is on the tracked file set, never
+    on a diff, so the row cannot pass because it looked at nothing.
     """
-    diff = subprocess.run(
-        ["git", "-C", str(REPO_ROOT), "diff", "--name-only", "origin/main...HEAD"],
+    listing = subprocess.run(
+        ["git", "-C", str(REPO_ROOT), "ls-files"],
         capture_output=True,
         text=True,
         check=False,
     )
-    if diff.returncode != 0:  # pragma: no cover - a detached clone has no origin/main
-        pytest.fail(f"cannot read the branch diff: {diff.stderr.strip()}")
-    changed = [line for line in diff.stdout.splitlines() if line]
-    assert changed, "the branch changes nothing"
+    if listing.returncode != 0:  # pragma: no cover - not a git checkout
+        pytest.fail(f"cannot list the tracked tree: {listing.stderr.strip()}")
+    tracked = [line for line in listing.stdout.splitlines() if line]
+    assert tracked, "the repository tracks no files, so this gate did not run"
 
+    # The constraint's subject is other repositories, which this repository
+    # cannot observe. The strongest equivalent it can assert is that no corpus
+    # checkout, vendored neighbour fixture or submodule is part of it, and that
+    # every tracked path is part of the module's own surface.
     owned = (
         "spec/",
         "spec_objects_architecture/",
@@ -282,27 +323,31 @@ def test_the_branch_edits_no_corpus_repository_or_vendored_fixture():
         "scripts/",
         "plan/",
         "reviews/",
+        ".agent/",
+        ".github/",
     )
     root_files = {
-        "Makefile",
-        "package.json",
-        "package-lock.json",
-        "poetry.lock",
-        "pyproject.toml",
         ".gitattributes",
         ".gitignore",
-        "README.md",
-        "CLAUDE.md",
         "AGENTS.md",
+        "CLAUDE.md",
+        "LICENSE",
+        "Makefile",
+        "README.md",
+        "package-lock.json",
+        "package.json",
+        "poetry.lock",
+        "pyproject.toml",
     }
-    for path in changed:
-        assert path.startswith(owned) or path in root_files, path
+    for path in tracked:
         assert not path.startswith("corpus/"), path
         assert "fixtures/semantic-module" not in path, path
         assert "/vendor/" not in path, path
+        assert path.startswith(owned) or path in root_files, path
 
-    # No submodule or nested checkout was introduced, which is the other way a
-    # single-repo diff could hide an edit to a neighbour.
+    # A submodule would let an edit to a neighbouring repository live inside
+    # this tree without appearing as one of its own paths.
+    assert ".gitmodules" not in tracked
     assert not (REPO_ROOT / ".gitmodules").exists()
 
 
