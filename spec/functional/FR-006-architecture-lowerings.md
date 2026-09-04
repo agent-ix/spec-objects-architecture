@@ -45,7 +45,7 @@ one declaration rather than two.
 - A `contract_yaml` key with no counterpart in `OperationDecl` (`semantics`, `dispatch`, `invariants` prose) SHALL remain documentation of the derived view.
 - The lowering SHALL NOT invent a record target for such a key, because that would put an unmodelled key in the record.
 - The `interface` skeleton SHALL author `## Operations` as the authority and `## Contract` as the derived view.
-- The `interface` skeleton's two sections SHALL declare the same operation names, the same param names per operation, and the same presence or absence of a return.
+- The `interface` skeleton's two sections SHALL declare the same operation names, the same param names per operation, and the same return type token where a return is declared.
 - The `data_schema` `schema_json` fence SHALL stay a JSON Schema fence.
 - The bundle index SHALL register each `data_schema` record as a `TypeRef` target under `ix://agent-ix/spec-objects-architecture/type/<title>`, so an `entity`, a DTO, an `api_endpoint` operation, or a `queue` message field can name it in a `Type` cell.
 - The `data_schema` skeleton's `## Schema` fence and its `## Properties` table SHALL declare the same property names and the same required set, the table being the authority.
@@ -66,7 +66,7 @@ one declaration rather than two.
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-006-AC-1 | Parsing the `interface` skeleton's `## Contract` YAML fence yields the same operation names as its extracted `OperationDecl[]`, the same param names per operation, and the same set of operations that declare a return. | Test |
+| FR-006-AC-1 | Parsing the `interface` skeleton's `## Contract` YAML fence yields the same operation names as its extracted `OperationDecl[]`, the same param names per operation, the same set of operations that declare a return, and for each of those the same return type token. | Test |
 | FR-006-AC-2 | Parsing the `data_schema` skeleton's `## Schema` JSON fence yields the same property names as its extracted `fields[].name`, and the fence's `required` set equals the set of fields whose multiplicity lower bound is 1. | Test |
 | FR-006-AC-3 | Parsing the `queue` skeleton's `## Message Format` JSON fence yields the same key set as its extracted `fields[].name`. | Test |
 | FR-006-AC-4 | Every non-kernel `type.target` in the extracted `api_endpoint` record resolves under the skeleton bundle index to `ix://agent-ix/spec-objects-architecture/type/<Title>` of a shipped `data_schema` skeleton, with zero `semantic.unresolved-type` findings. | Test |

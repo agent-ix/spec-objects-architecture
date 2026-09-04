@@ -29,20 +29,20 @@ object: interface
 
 ```yaml
 name: QuantCodec
-associated_types: [PreparedQuery]
+associated_types: [Bytes]
 operations:
   - name: prepare_ip_query
     inputs: [query_vector, dimension]
-    output: PreparedQuery
-    semantics: one-time query-side transform, amortized across candidates
+    output: Bytes
+    semantics: one-time query-side transform (the PreparedQuery form), amortized across candidates
   - name: score_ip_candidate
     inputs: [prepared_query, candidate_payload]
-    output: score
-    semantics: single-candidate scoring; exact fallback allowed
+    output: Decimal(18,9)
+    semantics: single-candidate approximate inner-product score; exact fallback allowed
   - name: score_ip_batch
     inputs: [prepared_query, candidate_payloads]
-    output: scores
-    semantics: block-kernel entry point; len(out) == len(payloads)
+    output: Decimal(18,9)
+    semantics: block-kernel entry point; one score per payload, same order
 invariants:
   - payload_len is constant for a built index
   - batch and single-candidate scores agree within quantization error
