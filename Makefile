@@ -13,7 +13,10 @@ help:
 	@echo "Available targets (via poe):"
 	@echo "  make install        - Install dependencies"
 	@echo "  make test           - Run tests"
-	@echo "  make lint           - Run linters (ruff + black)"
+	@echo "  make lint           - Run linters (ruff + black + schema drift gate)"
+	@echo "  make schemas        - Emit schemas/ from typespec/main.tsp"
+	@echo "  make schemas-check  - Fail on schema or digest drift"
+	@echo "  make dev-quire      - Install the Quire wheel the semantic tests need"
 	@echo "  make format         - Format code (black + ruff --fix)"
 	@echo "  make build          - Build distribution"
 	@echo "  make clean          - Clean build artifacts"
@@ -57,6 +60,22 @@ test-integrations test-it:
 .PHONY: lint
 lint:
 	$(POE) lint
+
+.PHONY: schemas
+schemas:
+	$(POE) schemas
+
+.PHONY: schemas-check
+schemas-check:
+	$(POE) schemas-check
+
+# The semantic tests need the Quire wheel that carries `extract_semantic`. It is
+# not a declared dependency: internal-pypi serves 0.33.0 at most and no quire-rs
+# tag carries the semantic layer, so the only index with it is the dev-only
+# pypi.ix (agent-ix/quire-rs#392). The suite FAILS, never skips, without it.
+.PHONY: dev-quire
+dev-quire:
+	$(POE) dev-quire
 
 .PHONY: format
 format:

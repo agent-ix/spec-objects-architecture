@@ -12,6 +12,7 @@ packages = [{ include = "spec_objects_architecture" }]
 include = [
     { path = "spec_objects_architecture/manifest.yaml", format = ["sdist", "wheel"] },
     { path = "spec_objects_architecture/skeletons/*.md", format = ["sdist", "wheel"] },
+    { path = "spec_objects_architecture/schemas/*.json", format = ["sdist", "wheel"] },
 ]
 
 [tool.poetry.dependencies]
@@ -20,6 +21,7 @@ python = ">=3.13,<3.14"
 
 [tool.poetry.group.dev.dependencies]
 black = "^26.1.0"
+jsonschema = "^4.26.0"
 poetry-dynamic-versioning = "^1.9.1"
 poethepoet = "^0.34.0"
 py-deps = "*"
@@ -60,8 +62,20 @@ cmd = "pytest tests_integration/ -v -s --no-cov -m integration"
 help = "Run integration tests (requires Kind cluster)"
 
 [tool.poe.tasks.lint]
-sequence = ["ruff-check", "black-check"]
-help = "Run all linters (ruff + black)"
+sequence = ["ruff-check", "black-check", "schemas-check"]
+help = "Run all linters (ruff + black) and the schema drift gate"
+
+[tool.poe.tasks.schemas]
+cmd = "node scripts/generate-schemas.mjs"
+help = "Emit spec_objects_architecture/schemas/ from typespec/main.tsp (FR-002)"
+
+[tool.poe.tasks.schemas-check]
+cmd = "node scripts/generate-schemas.mjs --check"
+help = "Fail when the committed schemas or manifest digests differ from the source"
+
+[tool.poe.tasks.dev-quire]
+shell = "pip install --index-url http://pypi.ix/root/dev/+simple/ --trusted-host pypi.ix 'quire>=0.46.0'"
+help = "Install the Quire wheel the semantic tests need (see agent-ix/quire-rs#392)"
 
 [tool.poe.tasks.ruff-check]
 cmd = "ruff check ."
@@ -117,6 +131,7 @@ filterwarnings = ["error"]
 
 markers = [
     "integration: Integration tests (require Kind cluster)",
+    "trace: Bind a test to one or more spec ids (quire trace marker form)",
 ]
 
 [tool.ruff]

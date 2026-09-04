@@ -20,8 +20,9 @@ Spec authors and agent CLI generators (minijinja-cli) are accountable for produc
 |----|----------|------------|
 | StR-001-VC-1 | A Module activation against filament-core registers the contents this module declares. | Inspection |
 | StR-001-VC-2 | Agent CLI generators (minijinja-cli) can produce valid artifacts using the templates and schemas this module ships. | Demonstration |
+| StR-001-VC-3 | Every object type ships a typed declaration schema a fixture reader can consume; an api-endpoint record and a rate-limit record are distinguishable by schema alone. | Demonstration |
 
-Satisfaction is judged by demonstrating both outcomes against a live filament-core instance and a generator run.
+Satisfaction is judged by demonstrating all three outcomes against a live filament-core instance, a generator run, and the shipped schemas.
 
 ## Dependencies
 

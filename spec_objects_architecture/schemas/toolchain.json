@@ -1,0 +1,57 @@
+{
+  "compiler": {
+    "name": "@typespec/compiler",
+    "version": "1.15.0"
+  },
+  "emitter": {
+    "name": "@typespec/json-schema",
+    "version": "1.15.0"
+  },
+  "semanticCore": {
+    "name": "@agent-ix/semantic-core",
+    "version": "0.1.0"
+  },
+  "base": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/",
+  "normalization": {
+    "name": "absolute-id-and-ref",
+    "version": "1.0.0",
+    "issue": "https://github.com/agent-ix/spec-objects-architecture/issues/8",
+    "applied": false,
+    "rewrittenFiles": [],
+    "note": "no-op: the emitter left no relative $id or $ref"
+  },
+  "files": [
+    "Action.json",
+    "ApiEndpoint.json",
+    "BinaryFormat.json",
+    "CompatibilityWindow.json",
+    "ConflictPolicy.json",
+    "DataSchema.json",
+    "DeliveryPolicy.json",
+    "DeliverySemantics.json",
+    "Endianness.json",
+    "ExceedResponse.json",
+    "ExtensionPoint.json",
+    "ExternalContract.json",
+    "GuaranteedOperation.json",
+    "HttpMethod.json",
+    "IdentityField.json",
+    "Interface.json",
+    "LayoutField.json",
+    "LayoutType.json",
+    "LimitScope.json",
+    "OrderingScope.json",
+    "Queue.json",
+    "RateLimit.json",
+    "RecordLayout.json",
+    "RegistrationPolicy.json",
+    "ReturningOperation.json",
+    "RouteDecl.json",
+    "StabilityPolicy.json",
+    "Threshold.json",
+    "UiComponent.json",
+    "VersioningPolicy.json",
+    "VersioningScheme.json"
+  ],
+  "digest": "sha256:d56db46824b9c4d2a3508368202c2c04476cd41bb1a3af4281ca10009b6ca184"
+}

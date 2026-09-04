@@ -1,0 +1,186 @@
+{
+  "object_types": {
+    "action": {
+      "allowed_links": {
+        "calls": [
+          "api_endpoint"
+        ],
+        "operates_on": [
+          "domain-object"
+        ],
+        "reads": [
+          "data_schema"
+        ],
+        "triggers": [
+          "process",
+          "action"
+        ],
+        "writes": [
+          "data_schema"
+        ]
+      },
+      "roles": [
+        "externally-exposed"
+      ]
+    },
+    "api_endpoint": {
+      "allowed_links": {
+        "calls": [
+          "api_endpoint",
+          "external_contract"
+        ],
+        "exposes": [
+          "domain-object"
+        ],
+        "implements": [
+          "interface"
+        ],
+        "operates_on": [
+          "domain-object"
+        ],
+        "publishes": [
+          "queue"
+        ],
+        "reads": [
+          "data_schema",
+          "aggregate_root",
+          "entity"
+        ],
+        "realizes": [
+          "business-intent"
+        ],
+        "requires": [
+          "permission",
+          "auth_flow"
+        ],
+        "writes": [
+          "data_schema",
+          "aggregate_root",
+          "entity"
+        ]
+      },
+      "roles": [
+        "externally-exposed",
+        "deployable",
+        "measurable",
+        "configurable"
+      ]
+    },
+    "binary_format": {
+      "allowed_links": {
+        "references": [
+          "data_schema"
+        ],
+        "serializes": [
+          "data_schema"
+        ]
+      },
+      "roles": null
+    },
+    "data_schema": {
+      "allowed_links": {
+        "contains": [
+          "data_schema",
+          "enumeration"
+        ],
+        "references": [
+          "data_schema"
+        ],
+        "represents": [
+          "domain-object"
+        ]
+      },
+      "roles": null
+    },
+    "extension_point": {
+      "allowed_links": {
+        "extends": [
+          "interface"
+        ],
+        "references": [
+          "interface"
+        ]
+      },
+      "roles": null
+    },
+    "external_contract": {
+      "allowed_links": {
+        "conforms_to": [
+          "external_contract"
+        ],
+        "implements": [
+          "interface"
+        ],
+        "references": [
+          "data_schema"
+        ]
+      },
+      "roles": [
+        "externally-exposed"
+      ]
+    },
+    "interface": {
+      "allowed_links": {
+        "contains": [
+          "api_endpoint"
+        ],
+        "references": [
+          "data_schema"
+        ]
+      },
+      "roles": [
+        "externally-exposed"
+      ]
+    },
+    "queue": {
+      "allowed_links": {
+        "carries": [
+          "data_schema",
+          "event"
+        ],
+        "references": [
+          "data_schema"
+        ]
+      },
+      "roles": [
+        "externally-exposed",
+        "deployable",
+        "configurable"
+      ]
+    },
+    "rate_limit": {
+      "allowed_links": {
+        "throttles": [
+          "api_endpoint",
+          "action"
+        ]
+      },
+      "roles": null
+    },
+    "ui_component": {
+      "allowed_links": {
+        "calls": [
+          "api_endpoint",
+          "action"
+        ],
+        "contained_by": [
+          "ui_component"
+        ],
+        "contains": [
+          "ui_component"
+        ],
+        "realizes": [
+          "business-intent"
+        ],
+        "renders": [
+          "data_schema"
+        ]
+      },
+      "roles": [
+        "externally-exposed",
+        "deployable"
+      ]
+    }
+  },
+  "version": "0.2.0"
+}
