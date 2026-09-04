@@ -1,0 +1,354 @@
+{
+  "lexicon": {
+    "account": {
+      "definition": "an identity's registration with a system"
+    },
+    "action": {
+      "definition": "a discrete invokable behavior"
+    },
+    "adapter": {
+      "definition": "code bridging one interface to another"
+    },
+    "api": {
+      "definition": "an application programming interface surface"
+    },
+    "artifact": {
+      "definition": "a produced",
+      "versioned output": null
+    },
+    "attachment": {
+      "definition": "a file or object linked to a record"
+    },
+    "boundary": {
+      "definition": "a delimiting interface between contexts"
+    },
+    "branching": {
+      "definition": "conditional control flow"
+    },
+    "button": {
+      "definition": "a clickable UI control"
+    },
+    "cell": {
+      "definition": "a single table position"
+    },
+    "channel": {
+      "definition": "a typed conduit for passing messages"
+    },
+    "column": {
+      "definition": "a vertical field in a table"
+    },
+    "command": {
+      "definition": "an imperative request to perform an action"
+    },
+    "comment": {
+      "definition": "an authored note attached to a target"
+    },
+    "component": {
+      "definition": "a self-contained UI or system building block"
+    },
+    "config": {
+      "definition": "externalized settings governing behavior"
+    },
+    "connection": {
+      "definition": "an established link between two endpoints"
+    },
+    "content": {
+      "definition": "the substantive body of a document or message"
+    },
+    "contract": {
+      "definition": "an agreed request/response or data shape between parties"
+    },
+    "create": {
+      "definition": "an operation that adds a new record"
+    },
+    "crud": {
+      "definition": "the create-read-update-delete operation set"
+    },
+    "cursor": {
+      "definition": "an opaque token encoding a position for stable iteration"
+    },
+    "database": {
+      "definition": "a persistent structured data store"
+    },
+    "delete": {
+      "definition": "an operation that removes a record"
+    },
+    "dialog": {
+      "definition": "a modal UI surface"
+    },
+    "digest": {
+      "definition": "a hash summarizing content"
+    },
+    "document": {
+      "definition": "an authored",
+      "structured file": null
+    },
+    "dropdown": {
+      "definition": "a UI control selecting from a list"
+    },
+    "edge": {
+      "definition": "a connection between two nodes"
+    },
+    "endpoint": {
+      "definition": "a network-addressable HTTP path + method serving a capability"
+    },
+    "entry": {
+      "definition": "one item in a list or log"
+    },
+    "error": {
+      "definition": "a failure condition or error value"
+    },
+    "event": {
+      "definition": "a recorded occurrence emitted for consumers"
+    },
+    "field": {
+      "definition": "a named member of a record or schema"
+    },
+    "file": {
+      "definition": "a named unit of stored bytes"
+    },
+    "flag": {
+      "definition": "a boolean configuration toggle"
+    },
+    "form": {
+      "definition": "a UI grouping of inputs"
+    },
+    "frame": {
+      "definition": "a unit of streamed or rendered content"
+    },
+    "function": {
+      "definition": "a named callable unit of code"
+    },
+    "gateway": {
+      "definition": "an entry-point service routing to backends"
+    },
+    "graph": {
+      "definition": "a set of nodes and edges"
+    },
+    "handler": {
+      "definition": "code that processes a request",
+      "event": null,
+      "or signal": null
+    },
+    "header": {
+      "definition": "a key/value pair carried on a request or response"
+    },
+    "index": {
+      "definition": "a lookup structure over records"
+    },
+    "input": {
+      "definition": "data supplied to an operation"
+    },
+    "interface": {
+      "definition": "a contract a component exposes or depends on"
+    },
+    "job": {
+      "definition": "a unit of scheduled or queued work"
+    },
+    "key": {
+      "definition": "a unique identifier or lookup token"
+    },
+    "label": {
+      "definition": "a short classifying tag"
+    },
+    "layer": {
+      "definition": "one tier of a layered structure"
+    },
+    "lifecycle": {
+      "definition": "the ordered phases of an entity's existence"
+    },
+    "list": {
+      "definition": "an ordered collection / a list operation"
+    },
+    "log": {
+      "definition": "an append-only record of events"
+    },
+    "loop": {
+      "definition": "a repeated control-flow construct"
+    },
+    "mapping": {
+      "definition": "an association from keys to values"
+    },
+    "menu": {
+      "definition": "a UI list of actions"
+    },
+    "method": {
+      "definition": "an HTTP verb or a callable on an interface"
+    },
+    "module": {
+      "definition": "a packaged",
+      "reusable unit of functionality": null
+    },
+    "node": {
+      "definition": "a vertex in a graph or tree"
+    },
+    "object": {
+      "definition": "a typed",
+      "identifiable data instance": null
+    },
+    "observability": {
+      "definition": "logs/metrics/traces instrumentation surface"
+    },
+    "operation": {
+      "definition": "a named",
+      "invokable unit of behavior (e.g. a CRUD operation)": null
+    },
+    "overlay": {
+      "definition": "a layered configuration applied over a base"
+    },
+    "page": {
+      "definition": "a routed UI view"
+    },
+    "pagination": {
+      "definition": "splitting a result set into pages"
+    },
+    "panel": {
+      "definition": "a bounded UI region"
+    },
+    "parallelism": {
+      "definition": "concurrent execution of independent work"
+    },
+    "parameter": {
+      "definition": "a named input governing behavior"
+    },
+    "parser": {
+      "definition": "code that turns input text into a structured form"
+    },
+    "path": {
+      "definition": "a code path",
+      "file path": null,
+      "or route path": null
+    },
+    "pattern": {
+      "definition": "a recurring structural or matching template"
+    },
+    "payload": {
+      "definition": "the body/content of a message"
+    },
+    "picker": {
+      "definition": "a UI control for selecting a value"
+    },
+    "plugin": {
+      "definition": "an installable extension contributing capability"
+    },
+    "pointer": {
+      "definition": "a reference to a location or value"
+    },
+    "primitive": {
+      "definition": "a small reusable building-block type or operation"
+    },
+    "provider": {
+      "definition": "an external system supplying a capability"
+    },
+    "query": {
+      "definition": "a parameterized read request over a data source"
+    },
+    "queue": {
+      "definition": "an ordered buffer of pending work items"
+    },
+    "read": {
+      "definition": "an operation that retrieves a record"
+    },
+    "record": {
+      "definition": "a structured data row/entry"
+    },
+    "reference": {
+      "definition": "a link to another artifact or entity"
+    },
+    "renderer": {
+      "definition": "code that turns a structure into output"
+    },
+    "reply": {
+      "definition": "a response in a thread or conversation"
+    },
+    "report": {
+      "definition": "a generated summary document"
+    },
+    "request": {
+      "definition": "an inbound message asking for work"
+    },
+    "response": {
+      "definition": "an outbound message returning a result"
+    },
+    "result": {
+      "definition": "the produced outcome of an operation"
+    },
+    "review": {
+      "definition": "a structured assessment of an artifact"
+    },
+    "route": {
+      "definition": "a URL path pattern dispatched to a handler"
+    },
+    "row": {
+      "definition": "a horizontal record in a table"
+    },
+    "schema": {
+      "definition": "a typed structure describing data"
+    },
+    "serializer": {
+      "definition": "code that encodes a value to a transport form"
+    },
+    "session": {
+      "definition": "a bounded interaction context between client and server"
+    },
+    "signal": {
+      "definition": "an asynchronous notification"
+    },
+    "spec": {
+      "definition": "an authored specification artifact"
+    },
+    "state": {
+      "definition": "the current condition of a stateful entity"
+    },
+    "status": {
+      "definition": "a discrete condition value"
+    },
+    "step": {
+      "definition": "one ordered unit of a procedure or pipeline"
+    },
+    "stream": {
+      "definition": "an ordered",
+      "possibly unbounded sequence of items": null
+    },
+    "streaming": {
+      "definition": "incremental delivery of data as it is produced"
+    },
+    "tab": {
+      "definition": "a switchable UI section"
+    },
+    "task": {
+      "definition": "a discrete unit of work"
+    },
+    "template": {
+      "definition": "a reusable parameterized form"
+    },
+    "thread": {
+      "definition": "an ordered conversation of messages"
+    },
+    "tracing": {
+      "definition": "distributed request/span instrumentation"
+    },
+    "transition": {
+      "definition": "a move from one state to another"
+    },
+    "update": {
+      "definition": "an operation that modifies a record"
+    },
+    "version": {
+      "definition": "an identified revision of an artifact"
+    },
+    "view": {
+      "definition": "a rendered presentation of data"
+    },
+    "webhook": {
+      "definition": "an outbound HTTP callback invoked on an event"
+    },
+    "widget": {
+      "definition": "a discrete UI element"
+    },
+    "workflow": {
+      "definition": "an orchestrated sequence of steps"
+    }
+  },
+  "version": "0.2.0"
+}

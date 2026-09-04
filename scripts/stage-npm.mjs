@@ -34,6 +34,23 @@ if (!inner) {
 }
 
 const PAYLOAD = ["manifest.yaml", "schemas", "skeletons"];
+
+// `--clean` (run from `postpack`) removes the staged copies again. Leaving them
+// behind puts a `manifest.yaml` at the repository root, which every Filament
+// tool then discovers as a second module — quire's scoped module search finds
+// the root "module" and stops merging the installed module set, so an unrelated
+// `quire validate` in this repo fails with "no archetype registered".
+if (process.argv.includes("--clean")) {
+  for (const item of PAYLOAD) {
+    const target = join(root, item);
+    if (existsSync(target)) {
+      rmSync(target, { recursive: true, force: true });
+      console.log(`stage-npm: removed staged ${item}`);
+    }
+  }
+  process.exit(0);
+}
+
 for (const item of PAYLOAD) {
   const from = join(root, inner, item);
   if (!existsSync(from)) continue;

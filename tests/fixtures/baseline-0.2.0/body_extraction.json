@@ -1,0 +1,354 @@
+{
+  "object_types": {
+    "action": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "inputs": {
+            "after_heading": "Inputs",
+            "from": "section_body",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "api_endpoint": {
+      "yield_pattern": {
+        "match": {
+          "api_contract": {
+            "after_heading": "2. API Contract",
+            "from": "section_body",
+            "required": false
+          },
+          "endpoint": {
+            "after_heading": "Endpoint",
+            "from": "section_body",
+            "required": true
+          },
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "binary_format": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "layout_yaml": {
+            "after_heading": "Layout",
+            "from": "code_block",
+            "language": "yaml",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "data_schema": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "schema_json": {
+            "after_heading": "Schema",
+            "from": "code_block",
+            "language": "json",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "extension_point": {
+      "yield_pattern": {
+        "match": {
+          "contract": {
+            "after_heading": "Contract",
+            "from": "section_body",
+            "required": true
+          },
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "registration": {
+            "after_heading": "Registration",
+            "from": "section_body",
+            "required": false
+          },
+          "stability": {
+            "after_heading": "Stability",
+            "from": "section_body",
+            "required": false
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "external_contract": {
+      "yield_pattern": {
+        "match": {
+          "behavior": {
+            "after_heading": "Behavior",
+            "from": "section_body",
+            "required": false
+          },
+          "contract": {
+            "after_heading": "Contract",
+            "from": "section_body",
+            "required": true
+          },
+          "endpoints": {
+            "after_heading": "Endpoints",
+            "from": "section_body",
+            "required": false
+          },
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "interface": {
+      "yield_pattern": {
+        "match": {
+          "contract_yaml": {
+            "after_heading": "Contract",
+            "from": "code_block",
+            "language": "yaml",
+            "required": true
+          },
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "queue": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "message_schema": {
+            "after_heading": "Message Format",
+            "from": "code_block",
+            "language": "json",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "rate_limit": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "thresholds": {
+            "after_heading": "Thresholds",
+            "from": "section_body",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    },
+    "ui_component": {
+      "yield_pattern": {
+        "match": {
+          "id": {
+            "from": "frontmatter_field",
+            "path": [
+              "id"
+            ],
+            "required": true
+          },
+          "props": {
+            "after_heading": "Props",
+            "from": "section_body",
+            "required": true
+          },
+          "title": {
+            "from": "frontmatter_field",
+            "path": [
+              "title"
+            ],
+            "required": true
+          },
+          "type": {
+            "from": "frontmatter_field",
+            "path": [
+              "type"
+            ],
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "version": "0.2.0"
+}

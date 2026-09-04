@@ -1,7 +1,27 @@
 manifest_version: 1.0.0
 name: spec-objects-architecture
-version: 0.2.0
-description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format)'
+version: 0.3.0
+description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit)'
+semantic:
+  contract_version: 1.0.0
+  semantic_core: 0.1.0
+  package: agent-ix/spec-objects-architecture
+  exports:
+  - api_endpoint
+  - data_schema
+  - queue
+  - action
+  - ui_component
+  - interface
+  - external_contract
+  - extension_point
+  - binary_format
+  - rate_limit
+  imports: {}
+  targets: [json-schema, markdown]
+  mappings: [typed-table, sysml-fence, ocl-clause]
+  compatibility_posture: additive
+  legacy_forms: warning
 nav:
   category:
     slug: architecture
@@ -26,7 +46,8 @@ object_types:
     requires: [permission, auth_flow]
     realizes: [business-intent]
   data_schema:
-    type: object
+    schema: schemas/ApiEndpoint.json
+    digest: sha256:b590a2bcfa6c1629b6a649712f19df10adb33b92f3a91a546739d661b37e2211
   body_extraction:
     yield_pattern:
       match:
@@ -57,13 +78,18 @@ object_types:
           from: section_body
           after_heading: 2. API Contract
           required: false
+        operations:
+          from: section_body
+          after_heading: Operations
+          required: false
 - name: data_schema
   allowed_links:
     contains: [data_schema, enumeration]
     represents: [domain-object]
     references: [data_schema]
   data_schema:
-    type: object
+    schema: schemas/DataSchema.json
+    digest: sha256:641df42fa31f8725ad8cd81b368453579bdaa693df501a0996f1e1ab58d8cf71
   body_extraction:
     yield_pattern:
       match:
@@ -75,13 +101,18 @@ object_types:
           after_heading: Schema
           required: true
           language: json
+        properties:
+          from: section_body
+          after_heading: Properties
+          required: false
 - name: queue
   roles: [externally-exposed, deployable, configurable]
   allowed_links:
     carries: [data_schema, event]
     references: [data_schema]
   data_schema:
-    type: object
+    schema: schemas/Queue.json
+    digest: sha256:b8814b4d51d400fa9c8f44e5ed100e2c61a67e2520dd28d548e8491c2d62333d
   body_extraction:
     yield_pattern:
       match:
@@ -93,6 +124,10 @@ object_types:
           after_heading: Message Format
           required: true
           language: json
+        properties:
+          from: section_body
+          after_heading: Properties
+          required: false
 - name: action
   roles: [externally-exposed]
   allowed_links:
@@ -102,7 +137,8 @@ object_types:
     calls: [api_endpoint]
     operates_on: [domain-object]
   data_schema:
-    type: object
+    schema: schemas/Action.json
+    digest: sha256:c0eac80888e76c79d08789b772f1bc207947a46c3f2924d2fb9cdc81f3765039
   body_extraction:
     yield_pattern:
       match:
@@ -113,6 +149,10 @@ object_types:
           from: section_body
           after_heading: Inputs
           required: true
+        operations:
+          from: section_body
+          after_heading: Operations
+          required: false
 - name: ui_component
   roles: [externally-exposed, deployable]
   allowed_links:
@@ -122,7 +162,8 @@ object_types:
     renders: [data_schema]
     realizes: [business-intent]
   data_schema:
-    type: object
+    schema: schemas/UiComponent.json
+    digest: sha256:b2d1143a1bcfc2d712ead4998f2778eb0e67b8e152bb4144cb40c635609b13ef
   body_extraction:
     yield_pattern:
       match:
@@ -133,6 +174,10 @@ object_types:
           from: section_body
           after_heading: Props
           required: true
+        properties:
+          from: section_body
+          after_heading: Properties
+          required: false
 # `integration` object type RETIRED (format-walkthrough decision #8,
 # 2026-06-11): the tag `tags: [integration]` is the working discovery
 # surface (IntegrationTab); the object type's anchors never matched its
@@ -144,7 +189,8 @@ object_types:
     contains: [api_endpoint]
     references: [data_schema]
   data_schema:
-    type: object
+    schema: schemas/Interface.json
+    digest: sha256:1372b5644c02e980da7ebeb0193d439decdfe978dc6e3547378e341d3049d2e7
   body_extraction:
     yield_pattern:
       match:
@@ -161,6 +207,10 @@ object_types:
           after_heading: Contract
           language: yaml
           required: true
+        operations:
+          from: section_body
+          after_heading: Operations
+          required: false
 - name: external_contract
   roles: [externally-exposed]
   allowed_links:
@@ -168,7 +218,8 @@ object_types:
     conforms_to: [external_contract]
     references: [data_schema]
   data_schema:
-    type: object
+    schema: schemas/ExternalContract.json
+    digest: sha256:8c589498c17edf48cedfb745e3c1440b7689e4e14d754e8399f0b2181fb56532
   body_extraction:
     yield_pattern:
       match:
@@ -191,12 +242,21 @@ object_types:
           from: section_body
           after_heading: Behavior
           required: false
+        operations:
+          from: section_body
+          after_heading: Operations
+          required: false
+        invariants:
+          from: section_body
+          after_heading: Invariants
+          required: false
 - name: extension_point
   allowed_links:
     extends: [interface]
     references: [interface]
   data_schema:
-    type: object
+    schema: schemas/ExtensionPoint.json
+    digest: sha256:baab4aebf009dacb7115f4ec44041fec2a07cbfc3458df84eebaea8a3aec0015
   body_extraction:
     yield_pattern:
       match:
@@ -217,12 +277,21 @@ object_types:
           from: section_body
           after_heading: Stability
           required: false
+        operations:
+          from: section_body
+          after_heading: Operations
+          required: false
+        invariants:
+          from: section_body
+          after_heading: Invariants
+          required: false
 - name: binary_format
   allowed_links:
     serializes: [data_schema]
     references: [data_schema]
   data_schema:
-    type: object
+    schema: schemas/BinaryFormat.json
+    digest: sha256:6e19f9cc40f1403332b6bd28c9c87d02b5218f1dbbeae33a8297226eb2ae2ddd
   body_extraction:
     yield_pattern:
       match:
@@ -238,11 +307,16 @@ object_types:
           after_heading: Layout
           language: yaml
           required: true
+        invariants:
+          from: section_body
+          after_heading: Invariants
+          required: false
 - name: rate_limit
   allowed_links:
     throttles: [api_endpoint, action]
   data_schema:
-    type: object
+    schema: schemas/RateLimit.json
+    digest: sha256:d2b1e6d6c909c686e6c5fed7d6d8acf3faef2ebf9d4d786baebb8e55970fa4f3
   body_extraction:
     yield_pattern:
       match:
@@ -253,6 +327,10 @@ object_types:
           from: section_body
           after_heading: Thresholds
           required: true
+        invariants:
+          from: section_body
+          after_heading: Invariants
+          required: false
 
 # FR-043: concrete-term lexicon — API / web / UI / data-shape / computing
 # objects the EARS object-aware vague-response check accepts as verifiable
