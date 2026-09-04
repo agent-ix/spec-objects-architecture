@@ -43,7 +43,7 @@ they differ, never raising for a mismatch.
 | Param | Type | Multiplicity | Constraints |
 |---|---|---|---|
 | artifact_id | UUID | 1..1 | |
-| declared_digest | String | 1..1 | minLength: 64, maxLength: 64 |
+| declared_digest | String | 1..1 | pattern: /^[a-f0-9]{64}$/ |
 | content_stream | Bytes | 1..1 | nonEmpty |
 
 Returns: Boolean[1..1]

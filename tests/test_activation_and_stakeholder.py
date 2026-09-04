@@ -21,6 +21,8 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import shutil
+import subprocess
 
 import pytest
 
@@ -147,16 +149,56 @@ def test_every_declared_contribution_is_readable_from_the_registry_endpoints():
         assert row["data_schema"] == declared["data_schema"]
 
 
-@pytest.mark.trace("TC-006", "StR-001-VC-2")
 @pytest.mark.integration
 @needs_filament_core
-def test_a_generator_produces_an_artifact_that_validates_against_the_shipped_module(
+def test_a_shipped_skeleton_validates_against_the_module_the_service_serves(
     quire_engine,
 ):
-    """StR-001-VC-2, demonstration: an artifact authored from a shipped
-    skeleton validates against the module the service serves."""
+    """An artifact authored from a shipped skeleton validates against the
+    module the service serves. This carries no StR-001-VC-2 tag: VC-2 is about
+    a generator run, which the row below performs."""
     text = (SKELETONS_DIR / "api_endpoint.md").read_text()
     result = quire_engine.validate_document(
         frontmatter(text)["type"], str(PACKAGE_ROOT), text
     )
     assert result["is_valid"]
+
+
+@pytest.mark.trace("TC-006", "StR-001-VC-2")
+def test_the_agent_cli_generator_produces_artifacts_that_validate(
+    quire_engine, tmp_path
+):
+    """StR-001-VC-3's sibling criterion, discharged by a real generator run.
+
+    What this row counts: the thirteen shipped skeletons, each rendered by
+    `minijinja-cli` — the agent CLI generator StR-001 names — and then
+    validated through Quire against this module. A placeholder-free skeleton
+    renders to itself, so the row asserts both halves: the generator produces
+    the artifact byte-for-byte, and the artifact validates.
+
+    The row fails, never skips, when the generator is absent: a skipped row is
+    not coverage.
+    """
+    generator = shutil.which("minijinja-cli")
+    if generator is None:
+        pytest.fail(
+            "StR-001-VC-2 names an agent CLI generator (minijinja-cli) and it is "
+            "not on PATH. Install it (`cargo install minijinja-cli`) rather than "
+            "skipping: a skipped row is not coverage."
+        )
+    context = tmp_path / "context.json"
+    context.write_text("{}\n")
+    for path in sorted(SKELETONS_DIR.glob("*.md")):
+        run = subprocess.run(
+            [generator, str(path), str(context)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        assert run.returncode == 0, (path.name, run.stderr)
+        rendered = run.stdout
+        assert rendered == path.read_text(), path.name
+        result = quire_engine.validate_document(
+            frontmatter(rendered)["type"], str(PACKAGE_ROOT), rendered
+        )
+        assert result["is_valid"], (path.name, result["errors"])

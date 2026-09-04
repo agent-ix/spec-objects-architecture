@@ -15,7 +15,7 @@ object: data_schema
 
 ```sysml
 attribute artifact_id : UUID[1..1] { identity }
-attribute digest : String[1..1] { minLength: 64, maxLength: 64 }
+attribute digest : String[1..1] { pattern: /^[a-f0-9]{64}$/ }
 attribute size_bytes : Integer[1..1] { min: 0 }
 attribute content_type : String[0..1]
 attribute created_at : Timestamp[1..1]
@@ -31,7 +31,7 @@ attribute created_at : Timestamp[1..1]
   "required": ["artifact_id", "digest", "size_bytes", "created_at"],
   "properties": {
     "artifact_id": { "type": "string", "format": "uuid" },
-    "digest": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "size_bytes": { "type": "integer", "minimum": 0 },
     "content_type": { "type": "string" },
     "created_at": { "type": "string", "format": "date-time" }

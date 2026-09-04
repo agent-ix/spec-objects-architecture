@@ -24,7 +24,7 @@ object: queue
 |---|---|---|---|
 | artifact_id | UUID | 1..1 | identity |
 | event | String | 1..1 | minLength: 1 |
-| digest | String | 1..1 | minLength: 64, maxLength: 64 |
+| digest | String | 1..1 | pattern: /^[a-f0-9]{64}$/ |
 | size_bytes | Integer | 1..1 | min: 0 |
 | uploaded_at | Timestamp | 1..1 | |
 

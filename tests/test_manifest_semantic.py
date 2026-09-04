@@ -113,7 +113,7 @@ def test_every_locator_added_after_020_is_optional():
 
 
 @pytest.mark.trace("TC-028", "FR-003-AC-7")
-def test_the_020_lexicon_block_is_byte_identical_at_030():
+def test_the_prior_version_lexicon_block_is_byte_identical_now():
     baseline = json.loads((BASELINE_DIR / "lexicon.json").read_text())
     assert baseline["version"] == "0.2.0"
     assert load_manifest()["lexicon"] == baseline["lexicon"]

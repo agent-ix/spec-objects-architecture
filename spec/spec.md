@@ -68,14 +68,33 @@ share one authoritative definition of what the module activates against
   (Rust), `#22` (TypeScript) and `#23` (Python), and published only behind the
   promotion gate (`agent-ix/quoin#290`); the semantic-core language packages
   are `agent-ix/filament-core-data#11`. None is produced or faked here.
-- Extraction of the declared-but-not-yet-extracted keys (`routes`, `carries`,
-  `delivery`, `exposes`, `registration`, `stability`, `versioning`,
-  `provider`, `records`, `thresholds`, `throttles`, `renders`, `requires`,
-  `associated_types`) from Markdown: the mapping is owned by
-  `agent-ix/quoin#335` (FR-071/FR-072 define `Properties`, `Invariants`, and
-  `Operations` only) and the extractor by `agent-ix/quire-rs` once the mapping
-  is published; the schemas declare the keys as optional so the engine can
-  fill them without a schema change.
+- Extraction from Markdown of the eighteen keys this module declares but the
+  current extractor does not populate — `routes`, `requires`, `carries`,
+  `delivery`, `renders`, `triggers`, `associated_types`, `provider`,
+  `versioning`, `exposes`, `registration`, `stability`, `records`,
+  `endianness`, `serializes`, `thresholds`, `throttles`, and `relations`.
+  quoin FR-071/FR-072 define `Properties`, `Invariants` and `Operations`
+  only. `agent-ix/quoin#335` is the ticket that owns publishing the mapping
+  for keys beyond those three, but its body enumerates the
+  `spec-objects-business` keys and names that module as its downstream: the
+  architecture keys are named by no ticket today, and adding them to #335 is
+  the action this specification asks for rather than a claim that it already
+  covers them. The schemas declare all eighteen optional, so a record from
+  today's extractor validates and a future extractor can fill them without a
+  schema change.
+- Improving the diagnostic a bare `pattern: <regex>` earns:
+  `agent-ix/quire-rs#397`. The reader accepts `pattern: /<regex>/` — the
+  skeletons use that form — but answers `semantic.unknown-constraint-keyword`
+  for the unslashed spelling, which names neither the true cause nor the form
+  it wants, and then drops the whole `fields` key. The wording is the
+  neighbour's to fix; nothing here is authored around it.
+- Collapsing bundle-index entries that share a declaration id:
+  `agent-ix/quire-rs#398`. An index built one entry per document lists the
+  three `*.sysml.md` alternates beside their table skeletons and then reports
+  every reference to them as `semantic.ambiguous-type` naming the same id on
+  both sides. FR-005-CON-3 keys this module's index by id, which is the
+  correct construction, and carries the engine's behaviour as an expected
+  failure.
 - Enabling impact propagation or extraction behaviour for the architecture
   resource graph: the ticket's safety gate holds the change advisory-only
   until promotion, and resource-identity changes need controlled-corpus
@@ -98,14 +117,34 @@ share one authoritative definition of what the module activates against
   rather than skip when the engine is absent (FR-005).
 - Resolving a reference-form `data_schema` into a stored snapshot at
   activation: `agent-ix/filament-core-service#23`. Until it lands the service
-  stores the reference verbatim, which is what FR-001-AC-4 and IT-001-SC-03
-  assert.
-- Editing any corpus repository or vendored fixture, and the malformed
-  `lexicon` entries the corpus carries; the legacy-form sweep and corpus
-  promotion are `agent-ix/quoin#291`.
+  stores the reference verbatim, which is what FR-001-AC-4 asserts. The
+  consequence is measured rather than assumed: handed this manifest's ten
+  reference-form values verbatim, quire's Filament path answers ten
+  `semantic.data-schema-unresolved-reference` diagnostics at error severity
+  and emits no object-type snapshot node, exactly as quire-rs FR-069
+  specifies ("the registry owner resolves it before the snapshot is served").
+  A consumer that reads this manifest directly therefore sees no architecture
+  object type until #23 lands, which is one of the reasons the module is
+  advisory-only until promotion. FR-003-AC-8 carries that measurement and its
+  resolved-form counterpart, so the row turns red the day #23 changes it.
+- Admitting the top-level `lexicon` block in the FR-035 module-manifest
+  schema: `agent-ix/filament-core-service#25`. The schema is
+  `additionalProperties: false` and declares no `lexicon`, so this module's
+  manifest is refused by it — a condition that predates this issue, since the
+  0.2.0 manifest fails the same way. FR-001 carries it as an explicit expected
+  failure; the `lexicon` is not dropped and the schema is not relaxed.
+- Editing any corpus repository or vendored fixture; the legacy-form sweep
+  and corpus promotion are `agent-ix/quoin#291`.
+- Repairing the eight `lexicon` definitions this module's own manifest
+  truncates at an unquoted comma in a YAML flow mapping: that is this repo's
+  issue #7, a separately reviewed data fix. FR-003-AC-7 freezes the block
+  byte-identical precisely so this change cannot be confused with that one.
 - Replacing the measured cross-language resource-extraction contracts of
   Project 17: this module aligns resource vocabulary with them and does not
-  restate or supersede them.
+  restate or supersede them. The alignment is a naming discipline stated in
+  FR-004 — no model carries an observation key, so a declaration record can
+  never be read as an extraction from running code — and the resource-graph
+  work it must not collide with is `agent-ix/filament-ide-rs#541`.
 
 ## System Overview
 

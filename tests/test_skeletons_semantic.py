@@ -254,7 +254,15 @@ def test_a_properties_section_with_both_forms_is_refused(quire_engine):
 
 @pytest.mark.trace("TC-058", "FR-005-CON-1")
 def test_the_branch_edits_no_corpus_repository_or_vendored_fixture():
-    """FR-005-CON-1, inspection over the branch diff against `main`."""
+    """FR-005-CON-1, over the branch diff against `main`.
+
+    What this row counts: every path the branch changes. The constraint's
+    subject is other repositories, which a diff of this one cannot observe —
+    so the check is the strongest thing this repo *can* assert: the change is
+    confined to this repository, and inside it to the seven directories the
+    module owns. A stray edit to a vendored quoin/quire fixture, a corpus
+    checkout, or a git submodule would land outside that set and fail here.
+    """
     diff = subprocess.run(
         ["git", "-C", str(REPO_ROOT), "diff", "--name-only", "origin/main...HEAD"],
         capture_output=True,
@@ -265,10 +273,37 @@ def test_the_branch_edits_no_corpus_repository_or_vendored_fixture():
         pytest.fail(f"cannot read the branch diff: {diff.stderr.strip()}")
     changed = [line for line in diff.stdout.splitlines() if line]
     assert changed, "the branch changes nothing"
+
+    owned = (
+        "spec/",
+        "spec_objects_architecture/",
+        "tests/",
+        "typespec/",
+        "scripts/",
+        "plan/",
+        "reviews/",
+    )
+    root_files = {
+        "Makefile",
+        "package.json",
+        "package-lock.json",
+        "poetry.lock",
+        "pyproject.toml",
+        ".gitattributes",
+        ".gitignore",
+        "README.md",
+        "CLAUDE.md",
+        "AGENTS.md",
+    }
     for path in changed:
+        assert path.startswith(owned) or path in root_files, path
         assert not path.startswith("corpus/"), path
         assert "fixtures/semantic-module" not in path, path
         assert "/vendor/" not in path, path
+
+    # No submodule or nested checkout was introduced, which is the other way a
+    # single-repo diff could hide an edit to a neighbour.
+    assert not (REPO_ROOT / ".gitmodules").exists()
 
 
 @pytest.mark.trace("TC-059", "FR-005-AC-8")

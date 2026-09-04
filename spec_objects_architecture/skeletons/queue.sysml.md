@@ -15,7 +15,7 @@ object: queue
 ```sysml
 attribute artifact_id : UUID[1..1] { identity }
 attribute event : String[1..1] { minLength: 1 }
-attribute digest : String[1..1] { minLength: 64, maxLength: 64 }
+attribute digest : String[1..1] { pattern: /^[a-f0-9]{64}$/ }
 attribute size_bytes : Integer[1..1] { min: 0 }
 attribute uploaded_at : Timestamp[1..1]
 ```

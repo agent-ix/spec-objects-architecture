@@ -28,7 +28,7 @@ object: data_schema
 | Field | Type | Multiplicity | Constraints |
 |---|---|---|---|
 | artifact_id | UUID | 1..1 | identity |
-| digest | String | 1..1 | minLength: 64, maxLength: 64 |
+| digest | String | 1..1 | pattern: /^[a-f0-9]{64}$/ |
 | size_bytes | Integer | 1..1 | min: 0 |
 | content_type | String | 0..1 | |
 | created_at | Timestamp | 1..1 | |
@@ -43,7 +43,7 @@ object: data_schema
   "required": ["artifact_id", "digest", "size_bytes", "created_at"],
   "properties": {
     "artifact_id": { "type": "string", "format": "uuid" },
-    "digest": { "type": "string", "minLength": 64, "maxLength": 64 },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
     "size_bytes": { "type": "integer", "minimum": 0 },
     "content_type": { "type": "string" },
     "created_at": { "type": "string", "format": "date-time" }

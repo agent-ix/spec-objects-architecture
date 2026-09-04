@@ -53,10 +53,10 @@ refuse.
 - The `action` skeleton SHALL declare exactly one operation, because `Action` admits exactly one.
 - The `api_endpoint` skeleton SHALL declare at least one operation carrying a `Returns:` line, and the `external_contract` skeleton at least one operation carrying a `Post:` line, because those are the item rules their schemas enforce.
 - Each skeleton whose type requires `clauses` (`external_contract`, `extension_point`, `binary_format`, `rate_limit`) SHALL author `## Invariants` with one `### <clauseId>` per clause, each owning exactly one ```` ```ocl ```` fence.
-- The `data_schema`, `queue`, `action`, `ui_component`, and `interface` skeletons SHALL carry no `## Invariants` section, so the module ships both the clause-bearing and the clause-free availability state.
+- The `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, and `interface` skeletons SHALL carry no `## Invariants` section, so the module ships both the clause-bearing and the clause-free availability state.
 - Each skeleton's frontmatter SHALL carry `object: <type name>` beside `type: <type name>`, because Quire runs the semantic layer (extraction and record validation) on the `object:` archetype of a document; a skeleton without it validates its headings only.
 - The manifest SHALL gain a `required: false` `section_body` locator for every `## Properties`, `## Invariants`, and `## Operations` section a skeleton introduces, so the section is asserted by the manifest and remains optional for existing artifacts.
-- Every skeleton `title` SHALL be an `Identifier` (`^[A-Za-z_][A-Za-z0-9_]*$`), distinct across all skeletons and outside the `KernelScalar` names, so a `Type` cell can name it.
+- Every skeleton `title` SHALL be an `Identifier` (`^[A-Za-z_][A-Za-z0-9_]*$`), distinct across the ten object types and outside the `KernelScalar` names, so a `Type` cell can name it. An alternate-form skeleton shares its table skeleton's `id` and `title` by intent — the two files declare one object — so uniqueness is measured over the ten declarations, not over the thirteen files.
 - Every `Type` cell that names another skeleton SHALL use that skeleton's `title`, so that under a bundle index built from the skeletons every non-kernel token resolves to `ix://agent-ix/spec-objects-architecture/type/<Title>` with no `semantic.unresolved-type` finding.
 - Every skeleton SHALL keep every H2 heading whose manifest locator is `required: true` for its type (`## Endpoint`, `## Schema`, `## Message Format`, `## Inputs`, `## Props`, `## Contract`, `## Layout`, `## Thresholds`).
 - No skeleton SHALL carry an H2 heading the manifest does not assert.
@@ -73,6 +73,7 @@ refuse.
 |----|------------|------|------------|
 | FR-005-CON-1 | The module SHALL keep the skeletons and negatives in this repository only, editing no corpus repository and no vendored quoin/quire fixture. | Boundary | Inspection |
 | FR-005-CON-2 | A skeleton SHALL carry one Properties form; the alternate form is a separate file, never a second block in the same artifact. | Integrity | Test |
+| FR-005-CON-3 | The bundle index SHALL hold one entry per declaration `id`, not one per file, so the three alternate-form skeletons do not list their declaration twice. | Integrity | Test |
 
 ## Acceptance Criteria
 
@@ -87,6 +88,7 @@ refuse.
 | FR-005-AC-7 | The skeleton for each of the ten types has no placeholder token and every asserted section body is non-empty. | Test |
 | FR-005-AC-8 | Every skeleton `title` matches the `Identifier` pattern, is unique across the skeletons, and is not a `KernelScalar` name; every skeleton frontmatter carries `object` equal to `type`. | Test |
 | FR-005-AC-9 | The `action` skeleton extracts exactly one operation, the `api_endpoint` skeleton at least one operation carrying `returns`, and the `external_contract` skeleton at least one operation carrying a non-empty `post`. | Test |
+| FR-005-AC-10 | The bundle index the module builds holds ten entries, one per declaration id; an index built one entry per file makes every reference to an alternate-bearing declaration `semantic.ambiguous-type`, which is carried as an expected failure naming `agent-ix/quire-rs#398`. | Test |
 
 ## Dependencies
 

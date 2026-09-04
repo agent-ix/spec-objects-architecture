@@ -43,6 +43,39 @@ def quoin(*args: str) -> subprocess.CompletedProcess:
     return subprocess.run([QUOIN, *args], capture_output=True, text=True, check=False)
 
 
+MODULE = "spec-objects-architecture"
+
+
+def install_spec(entry: dict) -> str:
+    """The `quoin module install` source string that reproduces one recorded
+    listing entry. `quoin module install` takes a source (`path:`, `github:`,
+    `package:`), never a bare module name, so the restore has to rebuild the
+    source it recorded — restoring by name silently does nothing."""
+    source = entry["source"]
+    kind = source["type"]
+    if kind == "path":
+        return f"path:{source['path']}"
+    if kind == "git-subdir":
+        ref = f"@{source['ref']}" if source.get("ref") else ""
+        return f"github:{source['url']}//{source['path']}{ref}"
+    if kind == "git":
+        ref = f"@{source['ref']}" if source.get("ref") else ""
+        return f"github:{source['url']}{ref}"
+    if kind == "npm":
+        version = f"@{source['version']}" if source.get("version") else ""
+        return f"package:{source['name']}{version}"
+    raise AssertionError(f"unknown quoin module source type: {kind}")
+
+
+def recorded_entry(listing: str) -> dict | None:
+    import json
+
+    for entry in json.loads(listing)["plugins"]:
+        if entry["name"] == MODULE:
+            return entry
+    return None
+
+
 def roundtrip():
     """Record, install, inspect, and restore — the IT-002 procedure. Returns
     the per-step observations so each criterion can assert its own."""
@@ -51,7 +84,8 @@ def roundtrip():
     before = quoin("module")
     assert before.returncode == 0, before.stderr
     recorded = before.stdout
-    observed = {"recorded": recorded}
+    prior = recorded_entry(recorded)
+    observed = {"recorded": recorded, "prior": prior}
     try:
         install = quoin("module", "install", f"path:{PACKAGE_ROOT}")
         observed["install"] = install
@@ -69,9 +103,24 @@ def roundtrip():
         # The restore (spec step 5) runs whether or not the steps above passed,
         # so a failed install never leaves the operator's global module store
         # half-written. The criteria it discharges are asserted by the tests.
-        quoin("module", "install", "spec-objects-architecture")
+        if prior is not None:
+            restore = quoin("module", "install", install_spec(prior))
+            observed["restore"] = restore
+        else:  # pragma: no cover - nothing was installed before the run
+            observed["restore"] = quoin("module", "remove", MODULE)
         observed["after"] = quoin("module").stdout
+        observed["after_entry"] = recorded_entry(observed["after"])
     return observed
+
+
+def same_module_state(prior: dict | None, after: dict | None) -> bool:
+    """State equality for IT-002-SC-05, ignoring `installedAt`: the criterion
+    is that the operator's module resolves to the same bytes from the same
+    source, not that the clock did not move."""
+    if prior is None or after is None:
+        return prior is after
+    keys = ("source", "ref", "sha", "resolvedPath", "targetPath")
+    return all(prior.get(key) == after.get(key) for key in keys)
 
 
 @pytest.mark.trace("TC-027", "FR-003-AC-5")
@@ -84,8 +133,8 @@ def test_quoin_module_install_succeeds_and_lists_the_module():
     combined = install.stdout + install.stderr
     assert "semantic." not in combined or "error" not in combined.lower(), combined
     assert "spec-objects-architecture" in observed["listing"].stdout
-    assert (
-        observed["after"] == observed["recorded"]
+    assert same_module_state(
+        observed["prior"], observed["after_entry"]
     ), "the prior quoin module state was not restored"
 
 
@@ -110,4 +159,7 @@ def test_the_roundtrip_derives_the_package_manifest_and_restores_state():
     assert derived is not None, observed.get("package_manifest_path")
     assert derived["package"]["identity"] == "agent-ix/spec-objects-architecture"
     assert len(derived["exports"]) == len(OBJECT_TYPES)
-    assert observed["after"] == observed["recorded"]  # step 5: state restored
+    # step 5: the prior source, ref and sha are back
+    assert same_module_state(observed["prior"], observed["after_entry"])
+    # step 6: the restore ran even though every step above could have failed
+    assert observed["restore"].returncode == 0, observed["restore"].stderr

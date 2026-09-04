@@ -61,7 +61,7 @@ persist the artifact; answers with the stored record.
 | Param | Type | Multiplicity | Constraints |
 |---|---|---|---|
 | content | Bytes | 1..1 | nonEmpty |
-| declared_digest | String | 1..1 | minLength: 64, maxLength: 64 |
+| declared_digest | String | 1..1 | pattern: /^[a-f0-9]{64}$/ |
 | content_type | String | 0..1 | |
 
 Returns: ArtifactRecord[1..1]
