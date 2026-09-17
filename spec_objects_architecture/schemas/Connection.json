@@ -4,22 +4,22 @@
   "type": "object",
   "properties": {
     "sourceEnd": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionEnd.json"
     },
     "targetEnd": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionEnd.json"
     },
-    "direction": {
+    "flowDirection": {
       "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionDirection.json"
     }
   },
   "required": [
     "sourceEnd",
     "targetEnd",
-    "direction"
+    "flowDirection"
   ],
   "unevaluatedProperties": {
     "not": {}
   },
-  "description": "A connection between two port ends with a declared direction. `fields` and\n`operations` are forbidden by the seal."
+  "description": "A connection between two port ends with a declared flow direction. `fields`\nand `operations` are forbidden by the seal."
 }

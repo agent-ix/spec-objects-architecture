@@ -207,21 +207,22 @@ object_types:
   allowed_links:
     contains: [api_endpoint]
     references: [data_schema]
-  # FR-007: the QSpec FR-152 Interface kind — its ordered feature signatures
-  # are the operations. Meaning id from agent-ix/quire-specification#86 (FR-208).
+  # FR-007: the QSpec FR-152 Interface kind — its features are fields and
+  # operations, ordered as one sequence by `featureOrder`. Meaning id from
+  # agent-ix/quire-specification#86 (FR-208).
   construct:
     identity: none
     shape: interface
     members:
-      operations: required
-      fields: forbidden
+      featureOrder: required
+      fields: optional
+      operations: optional
       clauses: optional
       relationships: optional
-    rules: [min_operations]
     meaning: quire.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
-    digest: sha256:dfa770a42695d5258476b8c79fea01012f3526b697262a5c0f197c5c9c9ac236
+    digest: sha256:f9bb3844c23908de143c28035a9883795fe883e1bc4a0484e216ff6210f37c38
   body_extraction:
     yield_pattern:
       match:
@@ -444,7 +445,7 @@ object_types:
     members:
       sourceEnd: required
       targetEnd: required
-      direction: required
+      flowDirection: required
       fields: forbidden
       operations: forbidden
     references:
@@ -453,7 +454,7 @@ object_types:
     meaning: quire.meaning.systems.connection/v1
   data_schema:
     schema: schemas/Connection.json
-    digest: sha256:8f445a991d18eaa7fbe1653e7e61c014e188b2b9621e0e9cdc4633528e5f6c30
+    digest: sha256:072acfc3afa7e48067b31febf390535b5c0c968fd3b9f0a8b038f4bfa514cd28
   body_extraction:
     yield_pattern:
       match:
@@ -465,7 +466,7 @@ object_types:
           under_section: Connection
           required: true
           assert:
-            columns: [Source, Target, Direction]
+            columns: [Source, Source Multiplicity, Target, Target Multiplicity, Direction]
             min_rows: 1
 - name: allocation
   allowed_links:

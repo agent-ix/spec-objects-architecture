@@ -156,21 +156,27 @@ def test_ui_component_admits_no_identity_prop(schema_registry):
 
 
 @pytest.mark.trace("TC-036", "FR-004-AC-7")
-def test_interface_requires_operations_and_forbids_routes(schema_registry):
-    """Hand-built: `associated_types` has no Markdown mapping yet."""
-    assert valid(schema_registry, "Interface", {"operations": [OP]})
+def test_interface_requires_feature_order_and_forbids_routes(schema_registry):
+    """Hand-built: `associated_types` and `featureOrder` have no Markdown
+    mapping yet."""
+    order = {"featureOrder": ["do_it"]}
+    assert valid(schema_registry, "Interface", {"operations": [OP], **order})
     assert valid(
         schema_registry,
         "Interface",
-        {"operations": [OP], "associated_types": [KERNEL]},
+        {"operations": [OP], "associated_types": [KERNEL], **order},
     )
-    assert not valid(schema_registry, "Interface", {"operations": []})
+    assert valid(
+        schema_registry, "Interface", {"fields": [FIELD], "featureOrder": ["a"]}
+    )
+    assert not valid(schema_registry, "Interface", {"operations": [OP]})
     assert not valid(
         schema_registry,
         "Interface",
         {
             "operations": [OP],
             "routes": [{"method": "GET", "path": "/x", "operation": "do_it"}],
+            **order,
         },
     )
 
@@ -445,7 +451,7 @@ def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry)
         "DataSchema": {"fields": [FIELD]},
         "Action": {"operations": [OP]},
         "UiComponent": {"fields": [FIELD]},
-        "Interface": {"operations": [OP]},
+        "Interface": {"operations": [OP], "featureOrder": ["do_it"]},
         "ExternalContract": {"operations": [GUARANTEED_OP], "clauses": [CLAUSE]},
     }
     refuses = {

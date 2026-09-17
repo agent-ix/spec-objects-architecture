@@ -1,4 +1,4 @@
-"""Additive-compatibility tests (NFR-001): the 0.3.0 module stays additive
+"""Additive-compatibility tests (NFR-001): the current module stays additive
 over the checked-in 0.2.0 set.
 
 The population is the frozen baseline under `tests/fixtures/baseline-0.2.0/`:
@@ -106,8 +106,8 @@ def test_no_object_type_changed_its_edge_vocabulary_or_roles():
 def test_every_baseline_skeleton_validates_under_the_new_manifest(quire_engine):
     """Measured, not assumed: the ten 0.2.0 skeletons carry no frontmatter
     `object:` key, so Quire runs headings-only validation on them and the
-    typed record is never assembled or checked. That is what makes 0.3.0
-    additive for the artifacts that exist today."""
+    typed record is never assembled or checked. That is what makes the current
+    module additive for the artifacts that exist today."""
     baseline = baseline_skeletons()
     assert len(baseline) == 10
     failures = {}
@@ -173,7 +173,7 @@ def test_the_legacy_properties_warning_population_is_empty_and_is_recorded_as_em
 @pytest.mark.trace("TC-063", "NFR-001-AC-4")
 def test_every_020_locator_yield_is_byte_identical_across_versions(quire_engine):
     """The untyped locator yields are what every existing consumer reads; the
-    0.3.0 locators must leave them untouched. Each expectation is read from
+    current locators must leave them untouched. Each expectation is read from
     the frozen fixture text, not from a second engine run."""
     baseline = baseline_locators()
     for path in baseline_skeletons():

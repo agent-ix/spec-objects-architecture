@@ -333,13 +333,14 @@ model UiComponent {
 }
 
 /**
- * A contract within the system: the operations a component exposes or depends
- * on. `fields` is forbidden by the seal — an interface declares calls, not
- * state.
+ * A contract within the system: its features, each a field or an operation
+ * (QSpec FR-152, FR-208). `featureOrder` orders the interface's own field and
+ * operation names as one sequence across both kinds of feature.
  */
 model Interface {
-  @minItems(1)
-  operations: OperationDecl[];
+  fields?: FieldDecl[];
+  operations?: OperationDecl[];
+  featureOrder: Identifier[];
 
   associated_types?: TypeRef[];
   clauses?: ClauseRef[];
@@ -447,13 +448,23 @@ model Port {
 }
 
 /**
- * A connection between two port ends with a declared direction. `fields` and
- * `operations` are forbidden by the seal.
+ * One end of a systems connection: the port it attaches to and, optionally, the
+ * multiplicity at that end.
+ */
+model ConnectionEnd {
+  type: SemanticId;
+  multiplicity?: Multiplicity;
+  ...Record<never>;
+}
+
+/**
+ * A connection between two port ends with a declared flow direction. `fields`
+ * and `operations` are forbidden by the seal.
  */
 model Connection {
-  sourceEnd: SemanticId;
-  targetEnd: SemanticId;
-  direction: ConnectionDirection;
+  sourceEnd: ConnectionEnd;
+  targetEnd: ConnectionEnd;
+  flowDirection: ConnectionDirection;
   ...Record<never>;
 }
 

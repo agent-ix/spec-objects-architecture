@@ -76,6 +76,19 @@ EXPORTS = OBJECT_TYPES + SYSTEMS_TYPES
 
 #: The quire-rs issue that owns lowering the systems tables into the record.
 SYSTEMS_EXTRACTION_ISSUE = "agent-ix/quire-rs#446"
+SYSTEMS_EXTRACTION_ISSUE_REASON = (
+    "the engine yields the systems table but does not lower it into the "
+    "record, so the required members are absent and the record fails "
+    f"`semantic.record-invalid`; {SYSTEMS_EXTRACTION_ISSUE}"
+)
+#: FCD #172 adds the `featureOrder` member; the Markdown shape that carries it,
+#: and its extraction, are not yet defined.
+INTERFACE_FEATURE_ORDER_ISSUE = "agent-ix/filament-core-data#172"
+INTERFACE_FEATURE_ORDER_REASON = (
+    "Interface.json requires `featureOrder`, and no authored shape or "
+    "extraction carries it yet, so the record fails `semantic.record-invalid`; "
+    f"{INTERFACE_FEATURE_ORDER_ISSUE}"
+)
 
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",
@@ -118,6 +131,7 @@ SUPPORT_MODELS = (
     "ExceedResponse",
     "PortDirection",
     "ConnectionDirection",
+    "ConnectionEnd",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.
@@ -190,6 +204,32 @@ def declaration_skeletons() -> list[pathlib.Path]:
 
 def systems_skeletons() -> list[pathlib.Path]:
     return [SKELETONS_DIR / f"{name}.md" for name in SYSTEMS_TYPES]
+
+
+def all_skeletons() -> list[pathlib.Path]:
+    return sorted(SKELETONS_DIR.glob("*.md"))
+
+
+def validation_gap(path: pathlib.Path) -> str | None:
+    """The named defect that keeps a skeleton from validating today, if any.
+
+    Each is a known defect, not a requirement: FR-005 and FR-007 require every
+    skeleton to validate with zero errors."""
+    if is_systems_skeleton(path):
+        return SYSTEMS_EXTRACTION_ISSUE_REASON
+    if path.stem == "interface":
+        return INTERFACE_FEATURE_ORDER_REASON
+    return None
+
+
+def validation_params(paths: list[pathlib.Path]) -> list:
+    """`paths` as pytest params, each known-defect skeleton a strict xfail."""
+    params = []
+    for path in paths:
+        reason = validation_gap(path)
+        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
+        params.append(pytest.param(path, id=path.name, marks=marks))
+    return params
 
 
 def sha256_of(path: pathlib.Path) -> str:

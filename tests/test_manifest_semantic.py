@@ -19,12 +19,14 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
+    declaration_skeletons,
     frontmatter,
     load_manifest,
     locators,
     object_type,
     object_types,
     sha256_of,
+    validation_params,
 )
 
 ADMITTED_KEYS = {
@@ -93,8 +95,10 @@ def test_every_020_locator_is_unchanged_against_the_checked_in_baseline():
         old = (extraction or {})["yield_pattern"]["match"]
         new = (current or {})["yield_pattern"]["match"]
         for key, facets in old.items():
-            assert key in new, f"{name}.{key} was dropped at 0.3.0"
-            assert new[key] == facets, f"{name}.{key} changed facets at 0.3.0"
+            assert key in new, f"{name}.{key} was dropped from the current module"
+            assert (
+                new[key] == facets
+            ), f"{name}.{key} changed facets in the current module"
 
 
 @pytest.mark.trace("TC-023", "FR-003-AC-3", "FR-003-CON-2")
@@ -129,18 +133,16 @@ def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
 
 
 @pytest.mark.trace("TC-025", "FR-003-AC-4")
+@pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
 def test_validate_document_reports_no_semantic_load_failure_for_any_skeleton(
-    quire_engine, skeletons
+    quire_engine, path
 ):
-    for path in skeletons:
-        text = path.read_text()
-        result = quire_engine.validate_document(
-            frontmatter(text)["type"], str(PACKAGE_ROOT), text
-        )
-        assert result["is_valid"], (path.name, result["errors"])
-        assert not [
-            e for e in result["errors"] if "semantic." in e["message"]
-        ], path.name
+    text = path.read_text()
+    result = quire_engine.validate_document(
+        frontmatter(text)["type"], str(PACKAGE_ROOT), text
+    )
+    assert result["is_valid"], (path.name, result["errors"])
+    assert not [e for e in result["errors"] if "semantic." in e["message"]], path.name
 
 
 @pytest.mark.trace("TC-026", "FR-003-AC-6")

@@ -30,6 +30,8 @@ import re
 import pytest
 import yaml
 
+from tests.conftest import validation_gap
+
 PKG_ROOT = pathlib.Path(__file__).resolve().parent.parent / "spec_objects_architecture"
 MANIFEST_PATH = PKG_ROOT / "manifest.yaml"
 SKELETONS_DIR = PKG_ROOT / "skeletons"
@@ -54,11 +56,6 @@ _REQUIRED_BODY_FIELDS = {
     "connection": {"connection"},
     "allocation": {"allocation"},
 }
-
-# The FR-007 systems types: their record keys come from a table the engine
-# yields but does not yet lower into the declaration record
-# (agent-ix/quire-rs#446), so their skeletons do not validate today.
-_SYSTEMS_TYPES = ("part", "port", "connection", "allocation")
 
 
 def _object_types() -> list[dict]:
@@ -299,26 +296,12 @@ def _quire_doc_validator():
 
 
 def _validation_cases() -> list:
-    return [
-        (
-            pytest.param(
-                name,
-                marks=pytest.mark.xfail(
-                    strict=True,
-                    reason=(
-                        "the engine yields the systems table but does not lower "
-                        "it into the record, so the required members are absent "
-                        "and the record fails `semantic.record-invalid`; "
-                        "agent-ix/quire-rs#446"
-                    ),
-                ),
-                id=name,
-            )
-            if name in _SYSTEMS_TYPES
-            else pytest.param(name, id=name)
-        )
-        for name in _names()
-    ]
+    params = []
+    for name in _names():
+        reason = validation_gap(SKELETONS_DIR / f"{name}.md")
+        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
+        params.append(pytest.param(name, id=name, marks=marks))
+    return params
 
 
 @pytest.mark.parametrize("name", _validation_cases())

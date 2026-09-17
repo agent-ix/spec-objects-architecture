@@ -29,6 +29,7 @@
     "ConflictPolicy.json",
     "Connection.json",
     "ConnectionDirection.json",
+    "ConnectionEnd.json",
     "DataSchema.json",
     "DeliveryPolicy.json",
     "DeliverySemantics.json",
@@ -59,5 +60,5 @@
     "VersioningPolicy.json",
     "VersioningScheme.json"
   ],
-  "digest": "sha256:5fea685fa341ad3379e2200b10ddadd967a8fc123986f1bd9363916cc37d359c"
+  "digest": "sha256:92a6a242a785e24da21715f42db82b22ec185f3a97eb0c6575982bd1b78be46d"
 }

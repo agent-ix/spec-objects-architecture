@@ -21,12 +21,13 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
-    SYSTEMS_TYPES,
+    all_skeletons,
     declaration_skeletons,
     frontmatter,
     locators,
     object_type,
     object_types,
+    validation_params,
 )
 
 IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -72,17 +73,17 @@ def extract(quire_engine, module, bundle, path):
 
 
 @pytest.mark.trace("TC-050", "FR-005-AC-1")
-def test_every_skeleton_validates_with_no_error(quire_engine, skeletons):
+@pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
+def test_every_skeleton_validates_with_no_error(quire_engine, skeletons, path):
     assert len(skeletons) == 13
-    for path in skeletons:
-        text = path.read_text()
-        result = quire_engine.validate_document(
-            frontmatter(text)["type"], str(PACKAGE_ROOT), text
-        )
-        assert result["is_valid"], (path.name, result["errors"])
-        assert not [
-            e for e in result["errors"] if "semantic.record-invalid" in e["message"]
-        ], path.name
+    text = path.read_text()
+    result = quire_engine.validate_document(
+        frontmatter(text)["type"], str(PACKAGE_ROOT), text
+    )
+    assert result["is_valid"], (path.name, result["errors"])
+    assert not [
+        e for e in result["errors"] if "semantic.record-invalid" in e["message"]
+    ], path.name
 
 
 @pytest.mark.trace("TC-051", "FR-005-AC-2", "FR-005-CON-2")
@@ -359,9 +360,9 @@ def test_the_repository_carries_no_corpus_or_vendored_fixture():
 def test_skeleton_titles_are_distinct_identifiers_and_object_equals_type():
     """One title per object type. The three `*.sysml.md` alternates share their
     table skeleton's `id` and `title` by intent (FR-005), so uniqueness is
-    measured over the ten object types, not over the thirteen files."""
+    measured over the fourteen object types, not over the seventeen files."""
     titles: dict[str, str] = {}
-    for path in skeleton_paths():
+    for path in all_skeletons():
         front = frontmatter(path.read_text())
         title = front["title"]
         assert IDENTIFIER.match(title), (path.name, title)
@@ -370,5 +371,5 @@ def test_skeleton_titles_are_distinct_identifiers_and_object_equals_type():
         stem = path.stem.removesuffix(".sysml")
         owner = titles.setdefault(title, stem)
         assert owner == stem, f"{title} is used by both {owner} and {stem}"
-    declared = {ot["name"] for ot in object_types()} - set(SYSTEMS_TYPES)
+    declared = {ot["name"] for ot in object_types()}
     assert set(titles.values()) == declared

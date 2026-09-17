@@ -48,8 +48,8 @@ quire validate spec/**/*.md --module node_modules/@agent-ix/spec-objects-archite
 | Binary format | `binary_format` | A persisted binary layout defined by a required `Layout` section holding a YAML code block of record types with per-field name/offset/size/type/endianness. |
 | Part | `part` | A systems-model part (QSpec FR-152): one row of a required `Part` table naming its owner, declared type and multiplicity. |
 | Port | `port` | A port of a part: one row of a required `Port` table naming its owning part, direction (`in`/`out`/`inout`), interface and multiplicity. |
-| Connection | `connection` | A link between two ports: one row of a required `Connection` table naming its source and target ports and its direction. |
-| Allocation | `allocation` | An allocation of an element to a part: one row of a required `Allocation` table naming the source element and the target part. |
+| Connection | `connection` | A link between two ports: one row of a required `Connection` table naming its source and target ports, the optional multiplicity at each end, and its flow direction. |
+| Allocation | `allocation` | An allocation of an element to a part: one row of a required `Allocation` table naming the source element (an artifact id, or `<artifact id>/<member>` for an operation) and the target part. |
 
 ## How this module is used
 

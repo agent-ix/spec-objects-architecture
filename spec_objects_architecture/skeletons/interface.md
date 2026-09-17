@@ -10,7 +10,7 @@ object: interface
      - Frontmatter MUST carry id, title, type: interface, object: interface.
      - "## Operations" (H2): the AUTHORITY. One `### <name>` per operation
        with its parameter table and a `Returns:` line where it answers with a
-       value. Interface.json requires at least one operation.
+       value.
      - "## Contract" (H2, required): MUST contain a fenced ```yaml code block
        holding the language-neutral operations contract. It is the derived,
        human-facing view of the same declarations; FR-006 fixes the mapping
@@ -20,8 +20,9 @@ object: interface
        own FR linked via an `implements` relationship edge.
      - Boundary: `interface` covers contracts WITHIN the system; a contract
        with an external system is an `external_contract`.
-     - An interface declares calls, not state: Interface.json forbids
-       `fields`, so there is no "## Properties" section.
+     - An interface's features are fields and operations (QSpec FR-152,
+       FR-208), ordered as one sequence across both; Interface.json admits
+       `fields` and `operations` and requires `featureOrder`.
      - Keep headings unique per level. -->
 # [quant_codec] QuantCodec
 

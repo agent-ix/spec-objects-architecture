@@ -3,12 +3,23 @@
   "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/Interface.json",
   "type": "object",
   "properties": {
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/FieldDecl.json"
+      }
+    },
     "operations": {
       "type": "array",
       "items": {
         "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/OperationDecl.json"
-      },
-      "minItems": 1
+      }
+    },
+    "featureOrder": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Identifier.json"
+      }
     },
     "associated_types": {
       "type": "array",
@@ -30,10 +41,10 @@
     }
   },
   "required": [
-    "operations"
+    "featureOrder"
   ],
   "unevaluatedProperties": {
     "not": {}
   },
-  "description": "A contract within the system: the operations a component exposes or depends\non. `fields` is forbidden by the seal — an interface declares calls, not\nstate."
+  "description": "A contract within the system: its features, each a field or an operation\n(QSpec FR-152, FR-208). `featureOrder` orders the interface's own field and\noperation names as one sequence across both kinds of feature."
 }

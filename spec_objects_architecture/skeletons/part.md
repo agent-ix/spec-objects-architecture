@@ -18,9 +18,8 @@ object: part
        an "## Operations" section.
      - Every cell that names another declaration names it by its artifact
        `id` (its identity), never by title (QSpec FR-152: display names are
-       not identities).
-       Owners and ends are references, never part of this declaration's
-       identity.
+       not identities). Owners and ends are references, never part of this
+       declaration's identity.
      - Keep headings unique per level. -->
 # [scoring_engine] ScoringEngine
 

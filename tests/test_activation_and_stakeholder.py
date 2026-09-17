@@ -31,9 +31,10 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
-    declaration_skeletons,
+    all_skeletons,
     frontmatter,
     load_manifest,
+    validation_params,
 )
 
 # The filament-core-service module-manifest schema at revision `e33070e`
@@ -171,11 +172,11 @@ def test_the_agent_cli_generator_produces_artifacts_that_validate(
 ):
     """The generator criterion, discharged by a real generator run.
 
-    What this row counts: the thirteen FR-005 skeletons, each rendered by
-    `minijinja-cli` — the agent CLI generator StR-001 names — and then
-    validated through Quire against this module. A placeholder-free skeleton
-    renders to itself, so the row asserts both halves: the generator produces
-    the artifact byte-for-byte, and the artifact validates.
+    What this row counts: every shipped skeleton (the FR-005 set and the
+    FR-007 systems skeletons), each rendered by `minijinja-cli` — the agent
+    CLI generator StR-001 names. A placeholder-free skeleton renders to
+    itself, so this half asserts the generator produces the artifact
+    byte-for-byte; the companion test validates each rendered artifact.
 
     The row fails, never skips, when the generator is absent: a skipped row is
     not coverage.
@@ -189,17 +190,35 @@ def test_the_agent_cli_generator_produces_artifacts_that_validate(
         )
     context = tmp_path / "context.json"
     context.write_text("{}\n")
-    for path in declaration_skeletons():
-        run = subprocess.run(
-            [generator, str(path), str(context)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        assert run.returncode == 0, (path.name, run.stderr)
-        rendered = run.stdout
-        assert rendered == path.read_text(), path.name
-        result = quire_engine.validate_document(
-            frontmatter(rendered)["type"], str(PACKAGE_ROOT), rendered
-        )
-        assert result["is_valid"], (path.name, result["errors"])
+    skeletons = all_skeletons()
+    assert len(skeletons) == 17
+    for path in skeletons:
+        assert _render(generator, path, context) == path.read_text(), path.name
+
+
+def _render(generator, path, context) -> str:
+    run = subprocess.run(
+        [generator, str(path), str(context)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 0, (path.name, run.stderr)
+    return run.stdout
+
+
+@pytest.mark.trace("TC-006", "StR-001-VC-2")
+@pytest.mark.parametrize("path", validation_params(all_skeletons()))
+def test_each_generated_artifact_validates(quire_engine, tmp_path, path):
+    """The validate half of the generator criterion, per rendered skeleton. A
+    skeleton with a named defect (conftest `validation_gap`) is a strict
+    expected failure, never a skip."""
+    generator = shutil.which("minijinja-cli")
+    assert generator is not None, "minijinja-cli is not on PATH"
+    context = tmp_path / "context.json"
+    context.write_text("{}\n")
+    rendered = _render(generator, path, context)
+    result = quire_engine.validate_document(
+        frontmatter(rendered)["type"], str(PACKAGE_ROOT), rendered
+    )
+    assert result["is_valid"], (path.name, result["errors"])
