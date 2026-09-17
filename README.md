@@ -1,6 +1,6 @@
 # spec-objects-architecture
 
-> Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format)
+> Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format, part, port, connection, allocation)
 
 This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/agent-ix/quire-cli) and [`quoin`](https://github.com/agent-ix/quoin). It provides tier-2 embedded `object_types` — a `manifest.yaml` plus per-kind authoring `skeletons/` used to author and validate Markdown spec artifacts.
 
@@ -46,6 +46,10 @@ quire validate spec/**/*.md --module node_modules/@agent-ix/spec-objects-archite
 | External contract | `external_contract` | A contract with a system *outside* this one, with a required `Contract` section plus optional `Endpoints` and `Behavior` sections for the consumed/exposed surface and interaction semantics. |
 | Extension point | `extension_point` | First-class pluggability: a required `Contract` section naming the interface it exposes, plus optional `Registration` and `Stability` sections for discovery and compatibility guarantees. |
 | Binary format | `binary_format` | A persisted binary layout defined by a required `Layout` section holding a YAML code block of record types with per-field name/offset/size/type/endianness. |
+| Part | `part` | A systems-model part (QSpec FR-152): one row of a required `Part` table naming its owner, declared type and multiplicity. |
+| Port | `port` | A port of a part: one row of a required `Port` table naming its owning part, direction (`in`/`out`/`inout`), interface and multiplicity. |
+| Connection | `connection` | A link between two ports: one row of a required `Connection` table naming its source and target ports and its direction. |
+| Allocation | `allocation` | An allocation of an element to a part: one row of a required `Allocation` table naming the source element and the target part. |
 
 ## How this module is used
 

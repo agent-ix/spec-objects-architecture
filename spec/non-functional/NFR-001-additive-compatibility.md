@@ -19,19 +19,26 @@ relationships:
 
 The module SHALL keep every artifact of the checked-in 0.2.0 skeleton set —
 the ten skeletons as they stood at manifest version 0.2.0, which is the
-population this NFR measures — validating against version 0.3.0 with at most
+population this NFR measures — validating against version 0.4.0 with at most
 warning-level semantic findings.
 
 The module SHALL keep every 0.2.0 `body_extraction` locator definition
-unchanged at 0.3.0.
+unchanged at 0.4.0.
 
 The module SHALL keep the fence and section text those locators yield
-byte-identical between the two versions. Yields of locators added at 0.3.0 are
+byte-identical between the two versions. Yields of locators added at 0.4.0 are
 unmeasured and are not claimed.
 
-The module SHALL keep every object type's `allowed_links` and `roles` sets
-unchanged at 0.3.0, because a changed edge vocabulary would change the graph
-the corpus already carries.
+The module SHALL keep every 0.2.0 object type's `allowed_links` set unchanged
+at 0.4.0, because a changed edge vocabulary would change the graph the corpus
+already carries.
+
+The module SHALL keep every 0.2.0 object type's `roles` set unchanged at 0.4.0
+except for one named addition: `interface` gains the role `systems-interface`
+after its 0.2.0 roles ([FR-007](../functional/FR-007-systems-model-kinds.md)),
+so a systems port can name the interface it is typed by. A role addition
+changes no edge the corpus carries: it only widens the targets a new object
+type's `allowed_links` may name.
 
 ## Scope
 
@@ -67,18 +74,18 @@ needs controlled-corpus evidence.
 | Metric | Target | Threshold | Method |
 |--------|--------|-----------|--------|
 | 0.2.0 locators changed | 0 | 0 | Test |
-| Checked-in 0.2.0 skeleton set under 0.3.0: error findings, per skeleton | 0 | 0 | Test |
+| Checked-in 0.2.0 skeleton set under 0.4.0: error findings, per skeleton | 0 | 0 | Test |
 | `semantic.legacy-properties-form` warnings over the ten checked-in 0.2.0 skeletons | 0 | 0 | Test |
 | 0.2.0 skeletons carrying a `## Properties` section in any form (the population the warning could fire on) | 0 | 0 | Test |
-| 0.2.0 locator yield per 0.2.0 skeleton, 0.2.0 vs 0.3.0 | identical | identical | Test |
-| Object types whose `allowed_links` or `roles` set changed | 0 | 0 | Test |
+| 0.2.0 locator yield per 0.2.0 skeleton, 0.2.0 vs 0.4.0 | identical | identical | Test |
+| 0.2.0 object types whose `allowed_links` set changed, or whose `roles` set differs from 0.2.0 plus the named `interface` addition | 0 | 0 | Test |
 
 ## Verification
 
 NFR-001-AC-2 holds on the population this NFR measures, and the measurement
 says why: no 0.2.0 skeleton carries a frontmatter `object:` key, so Quire runs
 headings-only validation on it and never assembles or checks a typed record.
-That is what makes 0.3.0 additive for the artifacts that exist today, and it
+That is what makes 0.4.0 additive for the artifacts that exist today, and it
 is asserted rather than assumed.
 
 The engine defect behind it is real but differently scoped: once a legacy-form
@@ -103,20 +110,21 @@ carry bullet-list Properties sections; copying its "exactly one warning"
 target here would have been a green row over nothing.
 
 A checked-in copy of the 0.2.0 `body_extraction`, the 0.2.0 edge vocabulary,
-and all ten 0.2.0 skeletons is compared against the 0.3.0 manifest and
+and all ten 0.2.0 skeletons is compared against the 0.4.0 manifest and
 validated under it: the locator definitions are equal, each skeleton validates
 with no error and no legacy-form warning, each 0.2.0 locator yield is
-unchanged, and no `allowed_links` or `roles` set moved.
+unchanged, no `allowed_links` set moved, and the only `roles` change is the
+named `interface` addition.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| NFR-001-AC-1 | Every 0.2.0 `body_extraction` locator is present in 0.3.0 with identical facets (0 changed). | Test |
-| NFR-001-AC-2 | Every skeleton of the checked-in 0.2.0 set validates under 0.3.0 with 0 error findings. | Test |
+| NFR-001-AC-1 | Every 0.2.0 `body_extraction` locator is present in 0.4.0 with identical facets (0 changed). | Test |
+| NFR-001-AC-2 | Every skeleton of the checked-in 0.2.0 set validates under 0.4.0 with 0 error findings. | Test |
 | NFR-001-AC-3 | No 0.2.0 skeleton carries a `## Properties` section in any form, and the `semantic.legacy-properties-form` warning count over the ten of them is 0. | Test |
-| NFR-001-AC-4 | Each 0.2.0 locator's yield for each 0.2.0 skeleton is byte-identical under 0.2.0 and 0.3.0. | Test |
-| NFR-001-AC-5 | Every object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.3.0. | Test |
+| NFR-001-AC-4 | Each 0.2.0 locator's yield for each 0.2.0 skeleton is byte-identical under 0.2.0 and 0.4.0. | Test |
+| NFR-001-AC-5 | Every 0.2.0 object type's `allowed_links` set is identical at 0.2.0 and 0.4.0, and its `roles` set is identical except that `interface` gains exactly `systems-interface`, appended. | Test |
 
 ## Dependencies
 

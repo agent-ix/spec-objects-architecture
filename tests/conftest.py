@@ -64,6 +64,19 @@ OBJECT_TYPES = (
     "rate_limit",
 )
 
+#: The QSpec FR-152 systems-model kinds this module adds as object types
+#: (FR-007). `interface` is the fifth kind and is already in OBJECT_TYPES.
+SYSTEMS_TYPES = ("part", "port", "connection", "allocation")
+
+#: The five FR-152 kinds, in FR-152's kind-mapping order.
+SYSTEMS_KINDS = ("interface", "part", "port", "connection", "allocation")
+
+#: Every exported object type, in manifest `semantic.exports` order.
+EXPORTS = OBJECT_TYPES + SYSTEMS_TYPES
+
+#: The quire-rs issue that owns lowering the systems tables into the record.
+SYSTEMS_EXTRACTION_ISSUE = "agent-ix/quire-rs#446"
+
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",
     "data_schema": "DataSchema",
@@ -75,6 +88,10 @@ MODEL_OF = {
     "extension_point": "ExtensionPoint",
     "binary_format": "BinaryFormat",
     "rate_limit": "RateLimit",
+    "part": "Part",
+    "port": "Port",
+    "connection": "Connection",
+    "allocation": "Allocation",
 }
 
 SUPPORT_MODELS = (
@@ -99,6 +116,8 @@ SUPPORT_MODELS = (
     "Threshold",
     "LimitScope",
     "ExceedResponse",
+    "PortDirection",
+    "ConnectionDirection",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.
@@ -153,6 +172,26 @@ def frontmatter(markdown: str) -> dict[str, Any]:
     return yaml.safe_load(match.group(1))
 
 
+def is_systems_skeleton(path: pathlib.Path) -> bool:
+    """A skeleton of an FR-007 systems type (FR-005 governs the others)."""
+    return path.stem in SYSTEMS_TYPES
+
+
+def declaration_skeletons() -> list[pathlib.Path]:
+    """The FR-005 skeleton set: every shipped skeleton except the four FR-007
+    systems skeletons, whose records the engine cannot yet assemble
+    (agent-ix/quire-rs#446)."""
+    return [
+        path
+        for path in sorted(SKELETONS_DIR.glob("*.md"))
+        if not is_systems_skeleton(path)
+    ]
+
+
+def systems_skeletons() -> list[pathlib.Path]:
+    return [SKELETONS_DIR / f"{name}.md" for name in SYSTEMS_TYPES]
+
+
 def sha256_of(path: pathlib.Path) -> str:
     return f"sha256:{hashlib.sha256(path.read_bytes()).hexdigest()}"
 
@@ -201,7 +240,8 @@ def semantic_module(semantic_block: dict[str, Any]) -> dict[str, Any]:
 
 @pytest.fixture(scope="session")
 def skeletons() -> list[pathlib.Path]:
-    return sorted(SKELETONS_DIR.glob("*.md"))
+    """The FR-005 skeleton set (see `declaration_skeletons`)."""
+    return declaration_skeletons()
 
 
 @pytest.fixture(scope="session")

@@ -13,3 +13,4 @@ description: "Index of artifacts in this directory."
 * [FR-004: Give every architecture object type a role-distinct declaration schema](./FR-004-role-schemas.md)
 * [FR-005: Make every skeleton an executable typed fixture](./FR-005-executable-skeletons.md)
 * [FR-006: Fix the three architecture-specific lowerings the module owns](./FR-006-architecture-lowerings.md)
+* [FR-007: Declare the systems-model kinds as object types with construct declarations](./FR-007-systems-model-kinds.md)

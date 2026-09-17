@@ -31,17 +31,18 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
+    declaration_skeletons,
     frontmatter,
     load_manifest,
 )
 
-# The filament-core-service module-manifest schema at revision `a77f31e`
-# (CR-003, the revision that admits the `semantic` block and the reference-form
-# `data_schema`), vendored byte-identically by Quoin and Quire. FR-001, FR-003
-# and IT-001 all judge this manifest against this one revision.
+# The filament-core-service module-manifest schema at revision `e33070e`
+# (CR-004, the revision that adds `ObjectTypeEntry.construct` on top of the
+# CR-003 `semantic` block and reference-form `data_schema`). FR-001, FR-003,
+# FR-007 and IT-001 all judge this manifest against this one revision.
 VENDORED_SCHEMA = REPO_ROOT / "tests" / "fixtures" / "module-manifest.schema.json"
 VENDORED_SCHEMA_DIGEST = (
-    "69cf9738600e7d8daa45ed5cd7231b17ca8dc58d068bd36af9b0d2c9b69dcbbc"
+    "6782f74f453095ec57abdeb6cf31fa993a4d5d27946d1baff9a7a2dff0647293"
 )
 
 FILAMENT_CORE_URL = os.environ.get("FILAMENT_CORE_URL")
@@ -59,7 +60,7 @@ needs_filament_core = pytest.mark.skipif(
 def test_the_vendored_fr035_schema_is_the_pinned_revision():
     digest = hashlib.sha256(VENDORED_SCHEMA.read_bytes()).hexdigest()
     assert digest == VENDORED_SCHEMA_DIGEST, (
-        "the vendored module-manifest schema is not the a77f31e revision the "
+        "the vendored module-manifest schema is not the e33070e revision the "
         "spec pins; FR-001 and FR-003 would judge the manifest against "
         "different schemas"
     )
@@ -170,7 +171,7 @@ def test_the_agent_cli_generator_produces_artifacts_that_validate(
 ):
     """The generator criterion, discharged by a real generator run.
 
-    What this row counts: the thirteen shipped skeletons, each rendered by
+    What this row counts: the thirteen FR-005 skeletons, each rendered by
     `minijinja-cli` — the agent CLI generator StR-001 names — and then
     validated through Quire against this module. A placeholder-free skeleton
     renders to itself, so the row asserts both halves: the generator produces
@@ -188,7 +189,7 @@ def test_the_agent_cli_generator_produces_artifacts_that_validate(
         )
     context = tmp_path / "context.json"
     context.write_text("{}\n")
-    for path in sorted(SKELETONS_DIR.glob("*.md")):
+    for path in declaration_skeletons():
         run = subprocess.run(
             [generator, str(path), str(context)],
             capture_output=True,

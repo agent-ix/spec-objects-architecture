@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/ReturningOperation.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ReturningOperation.json",
   "type": "object",
   "properties": {
     "returns": {

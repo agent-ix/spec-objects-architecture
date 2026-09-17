@@ -20,7 +20,7 @@ using AgentIx.Semantic.Core;
  * this base and `manifest.yaml`'s `version` in one commit and re-runs
  * `make schemas`.
  */
-@jsonSchema("https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/")
+@jsonSchema("https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/")
 namespace AgentIx.SpecObjects.Architecture;
 
 // ---------------------------------------------------------------------------
@@ -51,6 +51,23 @@ model GuaranteedOperation {
 // ---------------------------------------------------------------------------
 // Closed architecture vocabularies
 // ---------------------------------------------------------------------------
+
+/** The flow direction a systems port declares (QSpec FR-152). */
+enum PortDirection {
+  in,
+  out,
+  inout,
+}
+
+/**
+ * The direction a systems connection declares between its source and target
+ * port ends (QSpec FR-152). `undirected` is never a connection direction.
+ */
+enum ConnectionDirection {
+  sourceToTarget: "source-to-target",
+  targetToSource: "target-to-source",
+  bidirectional: "bidirectional",
+}
 
 /** HTTP methods a route may declare. */
 enum HttpMethod {
@@ -393,5 +410,59 @@ model RateLimit {
 
   thresholds?: Threshold[];
   throttles?: SemanticId[];
+  ...Record<never>;
+}
+
+// ---------------------------------------------------------------------------
+// Systems-model declaration records (FR-007; QSpec FR-152)
+// ---------------------------------------------------------------------------
+//
+// One record per systems kind QSpec FR-152 binds, carrying exactly the members
+// FR-152's kind table states beyond the declaration key (the artifact id).
+// `interface` is the existing `Interface` model above. Every member is
+// required: it is the kind's identity and constraints, not a profile key.
+
+/**
+ * A part: a typed, multiplicity-bearing member of its owning composite type.
+ * `fields` and `operations` are forbidden by the seal.
+ */
+model Part {
+  owner: SemanticId;
+  declaredType: TypeRef;
+  multiplicity: Multiplicity;
+  ...Record<never>;
+}
+
+/**
+ * A port of a part: its owning part, flow direction, interface type (an
+ * interface declaration) and multiplicity. `fields` and `operations` are
+ * forbidden by the seal.
+ */
+model Port {
+  owner: SemanticId;
+  direction: PortDirection;
+  interfaceType: TypeRef;
+  multiplicity: Multiplicity;
+  ...Record<never>;
+}
+
+/**
+ * A connection between two port ends with a declared direction. `fields` and
+ * `operations` are forbidden by the seal.
+ */
+model Connection {
+  sourceEnd: SemanticId;
+  targetEnd: SemanticId;
+  direction: ConnectionDirection;
+  ...Record<never>;
+}
+
+/**
+ * An allocation of a source element (a part, a port or an operation) to a
+ * target element (a part). `fields` and `operations` are forbidden by the seal.
+ */
+model Allocation {
+  sourceElement: SemanticId;
+  targetElement: SemanticId;
   ...Record<never>;
 }

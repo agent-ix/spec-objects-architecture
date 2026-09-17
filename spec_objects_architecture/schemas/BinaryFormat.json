@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/BinaryFormat.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/BinaryFormat.json",
   "type": "object",
   "properties": {
     "clauses": {
@@ -13,11 +13,11 @@
     "records": {
       "type": "array",
       "items": {
-        "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/RecordLayout.json"
+        "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/RecordLayout.json"
       }
     },
     "endianness": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/Endianness.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/Endianness.json"
     },
     "serializes": {
       "type": "array",

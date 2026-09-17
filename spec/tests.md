@@ -15,6 +15,8 @@ relationships:
     type: covers
   - target: "ix://agent-ix/spec-objects-architecture/FR-006"
     type: covers
+  - target: "ix://agent-ix/spec-objects-architecture/FR-007"
+    type: covers
   - target: "ix://agent-ix/spec-objects-architecture/NFR-001"
     type: covers
 ---
@@ -28,15 +30,15 @@ schemas (US-001, FR-002..FR-006, NFR-001, IT-002). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **141/141 rows backed
-(100%)**: 79 `TC-` rows from the Test Case Summary below plus 62 criterion
+What the numbers count. `quire coverage` reports **158/158 rows backed
+(100%)**: 88 `TC-` rows from the Test Case Summary below plus 70 criterion
 rows minted from the requirements (4 FR-001, 10 FR-002, 8 FR-003, 16 FR-004,
-10 FR-005, 6 FR-006, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
+10 FR-005, 6 FR-006, 8 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is
 a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **163 passed, 7 skipped, 4 xfailed**. The 7 skips are the
+reports **220 passed, 7 skipped, 8 xfailed**. The 7 skips are the
 environment-gated rows (4 need a running `filament-core-service`, 3 are the
-opt-in Quoin roundtrip, which was run separately and passed); the 4 xfails are
+opt-in Quoin roundtrip, which was run separately and passed); the 8 xfails are
 the expected failures named under Test Environment. No row is green because a
 test was skipped.
 
@@ -73,6 +75,7 @@ test was skipped.
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
+| FR-007 | FR-007-AC-1..8, FR-007-CON-1 | TC-100..TC-108 | ✅ skeleton validation is an expected failure on quire-rs#446 |
 
 ### Non-Functional Requirement Coverage
 
@@ -98,7 +101,7 @@ test was skipped.
 | TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
 | TC-006 | `minijinja-cli` renders every shipped skeleton and each rendered artifact validates against this module | Integration | P2 | StR-001-VC-2 | ✅ |
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
-| TC-010 | Emitted set equals the ten object-type models plus the declared support models; `toolchain.json` records compiler and emitter 1.15.0 | Unit | P0 | FR-002-AC-1 | ✅ |
+| TC-010 | Emitted set equals the fourteen object-type models plus the declared support models; `toolchain.json` records compiler and emitter 1.15.0 | Unit | P0 | FR-002-AC-1 | ✅ |
 | TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name under the manifest-version base | Unit | P0 | FR-002-AC-2 | ✅ |
 | TC-012 | Every `$ref` resolves to a shipped sibling or semantic-core 0.1.0 | Unit | P0 | FR-002-AC-3 | ✅ |
 | TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema or digest | Integration | P1 | FR-002-AC-4 | ✅ |
@@ -108,15 +111,15 @@ test was skipped.
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency, exact toolchain pins in `package.json` | Static | P2 | FR-002-CON-2 | ✅ |
 | TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (npm.ix) | Unit | P2 | FR-002-CON-4 | ✅ |
-| TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the ten types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
+| TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
 | TC-021 | Every exported type's `data_schema` is the reference form whose file hashes to the recorded digest | Unit | P0 | FR-003-AC-2 | ✅ |
 | TC-022 | Every 0.2.0 locator is unchanged against the checked-in baseline | Unit | P0 | FR-003-AC-3 | ✅ |
 | TC-023 | Every added locator is `required: false` | Unit | P1 | FR-003-AC-3, FR-003-CON-2 | ✅ |
-| TC-024 | `quire.Registry.load_from` lists all ten archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
+| TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-026 | An unknown `semantic` key and an altered digest are each refused by the loader; the refusal names the key or path | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
 | TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
-| TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.3.0 | Unit | P1 | FR-003-AC-7 | ✅ |
+| TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0 | Unit | P1 | FR-003-AC-7 | ✅ |
 | TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1 | ✅ |
 | TC-031 | Api endpoint: a returning operation validates; the return removed fails; `fields` fails | Integration | P0 | FR-004-AC-2 | ✅ |
 | TC-032 | Data schema: one field validates; empty `fields` fails; `operations` fails | Integration | P0 | FR-004-AC-3 | ✅ |
@@ -145,10 +148,10 @@ test was skipped.
 | TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1 | ✅ falsified three ways and restored: a `corpus/` probe, a `fixtures/semantic-module` probe and a `.gitmodules` each turn it red |
 | TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8 | ✅ |
 | TC-060 | Zero 0.2.0 locators changed | Unit | P0 | NFR-001-AC-1 | ✅ |
-| TC-061 | Every checked-in 0.2.0 skeleton validates under 0.3.0 with zero errors; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
+| TC-061 | Every checked-in 0.2.0 skeleton validates under 0.4.0 with zero errors; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
 | TC-062 | No 0.2.0 skeleton carries a `## Properties` section in any form, so the `semantic.legacy-properties-form` count over the ten of them is 0 | Integration | P1 | NFR-001-AC-3 | ✅ the measured population is empty, and the row asserts the emptiness rather than a warning the module cannot produce |
-| TC-063 | Each 0.2.0 locator's yield is identical under 0.2.0 and 0.3.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
-| TC-064 | Every object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.3.0 | Unit | P1 | NFR-001-AC-5 | ✅ |
+| TC-063 | Each 0.2.0 locator's yield is identical under 0.2.0 and 0.4.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
+| TC-064 | Every 0.2.0 object type's `allowed_links` set is identical at 0.2.0 and 0.4.0, and its `roles` set is identical except the named `interface` addition | Unit | P1 | NFR-001-AC-5 | ✅ |
 | TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ |
 | TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
@@ -168,8 +171,17 @@ test was skipped.
 | TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are byte-identical to 0.2.0 and still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1 | ✅ |
 | TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2 | ✅ |
 | TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
-| TC-090 | The Filament snapshot path refuses all ten reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
+| TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
 | TC-091 | The bundle index holds one entry per declaration id; a per-file index makes an alternate-bearing declaration ambiguous with itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ the per-file half is an expected failure on quire-rs#398 |
+| TC-100 | Each systems kind is an exported object type whose `data_schema` digest matches its model file | Unit | P0 | FR-007-AC-1 | ✅ |
+| TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; direction enums are closed | Unit | P0 | FR-007-AC-2 | ✅ |
+| TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3 | ✅ |
+| TC-103 | FR-035 violations name no `construct`; each construct binds its FR-208 meaning; references name declared roles only | Integration | P0 | FR-007-AC-4 | ✅ |
+| TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5 | ✅ |
+| TC-105 | Each systems skeleton has an underscore id and extracts one row with one cell per column | Integration | P1 | FR-007-AC-6 | ✅ |
+| TC-106 | Each systems skeleton fails validation with exactly one `semantic.record-invalid` error, pinned on quire-rs#446 | Integration | P1 | FR-007-AC-7 | ✅ pins the gap; the skeleton-validates assertion is an expected failure on quire-rs#446 |
+| TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
+| TC-108 | No systems schema or construct declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1 | ✅ |
 
 ## Test Environment
 
@@ -186,7 +198,11 @@ FR-035 schema refuses the `lexicon` block), TC-026 (`agent-ix/quire-rs#221`
 and `#394`, the refusal names nothing), TC-061 (`agent-ix/quire-rs#391`, a
 legacy form declaring `object:` validates as `{}`), and TC-091
 (`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
-ambiguous with itself).
+ambiguous with itself). The other four are the systems-model skeletons
+(`part`, `port`, `connection`, `allocation`) in the skeleton-validates test:
+each is a strict expected failure on `agent-ix/quire-rs#446`, which does not
+yet lower the systems table into the record, and TC-106 pins the one error
+each produces today.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only
@@ -224,6 +240,6 @@ independently of the status column.
 
 Five rows stay `🚧` and none of them is a coverage claim: TC-001 (the expected
 failure above), and TC-002, TC-003, TC-004 and TC-005, which need a running
-`filament-core-service` at revision `a77f31e` — no release tag contains it, so
+`filament-core-service` at revision `e33070e` — no release tag contains it, so
 this repository cannot provision one. That is issue #1's debt, carried
 forward.

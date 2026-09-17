@@ -21,6 +21,8 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
+    SYSTEMS_TYPES,
+    declaration_skeletons,
     frontmatter,
     locators,
     object_type,
@@ -49,7 +51,9 @@ TYPE_PREFIX = "ix://agent-ix/spec-objects-architecture/type/"
 
 
 def skeleton_paths() -> list:
-    return sorted(SKELETONS_DIR.glob("*.md"))
+    """The FR-005 skeleton set; the FR-007 systems skeletons are exercised in
+    `test_systems_kinds.py`."""
+    return declaration_skeletons()
 
 
 def extract(quire_engine, module, bundle, path):
@@ -366,5 +370,5 @@ def test_skeleton_titles_are_distinct_identifiers_and_object_equals_type():
         stem = path.stem.removesuffix(".sysml")
         owner = titles.setdefault(title, stem)
         assert owner == stem, f"{title} is used by both {owner} and {stem}"
-    declared = {ot["name"] for ot in object_types()}
+    declared = {ot["name"] for ot in object_types()} - set(SYSTEMS_TYPES)
     assert set(titles.values()) == declared

@@ -86,12 +86,20 @@ def test_no_baseline_locator_definition_changed():
 
 @pytest.mark.trace("TC-064", "NFR-001-AC-5")
 def test_no_object_type_changed_its_edge_vocabulary_or_roles():
+    """Every 0.2.0 `allowed_links` set is unchanged, and every 0.2.0 `roles`
+    set is unchanged except for the one addition NFR-001-AC-5 names:
+    `interface` gains `systems-interface` (FR-007), appended after its 0.2.0
+    roles, so a port can reference the interface it is typed by."""
+    added_roles = {"interface": ["systems-interface"]}
     baseline = json.loads((BASELINE_DIR / "edge_vocabulary.json").read_text())
     assert baseline["version"] == "0.2.0"
     for name, expected in baseline["object_types"].items():
         current = object_type(name)
         assert current.get("allowed_links") == expected["allowed_links"], name
-        assert current.get("roles") == expected["roles"], name
+        expected_roles = expected["roles"]
+        if name in added_roles:
+            expected_roles = (expected_roles or []) + added_roles[name]
+        assert current.get("roles") == expected_roles, name
 
 
 @pytest.mark.trace("TC-061", "NFR-001-AC-2")

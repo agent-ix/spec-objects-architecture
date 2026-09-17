@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/GuaranteedOperation.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/GuaranteedOperation.json",
   "type": "object",
   "properties": {
     "post": {

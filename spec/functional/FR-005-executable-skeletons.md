@@ -28,7 +28,9 @@ refuse.
 
 ## Inputs
 
-- The rewritten skeletons `skeletons/<type>.md` (one per object type) and the
+- The rewritten skeletons `skeletons/<type>.md` (one per FR-004 object type;
+  the systems-model skeletons are governed by
+  [FR-007](./FR-007-systems-model-kinds.md)) and the
   alternate-form skeletons `skeletons/data_schema.sysml.md`,
   `skeletons/queue.sysml.md`, `skeletons/ui_component.sysml.md`.
 - Negative fixtures `tests/fixtures/negative/<type>-<case>.md`, each with

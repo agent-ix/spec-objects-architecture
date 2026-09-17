@@ -12,8 +12,8 @@ import pytest
 import yaml
 
 from tests.conftest import (
+    EXPORTS,
     MANIFEST_PATH,
-    OBJECT_TYPES,
     SCHEMAS_DIR,
     SKELETONS_DIR,
     frontmatter,
@@ -65,9 +65,9 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
     quire_engine,
 ):
     """What this row counts: `semantic.data-schema-unresolved-reference`
-    diagnostics from `extract_filament_core` when the manifest's ten
+    diagnostics from `extract_filament_core` when the manifest's fourteen
     reference-form `data_schema` values are handed to it verbatim. The count is
-    ten — one per exported object type — and no object-type snapshot node is
+    fourteen — one per exported object type — and no object-type snapshot node is
     produced for any of them.
 
     This is quire-rs FR-069 behaving as specified ("the registry owner resolves
@@ -84,7 +84,7 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
         for d in result["diagnostics"]
         if d["code"] == "semantic.data-schema-unresolved-reference"
     ]
-    assert {d["objectType"] for d in refused} == set(OBJECT_TYPES)
+    assert {d["objectType"] for d in refused} == set(EXPORTS)
     assert all(d["severity"] == "error" for d in refused)
 
 
@@ -115,12 +115,14 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
         frontmatter(path.read_text())["id"]
         for path in sorted(SKELETONS_DIR.glob("*.md"))
     ]
-    assert len(per_file) == 13, per_file
-    assert len(set(per_file)) == len(OBJECT_TYPES)
+    # Seventeen files: the ten FR-005 declarations, their three alternates,
+    # and the four FR-007 systems skeletons.
+    assert len(per_file) == 17, per_file
+    assert len(set(per_file)) == len(EXPORTS)
 
     ids = [entry["id"] for entry in bundle_index["objects"]]
-    assert ids == sorted(set(per_file)), ids
-    assert len(ids) == len(OBJECT_TYPES)
+    assert sorted(ids) == sorted(set(per_file)), ids
+    assert len(ids) == len(EXPORTS)
 
 
 @pytest.mark.trace("TC-091", "FR-005-AC-10", "FR-005-CON-3")

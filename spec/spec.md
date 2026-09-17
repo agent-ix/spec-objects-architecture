@@ -43,8 +43,10 @@ share one authoritative definition of what the module activates against
 
 ### In Scope
 
-- The Module manifest (`spec_objects_architecture/manifest.yaml`) and the ten
-  tier-2 architecture ObjectTypes it contributes.
+- The Module manifest (`spec_objects_architecture/manifest.yaml`) and the fourteen
+  tier-2 architecture ObjectTypes it contributes, including the QSpec FR-152
+  systems-model kinds `part`, `port`, `connection` and `allocation` with
+  `construct:` declarations (FR-007).
 - The functional requirement that the manifest activates idempotently against
   `filament-core-service`, and the integration test that verifies it.
 - The semantic-module contract (issue #8): a TypeSpec source importing
@@ -59,6 +61,8 @@ share one authoritative definition of what the module activates against
 
 ### Out of Scope
 
+- Lowering the systems-model tables into typed record keys, which the
+  extraction engine owns (`agent-ix/quire-rs#446`).
 - The behaviour of `filament-core-service` itself, referenced here only by the
   relationship to its manifest schema (FR-035).
 - Deployment topology and cluster infrastructure, which live in the operating
@@ -118,8 +122,8 @@ share one authoritative definition of what the module activates against
 - Resolving a reference-form `data_schema` into a stored snapshot at
   activation: `agent-ix/filament-core-service#23`. Until it lands the service
   stores the reference verbatim, which is what FR-001-AC-4 asserts. The
-  consequence is measured rather than assumed: handed this manifest's ten
-  reference-form values verbatim, quire's Filament path answers ten
+  consequence is measured rather than assumed: handed this manifest's fourteen
+  reference-form values verbatim, quire's Filament path answers fourteen
   `semantic.data-schema-unresolved-reference` diagnostics at error severity
   and emits no object-type snapshot node, exactly as quire-rs FR-069
   specifies ("the registry owner resolves it before the snapshot is served").
@@ -151,7 +155,7 @@ share one authoritative definition of what the module activates against
 ### System Description
 
 `spec-objects-architecture` is a Python package that publishes a Filament
-Module manifest declaring ten tier-2 ObjectTypes for technical architecture
+Module manifest declaring fourteen tier-2 ObjectTypes for technical architecture
 modelling. The manifest is activated against `filament-core-service` over its
 HTTP API, which registers the declared archetypes, object types, grammars, and
 artifact types.

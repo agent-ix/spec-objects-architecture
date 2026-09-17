@@ -1,5 +1,5 @@
 ---
-id: interface-001
+id: quant_codec
 title: "QuantCodec"
 type: interface
 object: interface
@@ -23,7 +23,7 @@ object: interface
      - An interface declares calls, not state: Interface.json forbids
        `fields`, so there is no "## Properties" section.
      - Keep headings unique per level. -->
-# [interface-001] QuantCodec
+# [quant_codec] QuantCodec
 
 ## Contract
 

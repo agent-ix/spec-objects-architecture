@@ -18,9 +18,9 @@ import zipfile
 import pytest
 
 from tests.conftest import (
+    EXPORTS,
     MANIFEST_PATH,
     MODEL_OF,
-    OBJECT_TYPES,
     REPO_ROOT,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
@@ -78,14 +78,14 @@ def worktree_copy(tmp_path: pathlib.Path) -> pathlib.Path:
 
 
 @pytest.mark.trace("TC-010", "FR-002-AC-1")
-def test_emitted_set_is_the_thirtyone_files_the_toolchain_records():
+def test_emitted_set_is_the_thirtyseven_files_the_toolchain_records():
     record = toolchain()
     expected = sorted(
-        [f"{MODEL_OF[name]}.json" for name in OBJECT_TYPES]
+        [f"{MODEL_OF[name]}.json" for name in EXPORTS]
         + [f"{model}.json" for model in SUPPORT_MODELS]
     )
     assert sorted(record["files"]) == expected
-    assert len(expected) == 31
+    assert len(expected) == 37
     assert sorted(shipped_schemas()) == expected
     assert record["compiler"] == {"name": "@typespec/compiler", "version": "1.15.0"}
     assert record["emitter"] == {"name": "@typespec/json-schema", "version": "1.15.0"}
@@ -188,12 +188,12 @@ def test_the_built_wheel_and_sdist_carry_every_exported_schema(tmp_path):
     wheel = next(p for p in produced if p.suffix == ".whl")
     with zipfile.ZipFile(wheel) as archive:
         names = set(archive.namelist())
-    for name in OBJECT_TYPES:
+    for name in EXPORTS:
         assert f"spec_objects_architecture/schemas/{MODEL_OF[name]}.json" in names
     sdist = next(p for p in produced if p.name.endswith(".tar.gz"))
     with tarfile.open(sdist) as archive:
         members = {pathlib.PurePosixPath(m).parts[1:] for m in archive.getnames()}
-    for name in OBJECT_TYPES:
+    for name in EXPORTS:
         assert (
             "spec_objects_architecture",
             "schemas",
@@ -304,7 +304,7 @@ def test_the_npm_tarball_ships_the_schemas_beside_the_manifest(tmp_path):
     with tarfile.open(tarball) as archive:
         names = set(archive.getnames())
     assert "package/manifest.yaml" in names
-    for name in OBJECT_TYPES:
+    for name in EXPORTS:
         assert f"package/schemas/{MODEL_OF[name]}.json" in names
 
 

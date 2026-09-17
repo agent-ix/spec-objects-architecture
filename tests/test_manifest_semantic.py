@@ -13,6 +13,7 @@ import yaml
 
 from tests.conftest import (
     BASELINE_DIR,
+    EXPORTS,
     MODEL_OF,
     OBJECT_TYPES,
     PACKAGE_ROOT,
@@ -60,7 +61,7 @@ def test_the_semantic_block_carries_the_nine_admitted_keys_and_ten_exports(
     assert semantic_block["contract_version"] == "1.0.0"
     assert semantic_block["semantic_core"] == "0.1.0"
     assert semantic_block["package"] == "agent-ix/spec-objects-architecture"
-    assert semantic_block["exports"] == list(OBJECT_TYPES)
+    assert semantic_block["exports"] == list(EXPORTS)
     assert semantic_block["imports"] == {}
     assert semantic_block["targets"] == ["json-schema", "markdown"]
     assert semantic_block["mappings"] == ["typed-table", "sysml-fence", "ocl-clause"]
@@ -120,10 +121,10 @@ def test_the_prior_version_lexicon_block_is_byte_identical_now():
 
 
 @pytest.mark.trace("TC-024", "FR-003-AC-4")
-def test_the_registry_loads_all_ten_archetypes(quire_engine):
+def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
     registry = quire_engine.Registry.load_from([str(REPO_ROOT)])
     names = set(registry.archetype_names())
-    for name in OBJECT_TYPES:
+    for name in EXPORTS:
         assert name in names, f"{name} did not load from the module"
 
 

@@ -94,7 +94,7 @@ fails the build.
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-002-AC-1 | After `make schemas`, `spec_objects_architecture/schemas/` holds exactly the files `toolchain.json` lists — the ten object-type models of [FR-004](./FR-004-role-schemas.md) plus every support model that requirement declares — with compiler 1.15.0 and emitter 1.15.0 recorded. | Test |
+| FR-002-AC-1 | After `make schemas`, `spec_objects_architecture/schemas/` holds exactly the files `toolchain.json` lists — the ten object-type models of [FR-004](./FR-004-role-schemas.md) and the four of [FR-007](./FR-007-systems-model-kinds.md) plus every support model those requirements declare — with compiler 1.15.0 and emitter 1.15.0 recorded. | Test |
 | FR-002-AC-2 | Every shipped schema declares the 2020-12 `$schema` and the `$id` `https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<manifest version>/<Model>.json` matching its file name, with the version segment read from `manifest.yaml` rather than hard-coded. | Test |
 | FR-002-AC-3 | Every `$ref` across the shipped schemas resolves to a shipped sibling or to semantic-core `0.1.0`; a `$ref` to any other host or version is absent. | Test |
 | FR-002-AC-4 | `make schemas-check` on the committed tree exits zero; after one byte of any shipped schema or one manifest digest is changed, it exits non-zero naming that file. | Test |
