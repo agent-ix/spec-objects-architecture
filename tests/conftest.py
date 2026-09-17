@@ -92,6 +92,17 @@ INTERFACE_FEATURE_ORDER_REASON = (
     f"{INTERFACE_FEATURE_ORDER_ISSUE}"
 )
 
+#: The quire-rs issue that owns reading `Pre:`/`Post:` operation contract lines.
+#: An engine that does not read them extracts no `post` clause reference, so
+#: `ExternalContract.json` refuses the external contract skeleton and a dangling
+#: `Post:` is never reported.
+POST_LINES_ISSUE = "agent-ix/quire-rs#431"
+POST_LINES_REASON = (
+    "the installed engine does not read `Pre:`/`Post:` as operation contract "
+    "lines, so no operation carries a `post` clause reference; "
+    f"{POST_LINES_ISSUE}"
+)
+
 #: FR-003: an object id is a letter, then letters, digits and underscores.
 #: `typespec/main.tsp` states it once as `ObjectId`; the manifest's shared `id`
 #: locator carries it as a capturing `regex`.
@@ -291,6 +302,45 @@ def engine_lowers_feature_order() -> bool:
     )
 
 
+@functools.cache
+def engine_reads_post_lines() -> bool:
+    """agent-ix/quire-rs#431: the engine reads a `Post:` line under an operation
+    as a `post` clause reference."""
+    try:
+        import quire
+
+        record = quire.extract_semantic(
+            {
+                "markdown": (
+                    "---\nid: probe\ntitle: Probe\ntype: external_contract\n"
+                    "object: external_contract\n---\n# [probe] Probe\n\n"
+                    "## Invariants\n\n### Holds\n\n```ocl\ncontext Probe\n"
+                    "inv Holds:\n  true\n```\n\n## Operations\n\n### run\n\n"
+                    "Post: Holds\n"
+                ),
+                "module": {
+                    "contractVersion": "1.0.0",
+                    "semanticCore": "0.1.0",
+                    "package": "agent-ix/spec-objects-architecture",
+                    "exports": ["external_contract"],
+                },
+                "path": "spec/probe.md",
+                "bundle": {"package": "agent-ix/spec-objects-architecture"},
+            }
+        )
+    except Exception:  # noqa: BLE001 - an absent engine is reported by require_quire
+        return True
+    operations = record.get("operations") or []
+    return any(op.get("post") for op in operations)
+
+
+def post_lines_xfail():
+    """A strict xfail on an engine that does not read `Post:` lines."""
+    return pytest.mark.xfail(
+        condition=not engine_reads_post_lines(), strict=True, reason=POST_LINES_REASON
+    )
+
+
 def validation_gap(path: pathlib.Path) -> str | None:
     """The named defect that keeps a skeleton from validating with the
     installed engine, if any.
@@ -302,6 +352,8 @@ def validation_gap(path: pathlib.Path) -> str | None:
         return SYSTEMS_EXTRACTION_ISSUE_REASON
     if path.stem == "interface" and not engine_lowers_feature_order():
         return INTERFACE_FEATURE_ORDER_REASON
+    if path.stem == "external_contract" and not engine_reads_post_lines():
+        return POST_LINES_REASON
     return None
 
 

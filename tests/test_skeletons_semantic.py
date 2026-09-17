@@ -27,6 +27,7 @@ from tests.conftest import (
     locators,
     object_type,
     object_types,
+    post_lines_xfail,
     validation_params,
 )
 
@@ -155,6 +156,7 @@ def test_availability_states_match_each_type(
 
 
 @pytest.mark.trace("TC-065", "FR-005-AC-9")
+@post_lines_xfail()
 def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_demand(
     quire_engine, semantic_module, bundle_index
 ):
@@ -178,6 +180,7 @@ def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_dema
 
 
 @pytest.mark.trace("TC-054", "FR-005-AC-5")
+@post_lines_xfail()
 def test_every_negative_fixture_fails_for_its_own_reason(quire_engine):
     fixtures = sorted(NEGATIVE_DIR.glob("*.md"))
     # The ten cases FR-005 Behavior names, pinned by file so that deleting one

@@ -214,7 +214,18 @@ skeleton-validates test). Each of those expected failures is conditional on a
 probe of the installed engine (`engine_lowers_systems_tables`,
 `engine_lowers_feature_order` in `tests/conftest.py`), run on a minimal
 document rather than a shipped skeleton: against a wheel built from quire-rs
-PR #450 (`be37db9`) both probes hold and every one of those rows passes.
+PR #450 both probes hold and every one of those rows passes. A third probe,
+`engine_reads_post_lines`, checks that the engine reads a `Post:` line under an
+operation as a `post` clause reference; an engine that does not
+(`agent-ix/quire-rs#431`) carries strict expected failures on the
+`external_contract` skeleton validation rows (TC-006, TC-025, TC-050, and the
+untraced skeleton-validates test), TC-054 and TC-065. Operation contract lines
+are `Pre:` and `Post:`.
+
+Measured with `make test` on 2026-09-17: the `pypi.ix` quire 0.46.0 wheel
+gives 263 passed, 7 skipped, 17 xfailed; a wheel built from quire-rs main
+`724ad29` gives 257 passed, 7 skipped, 23 xfailed; a wheel built from quire-rs
+PR #450 `f7907ba` gives 270 passed, 7 skipped, 10 xfailed. None fails.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only
