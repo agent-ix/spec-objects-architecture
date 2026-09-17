@@ -2,7 +2,7 @@
 
 Each assertion compares two sections of one authored artifact: the kernel
 fence the 0.2.0 manifest already yields (`contract_yaml`, `schema_json`,
-`message_schema`) and the typed record the 0.3.0 semantic layer extracts.
+`message_schema`) and the typed record the current semantic layer extracts.
 Nothing here claims the engine performs the lowering — the engine-side
 mapping is `agent-ix/quoin#335` (FR-006-CON-2). The YAML/JSON side is parsed
 here; the typed side comes from `extract_semantic`.
@@ -190,7 +190,9 @@ def test_the_three_kernel_fence_locators_are_unchanged_and_still_yield(quire_eng
             "extraction"
         ]
         assert len(records) == 1, type_name
-        assert records[0][key].strip(), f"{type_name}.{key} yielded nothing at 0.3.0"
+        assert records[0][
+            key
+        ].strip(), f"{type_name}.{key} yielded nothing in the current module"
 
 
 @pytest.mark.trace("TC-086", "FR-006-CON-2")

@@ -31,17 +31,19 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
+    all_skeletons,
     frontmatter,
     load_manifest,
+    validation_params,
 )
 
-# The filament-core-service module-manifest schema at revision `a77f31e`
-# (CR-003, the revision that admits the `semantic` block and the reference-form
-# `data_schema`), vendored byte-identically by Quoin and Quire. FR-001, FR-003
-# and IT-001 all judge this manifest against this one revision.
+# The filament-core-service module-manifest schema at revision `e33070e`
+# (CR-004, the revision that adds `ObjectTypeEntry.construct` on top of the
+# CR-003 `semantic` block and reference-form `data_schema`). FR-001, FR-003,
+# FR-007 and IT-001 all judge this manifest against this one revision.
 VENDORED_SCHEMA = REPO_ROOT / "tests" / "fixtures" / "module-manifest.schema.json"
 VENDORED_SCHEMA_DIGEST = (
-    "69cf9738600e7d8daa45ed5cd7231b17ca8dc58d068bd36af9b0d2c9b69dcbbc"
+    "6782f74f453095ec57abdeb6cf31fa993a4d5d27946d1baff9a7a2dff0647293"
 )
 
 FILAMENT_CORE_URL = os.environ.get("FILAMENT_CORE_URL")
@@ -59,7 +61,7 @@ needs_filament_core = pytest.mark.skipif(
 def test_the_vendored_fr035_schema_is_the_pinned_revision():
     digest = hashlib.sha256(VENDORED_SCHEMA.read_bytes()).hexdigest()
     assert digest == VENDORED_SCHEMA_DIGEST, (
-        "the vendored module-manifest schema is not the a77f31e revision the "
+        "the vendored module-manifest schema is not the e33070e revision the "
         "spec pins; FR-001 and FR-003 would judge the manifest against "
         "different schemas"
     )
@@ -165,16 +167,14 @@ def test_a_shipped_skeleton_validates_against_the_module_the_service_serves(
 
 
 @pytest.mark.trace("TC-006", "StR-001-VC-2")
-def test_the_agent_cli_generator_produces_artifacts_that_validate(
-    quire_engine, tmp_path
-):
+def test_the_agent_cli_generator_renders_every_skeleton(quire_engine, tmp_path):
     """The generator criterion, discharged by a real generator run.
 
-    What this row counts: the thirteen shipped skeletons, each rendered by
-    `minijinja-cli` — the agent CLI generator StR-001 names — and then
-    validated through Quire against this module. A placeholder-free skeleton
-    renders to itself, so the row asserts both halves: the generator produces
-    the artifact byte-for-byte, and the artifact validates.
+    What this row counts: every shipped skeleton (the FR-005 set and the
+    FR-007 systems skeletons), each rendered by `minijinja-cli` — the agent
+    CLI generator StR-001 names. A placeholder-free skeleton renders to
+    itself, so this half asserts the generator produces the artifact
+    byte-for-byte; the companion test validates each rendered artifact.
 
     The row fails, never skips, when the generator is absent: a skipped row is
     not coverage.
@@ -188,17 +188,35 @@ def test_the_agent_cli_generator_produces_artifacts_that_validate(
         )
     context = tmp_path / "context.json"
     context.write_text("{}\n")
-    for path in sorted(SKELETONS_DIR.glob("*.md")):
-        run = subprocess.run(
-            [generator, str(path), str(context)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        assert run.returncode == 0, (path.name, run.stderr)
-        rendered = run.stdout
-        assert rendered == path.read_text(), path.name
-        result = quire_engine.validate_document(
-            frontmatter(rendered)["type"], str(PACKAGE_ROOT), rendered
-        )
-        assert result["is_valid"], (path.name, result["errors"])
+    skeletons = all_skeletons()
+    assert len(skeletons) == 17
+    for path in skeletons:
+        assert _render(generator, path, context) == path.read_text(), path.name
+
+
+def _render(generator, path, context) -> str:
+    run = subprocess.run(
+        [generator, str(path), str(context)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert run.returncode == 0, (path.name, run.stderr)
+    return run.stdout
+
+
+@pytest.mark.trace("TC-006", "StR-001-VC-2")
+@pytest.mark.parametrize("path", validation_params(all_skeletons()))
+def test_each_generated_artifact_validates(quire_engine, tmp_path, path):
+    """The validate half of the generator criterion, per rendered skeleton. A
+    skeleton with a named defect (conftest `validation_gap`) is a strict
+    expected failure, never a skip."""
+    generator = shutil.which("minijinja-cli")
+    assert generator is not None, "minijinja-cli is not on PATH"
+    context = tmp_path / "context.json"
+    context.write_text("{}\n")
+    rendered = _render(generator, path, context)
+    result = quire_engine.validate_document(
+        frontmatter(rendered)["type"], str(PACKAGE_ROOT), rendered
+    )
+    assert result["is_valid"], (path.name, result["errors"])

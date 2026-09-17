@@ -1,12 +1,12 @@
 ---
-id: negative-003
+id: negative_003
 title: "QueueWithoutPartitionKey"
 type: queue
 object: queue
 expect: semantic.record-invalid
 because: "Queue.json requires at least one identity field, the partition key"
 ---
-# [negative-003] QueueWithoutPartitionKey
+# [negative_003] QueueWithoutPartitionKey
 
 ## Properties
 

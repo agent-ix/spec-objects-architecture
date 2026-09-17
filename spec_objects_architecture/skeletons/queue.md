@@ -1,5 +1,5 @@
 ---
-id: queue-001
+id: queue_001
 title: "ArtifactIngestQueue"
 type: queue
 object: queue
@@ -16,7 +16,7 @@ object: queue
      - A queue carries messages, it does not expose calls: Queue.json forbids
        `operations`, so there is no "## Operations" section.
      - Keep headings unique per level. -->
-# [queue-001] ArtifactIngestQueue
+# [queue_001] ArtifactIngestQueue
 
 ## Properties
 

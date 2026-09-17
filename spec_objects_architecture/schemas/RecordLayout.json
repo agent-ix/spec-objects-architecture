@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/RecordLayout.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/RecordLayout.json",
   "type": "object",
   "properties": {
     "name": {
@@ -17,7 +17,7 @@
     "fields": {
       "type": "array",
       "items": {
-        "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/LayoutField.json"
+        "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/LayoutField.json"
       },
       "minItems": 1
     }

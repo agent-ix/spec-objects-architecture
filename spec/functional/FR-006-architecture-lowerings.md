@@ -22,7 +22,7 @@ The module SHALL fix the three lowerings its object types own — the
 `api_endpoint` operation params and returns to `TypeRef`s naming those
 records — and SHALL prove each by an agreement test between the kernel section
 and the typed section of the same artifact, so that the untyped fences the
-0.2.0 manifest yields and the typed record the 0.3.0 manifest yields describe
+0.2.0 manifest yields and the typed record the 0.4.0 manifest yields describe
 one declaration rather than two.
 
 ## Inputs
@@ -71,7 +71,7 @@ one declaration rather than two.
 | FR-006-AC-3 | Parsing the `queue` skeleton's `## Message Format` JSON fence yields the same key set as its extracted `fields[].name`. | Test |
 | FR-006-AC-4 | Every non-kernel `type.target` in the extracted `api_endpoint` record resolves under the skeleton bundle index to `ix://agent-ix/spec-objects-architecture/type/<Title>` of a shipped `data_schema` skeleton, with zero `semantic.unresolved-type` findings. | Test |
 | FR-006-AC-5 | An `api_endpoint` fixture whose return names a token no skeleton declares produces exactly one `semantic.unresolved-type` finding naming that token, and the target is the `ix://…/unresolved/<Token>` placeholder rather than a kernel scalar. | Test |
-| FR-006-AC-6 | The `contract_yaml`, `schema_json`, and `message_schema` locators are byte-identical to their 0.2.0 definitions, and each still yields its fence text at 0.3.0. | Test |
+| FR-006-AC-6 | The `contract_yaml`, `schema_json`, and `message_schema` locators are byte-identical to their 0.2.0 definitions, and each still yields its fence text at 0.4.0. | Test |
 
 ## Dependencies
 

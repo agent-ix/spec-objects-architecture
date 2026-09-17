@@ -7,4 +7,4 @@ description: "Index of artifacts in this directory."
 
 ## Contents
 
-* [NFR-001: Additive compatibility of the semantic contract](./NFR-001-additive-compatibility.md)
+* [NFR-001: Compatibility of the semantic contract](./NFR-001-additive-compatibility.md)

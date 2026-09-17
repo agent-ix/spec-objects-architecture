@@ -1,6 +1,6 @@
 # spec-objects-architecture
 
-> Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format)
+> Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format, part, port, connection, allocation)
 
 This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/agent-ix/quire-cli) and [`quoin`](https://github.com/agent-ix/quoin). It provides tier-2 embedded `object_types` — a `manifest.yaml` plus per-kind authoring `skeletons/` used to author and validate Markdown spec artifacts.
 
@@ -42,10 +42,14 @@ quire validate spec/**/*.md --module node_modules/@agent-ix/spec-objects-archite
 | Action | `action` | A discrete action/task defined by a required `Inputs` section listing every input it consumes, with type and source. |
 | UI component | `ui_component` | A frontend component defined by a required `Props` section enumerating every prop with name, type, and behavior. |
 | Rate limit | `rate_limit` | A throttling policy defined by a required `Thresholds` section listing the concrete limits, windows, and the response when a limit is exceeded. |
-| Interface | `interface` | A language-neutral operations contract *within* the system, defined by a required `Contract` section holding a YAML code block (name, types, operations, invariants). |
+| Interface | `interface` | A language-neutral operations contract *within* the system, defined by a required `Contract` section holding a YAML code block (name, types, operations, invariants), and a required `Features` table (`Feature \| Kind`) ordering its fields and operations. |
 | External contract | `external_contract` | A contract with a system *outside* this one, with a required `Contract` section plus optional `Endpoints` and `Behavior` sections for the consumed/exposed surface and interaction semantics. |
 | Extension point | `extension_point` | First-class pluggability: a required `Contract` section naming the interface it exposes, plus optional `Registration` and `Stability` sections for discovery and compatibility guarantees. |
 | Binary format | `binary_format` | A persisted binary layout defined by a required `Layout` section holding a YAML code block of record types with per-field name/offset/size/type/endianness. |
+| Part | `part` | A systems-model part (QSpec FR-152): one row of a required `Part` table naming its owner, declared type and multiplicity. |
+| Port | `port` | A port of a part: one row of a required `Port` table naming its owning part, direction (`in`/`out`/`inout`), interface and multiplicity. |
+| Connection | `connection` | A link between two ports: one row of a required `Connection` table naming its source and target ports, the optional multiplicity at each end, and its flow direction. |
+| Allocation | `allocation` | An allocation of an element to a part: one row of a required `Allocation` table naming the source element (an artifact id, or `<artifact id>/<member>` for an operation) and the target part. |
 
 ## How this module is used
 

@@ -15,17 +15,17 @@ relationships:
 The module **SHALL** publish a Filament Module manifest
 (`spec_objects_architecture/manifest.yaml`) that conforms to
 filament-core-service [FR-035](ix://agent-ix/filament-core-service/FR-035) at
-revision `a77f31e` and activates idempotently against
+revision `e33070e` and activates idempotently against
 `POST /api/v1/modules/activate`.
 
 ## Inputs
 
 - `manifest.yaml` (this repo's package).
 - The FR-035 module-manifest schema at `agent-ix/filament-core-service`
-  revision `a77f31e` (CR-003), which is the revision that admits the
-  `semantic` block and the reference-form `data_schema`, and the revision
-  Quoin and Quire each vendor byte-identically
-  (`sha256:69cf9738600e7d8daa45ed5cd7231b17ca8dc58d068bd36af9b0d2c9b69dcbbc`).
+  revision `e33070e` (CR-004), which admits the `semantic` block and the
+  reference-form `data_schema` (CR-003) and the `ObjectTypeEntry.construct`
+  declaration [FR-007](./FR-007-systems-model-kinds.md) uses
+  (`sha256:6782f74f453095ec57abdeb6cf31fa993a4d5d27946d1baff9a7a2dff0647293`).
   No release tag contains it. [FR-003](./FR-003-semantic-manifest-contract.md)
   names the same revision, so both requirements judge one schema.
 - Activation endpoint: `POST /api/v1/modules/activate`.

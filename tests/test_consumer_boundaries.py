@@ -12,8 +12,8 @@ import pytest
 import yaml
 
 from tests.conftest import (
+    EXPORTS,
     MANIFEST_PATH,
-    OBJECT_TYPES,
     SCHEMAS_DIR,
     SKELETONS_DIR,
     frontmatter,
@@ -50,7 +50,7 @@ def filament(quire_engine, object_types):
     return quire_engine.extract_filament_core(
         {
             "project_id": "spec-objects-architecture",
-            "document_id": "api-endpoint-001",
+            "document_id": "api_endpoint_001",
             "rel_path": str(path),
             "markdown": path.read_text(),
             "repo_name": "spec-objects-architecture",
@@ -65,9 +65,9 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
     quire_engine,
 ):
     """What this row counts: `semantic.data-schema-unresolved-reference`
-    diagnostics from `extract_filament_core` when the manifest's ten
+    diagnostics from `extract_filament_core` when the manifest's fourteen
     reference-form `data_schema` values are handed to it verbatim. The count is
-    ten — one per exported object type — and no object-type snapshot node is
+    fourteen — one per exported object type — and no object-type snapshot node is
     produced for any of them.
 
     This is quire-rs FR-069 behaving as specified ("the registry owner resolves
@@ -84,7 +84,7 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
         for d in result["diagnostics"]
         if d["code"] == "semantic.data-schema-unresolved-reference"
     ]
-    assert {d["objectType"] for d in refused} == set(OBJECT_TYPES)
+    assert {d["objectType"] for d in refused} == set(EXPORTS)
     assert all(d["severity"] == "error" for d in refused)
 
 
@@ -115,12 +115,14 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
         frontmatter(path.read_text())["id"]
         for path in sorted(SKELETONS_DIR.glob("*.md"))
     ]
-    assert len(per_file) == 13, per_file
-    assert len(set(per_file)) == len(OBJECT_TYPES)
+    # Seventeen files: the ten FR-005 declarations, their three alternates,
+    # and the four FR-007 systems skeletons.
+    assert len(per_file) == 17, per_file
+    assert len(set(per_file)) == len(EXPORTS)
 
     ids = [entry["id"] for entry in bundle_index["objects"]]
-    assert ids == sorted(set(per_file)), ids
-    assert len(ids) == len(OBJECT_TYPES)
+    assert sorted(ids) == sorted(set(per_file)), ids
+    assert len(ids) == len(EXPORTS)
 
 
 @pytest.mark.trace("TC-091", "FR-005-AC-10", "FR-005-CON-3")
@@ -128,10 +130,10 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
     strict=True,
     reason=(
         "A bundle index built one entry per document — which is what "
-        "`BundleIndex::from_documents` does — lists `data-schema-001` twice "
+        "`BundleIndex::from_documents` does — lists `data_schema_001` twice "
         "and then reports every reference to it as "
         '`semantic.ambiguous-type: type "ArtifactRecord" names '
-        "data-schema-001 and data-schema-001`, naming the same id on both "
+        "data_schema_001 and data_schema_001`, naming the same id on both "
         "sides. agent-ix/quire-rs#398 owns collapsing entries that share an "
         "id. The module keys its index by id, which is the correct "
         "construction; this row records that the engine does not yet."
@@ -151,7 +153,7 @@ def test_a_per_file_bundle_index_does_not_make_a_declaration_ambiguous_with_itse
             "markdown": path.read_text(),
             "module": semantic_module,
             "path": str(path),
-            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/api-endpoint-001",
+            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/api_endpoint_001",
             "bundle": {
                 "package": manifest["semantic"]["package"],
                 "objects": objects,

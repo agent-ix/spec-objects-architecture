@@ -30,6 +30,8 @@ import re
 import pytest
 import yaml
 
+from tests.conftest import validation_gap
+
 PKG_ROOT = pathlib.Path(__file__).resolve().parent.parent / "spec_objects_architecture"
 MANIFEST_PATH = PKG_ROOT / "manifest.yaml"
 SKELETONS_DIR = PKG_ROOT / "skeletons"
@@ -49,6 +51,10 @@ _REQUIRED_BODY_FIELDS = {
     "external_contract": {"contract"},
     "extension_point": {"contract"},
     "binary_format": {"layout_yaml"},
+    "part": {"part"},
+    "port": {"port"},
+    "connection": {"connection"},
+    "allocation": {"allocation"},
 }
 
 
@@ -69,8 +75,15 @@ def _match(ot: dict) -> dict:
     return (be.get("yield_pattern") or {}).get("match") or {}
 
 
+def _heading(loc: dict) -> str:
+    """The section a locator names: ``after_heading`` (``section_body``,
+    ``code_block``) or ``under_section`` (``table_row``)."""
+    return loc.get("after_heading") or loc["under_section"]
+
+
 def _body_locators(ot: dict) -> dict[str, dict]:
-    """Non-frontmatter locators (``section_body`` / ``code_block``)."""
+    """Non-frontmatter locators (``section_body`` / ``code_block`` /
+    ``table_row``)."""
     return {
         field: loc
         for field, loc in _match(ot).items()
@@ -196,9 +209,9 @@ def test_asserted_headings_present_at_level(name: str) -> None:
     ot = _object_type(name)
     headings = set(_skeleton_headings(_skeleton_text(name)))
     for field, loc in _body_locators(ot).items():
-        expected = (_locator_level(loc), loc["after_heading"])
+        expected = (_locator_level(loc), _heading(loc))
         assert expected in headings, (
-            f"{name}: asserted heading {loc['after_heading']!r} "
+            f"{name}: asserted heading {_heading(loc)!r} "
             f"(H{expected[0]}, locator {field!r}) absent from skeleton"
         )
 
@@ -233,8 +246,7 @@ def test_skeleton_headings_do_not_drift(name: str) -> None:
     contract knows nothing about."""
     ot = _object_type(name)
     asserted = {
-        (_locator_level(loc), loc["after_heading"])
-        for loc in _body_locators(ot).values()
+        (_locator_level(loc), _heading(loc)) for loc in _body_locators(ot).values()
     }
     asserted_levels = {lvl for lvl, _ in asserted}
     for lvl, text in _skeleton_headings(_skeleton_text(name)):
@@ -283,7 +295,16 @@ def _quire_doc_validator():
     return quire
 
 
-@pytest.mark.parametrize("name", _names(), ids=lambda n: n)
+def _validation_cases() -> list:
+    params = []
+    for name in _names():
+        reason = validation_gap(SKELETONS_DIR / f"{name}.md")
+        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
+        params.append(pytest.param(name, id=name, marks=marks))
+    return params
+
+
+@pytest.mark.parametrize("name", _validation_cases())
 def test_skeleton_validates_via_quire(name: str) -> None:
     """Each filled skeleton passes ``validate_document``.
 

@@ -1,5 +1,5 @@
 ---
-id: ui-component-001
+id: ui_component_001
 title: "ArtifactTable"
 type: ui_component
 object: ui_component
@@ -9,7 +9,7 @@ object: ui_component
      fence instead of the typed table (FR-005-AC-2). One artifact carries one
      form; the alternate is a separate file, never a second block in the same
      artifact. -->
-# [ui-component-001] ArtifactTable
+# [ui_component_001] ArtifactTable
 
 ## Properties
 

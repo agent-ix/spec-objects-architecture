@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/RouteDecl.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/RouteDecl.json",
   "type": "object",
   "properties": {
     "method": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/HttpMethod.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/HttpMethod.json"
     },
     "path": {
       "type": "string",

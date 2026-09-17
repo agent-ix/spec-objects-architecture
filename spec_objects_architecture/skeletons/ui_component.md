@@ -1,5 +1,5 @@
 ---
-id: ui-component-001
+id: ui_component_001
 title: "ArtifactTable"
 type: ui_component
 object: ui_component
@@ -15,7 +15,7 @@ object: ui_component
      - "## Props" (H2, required): the human-facing description of the same
        props, one bullet per row of the table.
      - Keep headings unique per level. -->
-# [ui-component-001] ArtifactTable
+# [ui_component_001] ArtifactTable
 
 ## Properties
 

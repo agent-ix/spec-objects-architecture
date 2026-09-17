@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/Threshold.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/Threshold.json",
   "type": "object",
   "properties": {
     "scope": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/LimitScope.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/LimitScope.json"
     },
     "metric": {
       "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Identifier.json"
@@ -18,7 +18,7 @@
       "minLength": 1
     },
     "on_exceeded": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/ExceedResponse.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ExceedResponse.json"
     }
   },
   "required": [

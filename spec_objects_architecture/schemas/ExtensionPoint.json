@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/ExtensionPoint.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ExtensionPoint.json",
   "type": "object",
   "properties": {
     "operations": {
@@ -21,10 +21,10 @@
       "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
     },
     "registration": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/RegistrationPolicy.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/RegistrationPolicy.json"
     },
     "stability": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/StabilityPolicy.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/StabilityPolicy.json"
     }
   },
   "required": [

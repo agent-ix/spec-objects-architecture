@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ObjectId.json",
+  "type": "string",
+  "pattern": "^[A-Za-z][A-Za-z0-9_]*$",
+  "description": "The id of an artifact whose type is one of this module's object types: a\nletter, then letters, digits and underscores. A hyphen is refused.\nArtifact-type ids such as `FR-100` are not object ids and are not governed\nby this pattern. The manifest's shared `id` locator carries the same\npattern, so Quire refuses a hyphenated object id at validation."
+}

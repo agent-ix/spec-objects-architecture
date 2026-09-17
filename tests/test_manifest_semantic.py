@@ -13,17 +13,24 @@ import yaml
 
 from tests.conftest import (
     BASELINE_DIR,
+    EXPORTS,
+    FIXTURES_DIR,
     MODEL_OF,
+    OBJECT_ID_LOCATOR_REGEX,
+    OBJECT_ID_PATTERN,
     OBJECT_TYPES,
     PACKAGE_ROOT,
     REPO_ROOT,
+    SCHEMAS_DIR,
     SKELETONS_DIR,
+    declaration_skeletons,
     frontmatter,
     load_manifest,
     locators,
     object_type,
     object_types,
     sha256_of,
+    validation_params,
 )
 
 ADMITTED_KEYS = {
@@ -60,11 +67,11 @@ def test_the_semantic_block_carries_the_nine_admitted_keys_and_ten_exports(
     assert semantic_block["contract_version"] == "1.0.0"
     assert semantic_block["semantic_core"] == "0.1.0"
     assert semantic_block["package"] == "agent-ix/spec-objects-architecture"
-    assert semantic_block["exports"] == list(OBJECT_TYPES)
+    assert semantic_block["exports"] == list(EXPORTS)
     assert semantic_block["imports"] == {}
     assert semantic_block["targets"] == ["json-schema", "markdown"]
     assert semantic_block["mappings"] == ["typed-table", "sysml-fence", "ocl-clause"]
-    assert semantic_block["compatibility_posture"] == "additive"
+    assert semantic_block["compatibility_posture"] == "strict"
     assert semantic_block["legacy_forms"] == "warning"
 
 
@@ -83,6 +90,21 @@ def test_every_exported_type_carries_the_reference_form_and_a_matching_digest():
         ), f"{ot['name']} still carries an inline data_schema"
 
 
+#: The one locator added after 0.2.0 as required: the interface feature order
+#: (FR-007), a break NFR-001 declares.
+REQUIRED_ADDITION = ("interface", "features")
+
+
+def facets_since_020(key: str, locator: dict) -> dict:
+    """A locator's facets as 0.2.0 recorded them: the FR-003 object id `regex`
+    on the `id` locator is the one facet added since, and it is checked on its
+    own (TC-111)."""
+    if key != "id":
+        return locator
+    assert locator["regex"] == OBJECT_ID_LOCATOR_REGEX
+    return {k: v for k, v in locator.items() if k != "regex"}
+
+
 @pytest.mark.trace("TC-022", "FR-003-AC-3")
 def test_every_020_locator_is_unchanged_against_the_checked_in_baseline():
     baseline = json.loads((BASELINE_DIR / "body_extraction.json").read_text())
@@ -92,8 +114,10 @@ def test_every_020_locator_is_unchanged_against_the_checked_in_baseline():
         old = (extraction or {})["yield_pattern"]["match"]
         new = (current or {})["yield_pattern"]["match"]
         for key, facets in old.items():
-            assert key in new, f"{name}.{key} was dropped at 0.3.0"
-            assert new[key] == facets, f"{name}.{key} changed facets at 0.3.0"
+            assert key in new, f"{name}.{key} was dropped from the current module"
+            assert (
+                facets_since_020(key, new[key]) == facets
+            ), f"{name}.{key} changed facets in the current module"
 
 
 @pytest.mark.trace("TC-023", "FR-003-AC-3", "FR-003-CON-2")
@@ -106,6 +130,9 @@ def test_every_locator_added_after_020_is_optional():
             if key in old:
                 continue
             added += 1
+            if (name, key) == REQUIRED_ADDITION:
+                assert facets.get("required") is True, f"{name}.{key}"
+                continue
             assert (
                 facets.get("required") is False
             ), f"{name}.{key} was added as required"
@@ -120,26 +147,24 @@ def test_the_prior_version_lexicon_block_is_byte_identical_now():
 
 
 @pytest.mark.trace("TC-024", "FR-003-AC-4")
-def test_the_registry_loads_all_ten_archetypes(quire_engine):
+def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
     registry = quire_engine.Registry.load_from([str(REPO_ROOT)])
     names = set(registry.archetype_names())
-    for name in OBJECT_TYPES:
+    for name in EXPORTS:
         assert name in names, f"{name} did not load from the module"
 
 
 @pytest.mark.trace("TC-025", "FR-003-AC-4")
+@pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
 def test_validate_document_reports_no_semantic_load_failure_for_any_skeleton(
-    quire_engine, skeletons
+    quire_engine, path
 ):
-    for path in skeletons:
-        text = path.read_text()
-        result = quire_engine.validate_document(
-            frontmatter(text)["type"], str(PACKAGE_ROOT), text
-        )
-        assert result["is_valid"], (path.name, result["errors"])
-        assert not [
-            e for e in result["errors"] if "semantic." in e["message"]
-        ], path.name
+    text = path.read_text()
+    result = quire_engine.validate_document(
+        frontmatter(text)["type"], str(PACKAGE_ROOT), text
+    )
+    assert result["is_valid"], (path.name, result["errors"])
+    assert not [e for e in result["errors"] if "semantic." in e["message"]], path.name
 
 
 @pytest.mark.trace("TC-026", "FR-003-AC-6")
@@ -201,3 +226,53 @@ def test_the_refusal_names_the_offending_key_and_path(quire_engine, tmp_path):
     with pytest.raises(quire_engine.QuireBaseError) as error:
         quire_engine.Registry.load_from([str(unknown)])
     assert "foo" in str(error.value)
+
+
+def _missing_id(kind: str) -> str:
+    return f"[{kind}] required 'id' (frontmatter_field(id)) is missing"
+
+
+@pytest.mark.trace("TC-111", "FR-003-AC-9")
+def test_the_id_pattern_is_stated_once_and_carried_by_every_id_locator(
+    schema_registry,
+):
+    object_id = json.loads((SCHEMAS_DIR / "ObjectId.json").read_text())
+    assert object_id["type"] == "string"
+    assert object_id["pattern"] == OBJECT_ID_PATTERN
+    base = json.loads((SCHEMAS_DIR / "ObjectFrontmatter.json").read_text())
+    assert base["properties"]["id"]["$ref"].endswith("/ObjectId.json")
+    assert set(base["required"]) == {"id", "title", "type"}
+    assert OBJECT_ID_LOCATOR_REGEX == f"^({OBJECT_ID_PATTERN[1:-1]})$"
+    for ot in object_types():
+        assert "frontmatter_schema_ref" not in ot, ot["name"]
+        loc = locators(ot)["id"]
+        assert loc["from"] == "frontmatter_field", ot["name"]
+        assert loc["regex"] == OBJECT_ID_LOCATOR_REGEX, ot["name"]
+        assert loc["required"] is True, ot["name"]
+    validator = schema_registry("ObjectFrontmatter")
+    documents = (
+        sorted(SKELETONS_DIR.glob("*.md"))
+        + sorted(FIXTURES_DIR.glob("[!b]*/*.md"))
+        + sorted(FIXTURES_DIR.glob("*.md"))
+    )
+    assert len(documents) > 17
+    for path in documents:
+        front = frontmatter(path.read_text())
+        assert list(validator.iter_errors(front)) == [], path
+    base_front = {"title": "Flow", "type": "interface"}
+    for good in ("Flow", "sys_pump", "queue_001", "a1"):
+        assert validator.is_valid({**base_front, "id": good}), good
+    for bad in ("queue-001", "sys-pump_1", "_flow", "1flow", ""):
+        assert not validator.is_valid({**base_front, "id": bad}), bad
+
+
+@pytest.mark.trace("TC-111", "FR-003-AC-9")
+def test_an_underscore_id_validates_and_a_hyphenated_id_is_refused(quire_engine):
+    text = (SKELETONS_DIR / "queue.md").read_text()
+    assert "id: queue_001\n" in text
+    assert quire_engine.validate_document("queue", str(PACKAGE_ROOT), text)["is_valid"]
+    hyphenated = text.replace("id: queue_001\n", "id: queue-001\n", 1)
+    result = quire_engine.validate_document("queue", str(PACKAGE_ROOT), hyphenated)
+    assert not result["is_valid"]
+    messages = [e["message"] for e in result["errors"]]
+    assert messages and set(messages) == {_missing_id("queue")}, messages

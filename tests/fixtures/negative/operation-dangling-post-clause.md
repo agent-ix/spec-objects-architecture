@@ -1,12 +1,12 @@
 ---
-id: negative-009
+id: negative_009
 title: "InterfaceWithDanglingPost"
 type: interface
 object: interface
 expect: semantic.dangling-clause-ref
 because: "a Pre:/Post: line names a clause id declared in the same artifact; this one names none"
 ---
-# [negative-009] InterfaceWithDanglingPost
+# [negative_009] InterfaceWithDanglingPost
 
 ## Contract
 
@@ -31,3 +31,9 @@ Score one payload.
 Returns: Decimal(18,9)[1..1]
 
 Post: NoSuchClause
+
+## Features
+
+| Feature | Kind |
+|---|---|
+| score | operation |

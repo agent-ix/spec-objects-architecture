@@ -58,7 +58,7 @@ The module directory `spec_objects_architecture/` from this branch, containing
 ## Expected Results
 
 The install succeeds with exit code 0, the module is listed, the derived
-package manifest names the ten exports, and the prior module state is
+package manifest names the fourteen exports, and the prior module state is
 restored. The test passes only when every per-step success criterion holds.
 
 ## Dependencies

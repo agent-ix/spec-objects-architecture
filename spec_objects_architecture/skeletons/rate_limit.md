@@ -1,5 +1,5 @@
 ---
-id: rate-limit-001
+id: rate_limit_001
 title: "ArtifactUploadRateLimit"
 type: rate_limit
 object: rate_limit
@@ -17,7 +17,7 @@ object: rate_limit
        forbids `fields` and `operations`, so there is neither a
        "## Properties" nor an "## Operations" section.
      - Keep headings unique per level. -->
-# [rate-limit-001] ArtifactUploadRateLimit
+# [rate_limit_001] ArtifactUploadRateLimit
 
 ## Thresholds
 

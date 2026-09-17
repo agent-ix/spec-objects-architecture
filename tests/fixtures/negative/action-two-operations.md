@@ -1,12 +1,12 @@
 ---
-id: negative-004
+id: negative_004
 title: "ActionWithTwoInvocations"
 type: action
 object: action
 expect: semantic.record-invalid
 because: "Action.json admits exactly one operation; two invocations make a process"
 ---
-# [negative-004] ActionWithTwoInvocations
+# [negative_004] ActionWithTwoInvocations
 
 ## Inputs
 

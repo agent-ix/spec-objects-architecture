@@ -11,7 +11,7 @@
     "name": "@agent-ix/semantic-core",
     "version": "0.1.0"
   },
-  "base": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.3.0/",
+  "base": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/",
   "normalization": {
     "name": "absolute-id-and-ref",
     "version": "1.0.0",
@@ -22,10 +22,14 @@
   },
   "files": [
     "Action.json",
+    "Allocation.json",
     "ApiEndpoint.json",
     "BinaryFormat.json",
     "CompatibilityWindow.json",
     "ConflictPolicy.json",
+    "Connection.json",
+    "ConnectionDirection.json",
+    "ConnectionEnd.json",
     "DataSchema.json",
     "DeliveryPolicy.json",
     "DeliverySemantics.json",
@@ -40,7 +44,12 @@
     "LayoutField.json",
     "LayoutType.json",
     "LimitScope.json",
+    "ObjectFrontmatter.json",
+    "ObjectId.json",
     "OrderingScope.json",
+    "Part.json",
+    "Port.json",
+    "PortDirection.json",
     "Queue.json",
     "RateLimit.json",
     "RecordLayout.json",
@@ -53,5 +62,5 @@
     "VersioningPolicy.json",
     "VersioningScheme.json"
   ],
-  "digest": "sha256:d56db46824b9c4d2a3508368202c2c04476cd41bb1a3af4281ca10009b6ca184"
+  "digest": "sha256:5c975c5d6027b0a14cd4e425971118dccd8733b7a12a7bb52b5ad10df749d541"
 }

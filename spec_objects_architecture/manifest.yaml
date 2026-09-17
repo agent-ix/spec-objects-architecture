@@ -1,7 +1,7 @@
 manifest_version: 1.0.0
 name: spec-objects-architecture
-version: 0.3.0
-description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit)'
+version: 0.4.0
+description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
 semantic:
   contract_version: 1.0.0
   semantic_core: 0.1.0
@@ -17,10 +17,14 @@ semantic:
   - extension_point
   - binary_format
   - rate_limit
+  - part
+  - port
+  - connection
+  - allocation
   imports: {}
   targets: [json-schema, markdown]
   mappings: [typed-table, sysml-fence, ocl-clause]
-  compatibility_posture: additive
+  compatibility_posture: strict
   legacy_forms: warning
 nav:
   category:
@@ -28,6 +32,22 @@ nav:
     label: Architecture
     icon: Network
     order: 52
+# FR-007: the edge verbs and roles the systems-model kinds (QSpec FR-152)
+# introduce. `specializes` is declared exactly as spec-objects-business
+# declares it, so a registry that loads both merges one definition; no other
+# verb or role here exists in spec-artifacts-iso or spec-objects-business. The
+# other verbs and roles this manifest uses are declared by spec-artifacts-iso.
+edge_types:
+  specializes: { description: "Generalization: the source type specializes the target type and inherits its declarations.", category: structural, inverse: generalizes }
+  owned_by: { description: "Systems element is owned by its owning type or part.", category: structural }
+  typed_by: { description: "Systems element is typed by a type or interface.", category: structural }
+  connects: { description: "Connection joins the ports at its source and target ends.", category: structural }
+  allocates: { description: "Allocation names its source element (part, port or operation).", category: realization }
+  allocated_to: { description: "Allocation names its target element (part).", category: realization }
+roles:
+  systems-part: { description: "A systems-model part (QSpec FR-152 Part)." }
+  systems-port: { description: "A systems-model port owned by a part (QSpec FR-152 Port)." }
+  systems-interface: { description: "An interface a systems port is typed by (QSpec FR-152 Interface)." }
 archetypes: []
 grammars: []
 artifact_types: []
@@ -47,14 +67,19 @@ object_types:
     realizes: [business-intent]
   data_schema:
     schema: schemas/ApiEndpoint.json
-    digest: sha256:b590a2bcfa6c1629b6a649712f19df10adb33b92f3a91a546739d661b37e2211
+    digest: sha256:1c2bd1a9191d6a75a3d07959214ddcc6fd8e499713e2b327652a40ef987c4cd3
   body_extraction:
     yield_pattern:
       match:
+        # FR-003: an object id uses underscores, never hyphens. The pattern
+        # equals `ObjectId` in typespec/main.tsp; a hyphenated id yields no
+        # value, so the required locator refuses it. Every object type shares
+        # this locator.
         id: &id001
           from: frontmatter_field
           path:
           - id
+          regex: ^([A-Za-z][A-Za-z0-9_]*)$
           required: true
         title: &id002
           from: frontmatter_field
@@ -89,7 +114,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/DataSchema.json
-    digest: sha256:641df42fa31f8725ad8cd81b368453579bdaa693df501a0996f1e1ab58d8cf71
+    digest: sha256:ef31619b12d13a10a9d4a56bab58c2eb5b4b6b72dcd0b45f180247071e5d6bc0
   body_extraction:
     yield_pattern:
       match:
@@ -112,7 +137,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/Queue.json
-    digest: sha256:b8814b4d51d400fa9c8f44e5ed100e2c61a67e2520dd28d548e8491c2d62333d
+    digest: sha256:2b6fc6c54d395a7f2823624a86177d0a582dccff57e06a0bde227603a05a93e8
   body_extraction:
     yield_pattern:
       match:
@@ -138,7 +163,7 @@ object_types:
     operates_on: [domain-object]
   data_schema:
     schema: schemas/Action.json
-    digest: sha256:c0eac80888e76c79d08789b772f1bc207947a46c3f2924d2fb9cdc81f3765039
+    digest: sha256:991db18bb82f1cda13c67a5a54d9b3e1dca7f82d924db0ef76caea99346f7f49
   body_extraction:
     yield_pattern:
       match:
@@ -163,7 +188,7 @@ object_types:
     realizes: [business-intent]
   data_schema:
     schema: schemas/UiComponent.json
-    digest: sha256:b2d1143a1bcfc2d712ead4998f2778eb0e67b8e152bb4144cb40c635609b13ef
+    digest: sha256:4aad931ce3828f4b238cfa258b085f7b574d0b4d1238adc16e105cbad7aded4c
   body_extraction:
     yield_pattern:
       match:
@@ -184,13 +209,31 @@ object_types:
 # 9 users. Internal contracts -> `interface`; external-system contracts
 # -> `external_contract`; service-client FRs -> relationship edges.
 - name: interface
-  roles: [externally-exposed]
+  roles: [externally-exposed, systems-interface]
   allowed_links:
     contains: [api_endpoint]
     references: [data_schema]
+    specializes: [interface]
+  # FR-007: the QSpec FR-152 Interface kind — its features are fields and
+  # operations, ordered as one sequence by `featureOrder`, which the
+  # `## Features` table carries in row order (quire-rs FR-075, #448). Meaning
+  # id from agent-ix/quire-specification#86 (FR-208).
+  construct:
+    identity: none
+    shape: interface
+    members:
+      featureOrder: required
+      fields: optional
+      operations: optional
+      supertypes: optional
+      clauses: optional
+      relationships: optional
+    references:
+      supertypes: [systems-interface]
+    meaning: quire.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
-    digest: sha256:1372b5644c02e980da7ebeb0193d439decdfe978dc6e3547378e341d3049d2e7
+    digest: sha256:f9bb3844c23908de143c28035a9883795fe883e1bc4a0484e216ff6210f37c38
   body_extraction:
     yield_pattern:
       match:
@@ -211,6 +254,13 @@ object_types:
           from: section_body
           after_heading: Operations
           required: false
+        features:
+          from: table_row
+          under_section: Features
+          required: true
+          assert:
+            columns: [Feature, Kind]
+            min_rows: 1
 - name: external_contract
   roles: [externally-exposed]
   allowed_links:
@@ -219,7 +269,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/ExternalContract.json
-    digest: sha256:8c589498c17edf48cedfb745e3c1440b7689e4e14d754e8399f0b2181fb56532
+    digest: sha256:f811ba48510690d5b42258fcf671d8fe3b7f33080e75bf3a3ac4400ee8901927
   body_extraction:
     yield_pattern:
       match:
@@ -256,7 +306,7 @@ object_types:
     references: [interface]
   data_schema:
     schema: schemas/ExtensionPoint.json
-    digest: sha256:baab4aebf009dacb7115f4ec44041fec2a07cbfc3458df84eebaea8a3aec0015
+    digest: sha256:a34c94f334fb5fa95bb9eeed9fb2ce82c65de15021a6494228c9cd48adaf6df5
   body_extraction:
     yield_pattern:
       match:
@@ -291,7 +341,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/BinaryFormat.json
-    digest: sha256:6e19f9cc40f1403332b6bd28c9c87d02b5218f1dbbeae33a8297226eb2ae2ddd
+    digest: sha256:559cc4d199f86015d3ba56fa81502241c43b6f87b76ddbf9685b0a0ea489562a
   body_extraction:
     yield_pattern:
       match:
@@ -316,7 +366,7 @@ object_types:
     throttles: [api_endpoint, action]
   data_schema:
     schema: schemas/RateLimit.json
-    digest: sha256:d2b1e6d6c909c686e6c5fed7d6d8acf3faef2ebf9d4d786baebb8e55970fa4f3
+    digest: sha256:027e12eebd0648312704073c4b13764b4816318c2bb3bd210f59b0ef8faf4e6c
   body_extraction:
     yield_pattern:
       match:
@@ -331,6 +381,142 @@ object_types:
           from: section_body
           after_heading: Invariants
           required: false
+
+# FR-007: the systems-model kinds QSpec FR-152 binds (part, port, connection,
+# allocation; interface is the object type above). Each carries exactly the
+# members FR-152's kind table states beyond the declaration key (the artifact
+# id), authored as one row of one table and declared once as a `construct`
+# (filament-core-service FR-035 CR-004). Meaning ids come from
+# agent-ix/quire-specification#86 (FR-208).
+- name: part
+  roles: [systems-part]
+  allowed_links:
+    owned_by: ["*"]
+    typed_by: ["*"]
+  construct:
+    identity: none
+    shape: record
+    members:
+      owner: required
+      declaredType: required
+      multiplicity: required
+      fields: forbidden
+      operations: forbidden
+    meaning: quire.meaning.systems.part/v1
+  data_schema:
+    schema: schemas/Part.json
+    digest: sha256:8b8403cff5472ac2a1a2df7b1a1e10f120eeda9c27dea6de23a99685d03d71aa
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        type: *id003
+        part:
+          from: table_row
+          under_section: Part
+          required: true
+          assert:
+            columns: [Owner, Declared Type, Multiplicity]
+            min_rows: 1
+- name: port
+  roles: [systems-port]
+  allowed_links:
+    owned_by: [systems-part]
+    typed_by: [systems-interface]
+  construct:
+    identity: none
+    shape: record
+    members:
+      owner: required
+      direction: required
+      interfaceType: required
+      multiplicity: required
+      fields: forbidden
+      operations: forbidden
+    references:
+      owner: [systems-part]
+      interfaceType: [systems-interface]
+    meaning: quire.meaning.systems.port/v1
+  data_schema:
+    schema: schemas/Port.json
+    digest: sha256:7d3c4cd18acdf4858a9d891dc159fda08dca5e2f6b365decf1d5c8d90bb3de9e
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        type: *id003
+        port:
+          from: table_row
+          under_section: Port
+          required: true
+          assert:
+            columns: [Owner, Direction, Interface, Multiplicity]
+            min_rows: 1
+- name: connection
+  allowed_links:
+    connects: [systems-port]
+  construct:
+    identity: none
+    shape: record
+    members:
+      sourceEnd: required
+      targetEnd: required
+      flowDirection: required
+      fields: forbidden
+      operations: forbidden
+    references:
+      sourceEnd: [systems-port]
+      targetEnd: [systems-port]
+    meaning: quire.meaning.systems.connection/v1
+  data_schema:
+    schema: schemas/Connection.json
+    digest: sha256:072acfc3afa7e48067b31febf390535b5c0c968fd3b9f0a8b038f4bfa514cd28
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        type: *id003
+        connection:
+          from: table_row
+          under_section: Connection
+          required: true
+          assert:
+            columns: [Source, Source Multiplicity, Target, Target Multiplicity, Direction]
+            min_rows: 1
+- name: allocation
+  allowed_links:
+    allocates: ["*"]
+    allocated_to: [systems-part]
+  construct:
+    identity: none
+    shape: record
+    members:
+      sourceElement: required
+      targetElement: required
+      fields: forbidden
+      operations: forbidden
+    references:
+      targetElement: [systems-part]
+    meaning: quire.meaning.systems.allocation/v1
+  data_schema:
+    schema: schemas/Allocation.json
+    digest: sha256:69627d8fd777c3aab9ad57fbde85667250b9a9fa483506e32c0ffc8adddc626c
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        type: *id003
+        allocation:
+          from: table_row
+          under_section: Allocation
+          required: true
+          assert:
+            columns: [Source, Target]
+            min_rows: 1
 
 # FR-043: concrete-term lexicon — API / web / UI / data-shape / computing
 # objects the EARS object-aware vague-response check accepts as verifiable

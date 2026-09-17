@@ -1,5 +1,5 @@
 ---
-id: api-endpoint-001
+id: api_endpoint_001
 title: "ArtifactUploadEndpoint"
 type: api_endpoint
 object: api_endpoint
@@ -22,7 +22,7 @@ object: api_endpoint
      - An endpoint declares operations, not data: ApiEndpoint.json forbids
        `fields`, so there is no "## Properties" section.
      - Keep headings unique per level. -->
-# [api-endpoint-001] ArtifactUploadEndpoint
+# [api_endpoint_001] ArtifactUploadEndpoint
 
 ## Endpoint
 

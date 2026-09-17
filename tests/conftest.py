@@ -16,6 +16,7 @@ Two policies are enforced here and nowhere else:
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import pathlib
@@ -64,6 +65,50 @@ OBJECT_TYPES = (
     "rate_limit",
 )
 
+#: The QSpec FR-152 systems-model kinds this module adds as object types
+#: (FR-007). `interface` is the fifth kind and is already in OBJECT_TYPES.
+SYSTEMS_TYPES = ("part", "port", "connection", "allocation")
+
+#: The five FR-152 kinds, in FR-152's kind-mapping order.
+SYSTEMS_KINDS = ("interface", "part", "port", "connection", "allocation")
+
+#: Every exported object type, in manifest `semantic.exports` order.
+EXPORTS = OBJECT_TYPES + SYSTEMS_TYPES
+
+#: The quire-rs issue that owns lowering the systems tables into the record.
+SYSTEMS_EXTRACTION_ISSUE = "agent-ix/quire-rs#446"
+SYSTEMS_EXTRACTION_ISSUE_REASON = (
+    "the engine yields the systems table but does not lower it into the "
+    "record, so the required members are absent and the record fails "
+    f"`semantic.record-invalid`; {SYSTEMS_EXTRACTION_ISSUE}"
+)
+#: The quire-rs issue that owns lowering the interface `## Features` table into
+#: the record's `featureOrder` (quire-rs FR-075, PR #450).
+INTERFACE_FEATURE_ORDER_ISSUE = "agent-ix/quire-rs#448"
+INTERFACE_FEATURE_ORDER_REASON = (
+    "Interface.json requires `featureOrder`, and the engine yields the "
+    "`## Features` table but does not lower it into the record, so the record "
+    "fails `semantic.record-invalid`; "
+    f"{INTERFACE_FEATURE_ORDER_ISSUE}"
+)
+
+#: The quire-rs issue that owns reading `Pre:`/`Post:` operation contract lines.
+#: An engine that does not read them extracts no `post` clause reference, so
+#: `ExternalContract.json` refuses the external contract skeleton and a dangling
+#: `Post:` is never reported.
+POST_LINES_ISSUE = "agent-ix/quire-rs#431"
+POST_LINES_REASON = (
+    "the installed engine does not read `Pre:`/`Post:` as operation contract "
+    "lines, so no operation carries a `post` clause reference; "
+    f"{POST_LINES_ISSUE}"
+)
+
+#: FR-003: an object id is a letter, then letters, digits and underscores.
+#: `typespec/main.tsp` states it once as `ObjectId`; the manifest's shared `id`
+#: locator carries it as a capturing `regex`.
+OBJECT_ID_PATTERN = "^[A-Za-z][A-Za-z0-9_]*$"
+OBJECT_ID_LOCATOR_REGEX = "^([A-Za-z][A-Za-z0-9_]*)$"
+
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",
     "data_schema": "DataSchema",
@@ -75,6 +120,10 @@ MODEL_OF = {
     "extension_point": "ExtensionPoint",
     "binary_format": "BinaryFormat",
     "rate_limit": "RateLimit",
+    "part": "Part",
+    "port": "Port",
+    "connection": "Connection",
+    "allocation": "Allocation",
 }
 
 SUPPORT_MODELS = (
@@ -99,6 +148,11 @@ SUPPORT_MODELS = (
     "Threshold",
     "LimitScope",
     "ExceedResponse",
+    "PortDirection",
+    "ConnectionDirection",
+    "ConnectionEnd",
+    "ObjectId",
+    "ObjectFrontmatter",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.
@@ -153,6 +207,149 @@ def frontmatter(markdown: str) -> dict[str, Any]:
     return yaml.safe_load(match.group(1))
 
 
+def is_systems_skeleton(path: pathlib.Path) -> bool:
+    """A skeleton of an FR-007 systems type (FR-005 governs the others)."""
+    return path.stem in SYSTEMS_TYPES
+
+
+def declaration_skeletons() -> list[pathlib.Path]:
+    """The FR-005 skeleton set: every shipped skeleton except the four FR-007
+    systems skeletons, whose records the engine cannot yet assemble
+    (agent-ix/quire-rs#446)."""
+    return [
+        path
+        for path in sorted(SKELETONS_DIR.glob("*.md"))
+        if not is_systems_skeleton(path)
+    ]
+
+
+def systems_skeletons() -> list[pathlib.Path]:
+    return [SKELETONS_DIR / f"{name}.md" for name in SYSTEMS_TYPES]
+
+
+def all_skeletons() -> list[pathlib.Path]:
+    return sorted(SKELETONS_DIR.glob("*.md"))
+
+
+def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None):
+    """Extract a minimal probe document, or `None` when no engine is installed
+    (`require_quire` fails those tests by name). Any other engine error
+    propagates: a probe never hides a defect unrelated to its feature."""
+    try:
+        import quire
+    except ImportError:
+        return None
+    request = {
+        "markdown": markdown,
+        "module": {
+            "contractVersion": "1.0.0",
+            "semanticCore": "0.1.0",
+            "package": "agent-ix/spec-objects-architecture",
+            "exports": [kind],
+        },
+        "path": f"spec/{kind}.md",
+        "bundle": {"package": "agent-ix/spec-objects-architecture"},
+    }
+    if body_extraction is not None:
+        request["bodyExtraction"] = body_extraction
+    return quire.extract_semantic(request)
+
+
+def _table_locator(section: str, columns: list[str]) -> dict:
+    return {
+        "yield_pattern": {
+            "match": {
+                "table": {
+                    "from": "table_row",
+                    "under_section": section,
+                    "required": True,
+                    "assert": {"columns": columns, "min_rows": 1},
+                }
+            }
+        }
+    }
+
+
+@functools.cache
+def engine_lowers_systems_tables() -> bool:
+    """agent-ix/quire-rs#446: the engine lowers a systems table into the record."""
+    record = _extract_probe(
+        "---\nid: tank_pump\ntitle: TankPump\ntype: part\nobject: part\n---\n"
+        "# [tank_pump] TankPump\n\n## Part\n\n"
+        "| Owner | Declared Type | Multiplicity |\n|---|---|---|\n"
+        "| tank_pump | String | 1..1 |\n",
+        "part",
+        _table_locator("Part", ["Owner", "Declared Type", "Multiplicity"]),
+    )
+    part = ((record or {}).get("model") or {}).get("part") or {}
+    return all(part.get(member) for member in ("owner", "declaredType", "multiplicity"))
+
+
+@functools.cache
+def engine_lowers_feature_order() -> bool:
+    """agent-ix/quire-rs#448: the engine lowers a `## Features` table into the
+    record's `featureOrder`."""
+    record = _extract_probe(
+        "---\nid: flow\ntitle: Flow\ntype: interface\nobject: interface\n---\n"
+        "# [flow] Flow\n\n## Operations\n\n### run\n\nReturns: Bytes[1..1]\n\n"
+        "## Features\n\n| Feature | Kind |\n|---|---|\n| run | operation |\n",
+        "interface",
+        _table_locator("Features", ["Feature", "Kind"]),
+    )
+    order = ((record or {}).get("model") or {}).get("featureOrder") or []
+    return [entry.get("name") for entry in order] == ["run"]
+
+
+@functools.cache
+def engine_reads_post_lines() -> bool:
+    """agent-ix/quire-rs#431: the engine reads a `Post:` line under an operation
+    as a `post` clause reference."""
+    record = _extract_probe(
+        "---\nid: probe\ntitle: Probe\ntype: external_contract\n"
+        "object: external_contract\n---\n# [probe] Probe\n\n"
+        "## Invariants\n\n### Holds\n\n```ocl\ncontext Probe\n"
+        "inv Holds:\n  true\n```\n\n## Operations\n\n### run\n\n"
+        "Post: Holds\n",
+        "external_contract",
+    )
+    if record is None:  # no engine: `require_quire` fails the row by name
+        return True
+    return any(op.get("post") for op in record.get("operations") or [])
+
+
+def post_lines_xfail():
+    """A strict xfail on an engine that does not read `Post:` lines."""
+    return pytest.mark.xfail(
+        condition=not engine_reads_post_lines(), strict=True, reason=POST_LINES_REASON
+    )
+
+
+def validation_gap(path: pathlib.Path) -> str | None:
+    """The named defect that keeps a skeleton from validating with the
+    installed engine, if any.
+
+    Each is a known defect, not a requirement: FR-005 and FR-007 require every
+    skeleton to validate with zero errors. An engine that carries the fix
+    (probed, not assumed) has no gap, so the row runs as a plain pass."""
+    if is_systems_skeleton(path) and not engine_lowers_systems_tables():
+        return SYSTEMS_EXTRACTION_ISSUE_REASON
+    if path.stem == "interface" and not engine_lowers_feature_order():
+        return INTERFACE_FEATURE_ORDER_REASON
+    if path.stem == "external_contract" and not engine_reads_post_lines():
+        return POST_LINES_REASON
+    return None
+
+
+def validation_params(paths: list[pathlib.Path]) -> list:
+    """`paths` as pytest params, each known-defect skeleton a strict xfail."""
+    params = []
+    for path in paths:
+        reason = validation_gap(path)
+        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
+        params.append(pytest.param(path, id=path.name, marks=marks))
+    return params
+
+
 def sha256_of(path: pathlib.Path) -> str:
     return f"sha256:{hashlib.sha256(path.read_bytes()).hexdigest()}"
 
@@ -201,7 +398,8 @@ def semantic_module(semantic_block: dict[str, Any]) -> dict[str, Any]:
 
 @pytest.fixture(scope="session")
 def skeletons() -> list[pathlib.Path]:
-    return sorted(SKELETONS_DIR.glob("*.md"))
+    """The FR-005 skeleton set (see `declaration_skeletons`)."""
+    return declaration_skeletons()
 
 
 @pytest.fixture(scope="session")

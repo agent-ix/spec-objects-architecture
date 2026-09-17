@@ -1,12 +1,12 @@
 ---
-id: negative-001
+id: negative_001
 title: "EndpointThatNeverAnswers"
 type: api_endpoint
 object: api_endpoint
 expect: semantic.record-invalid
 because: "ApiEndpoint.json requires at least one operation that declares a return"
 ---
-# [negative-001] EndpointThatNeverAnswers
+# [negative_001] EndpointThatNeverAnswers
 
 ## Endpoint
 

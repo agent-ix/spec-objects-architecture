@@ -21,10 +21,14 @@ from tests.conftest import (
     PACKAGE_ROOT,
     REPO_ROOT,
     SKELETONS_DIR,
+    all_skeletons,
+    declaration_skeletons,
     frontmatter,
     locators,
     object_type,
     object_types,
+    post_lines_xfail,
+    validation_params,
 )
 
 IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -49,7 +53,9 @@ TYPE_PREFIX = "ix://agent-ix/spec-objects-architecture/type/"
 
 
 def skeleton_paths() -> list:
-    return sorted(SKELETONS_DIR.glob("*.md"))
+    """The FR-005 skeleton set; the FR-007 systems skeletons are exercised in
+    `test_systems_kinds.py`."""
+    return declaration_skeletons()
 
 
 def extract(quire_engine, module, bundle, path):
@@ -63,22 +69,27 @@ def extract(quire_engine, module, bundle, path):
                 f"{frontmatter(path.read_text())['id']}"
             ),
             "bundle": bundle,
+            # The object type's own locators, as a manifest-driven consumer
+            # passes them, so the tables it declares are extractable.
+            "bodyExtraction": object_type(frontmatter(path.read_text())["type"])[
+                "body_extraction"
+            ],
         }
     )
 
 
 @pytest.mark.trace("TC-050", "FR-005-AC-1")
-def test_every_skeleton_validates_with_no_error(quire_engine, skeletons):
+@pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
+def test_every_skeleton_validates_with_no_error(quire_engine, skeletons, path):
     assert len(skeletons) == 13
-    for path in skeletons:
-        text = path.read_text()
-        result = quire_engine.validate_document(
-            frontmatter(text)["type"], str(PACKAGE_ROOT), text
-        )
-        assert result["is_valid"], (path.name, result["errors"])
-        assert not [
-            e for e in result["errors"] if "semantic.record-invalid" in e["message"]
-        ], path.name
+    text = path.read_text()
+    result = quire_engine.validate_document(
+        frontmatter(text)["type"], str(PACKAGE_ROOT), text
+    )
+    assert result["is_valid"], (path.name, result["errors"])
+    assert not [
+        e for e in result["errors"] if "semantic.record-invalid" in e["message"]
+    ], path.name
 
 
 @pytest.mark.trace("TC-051", "FR-005-AC-2", "FR-005-CON-2")
@@ -144,71 +155,103 @@ def test_availability_states_match_each_type(
         assert actual == expected, (path.name, actual)
 
 
+def _has_one_operation(record) -> bool:
+    return len(record["operations"]) == 1
+
+
+def _has_a_returning_operation(record) -> bool:
+    return bool([op for op in record["operations"] if op.get("returns")])
+
+
+def _has_a_guaranteed_operation(record) -> bool:
+    return bool([op for op in record["operations"] if op.get("post")])
+
+
+#: Only the `Post:` case depends on the engine reading contract lines.
+OPERATION_DEMANDS = [
+    pytest.param("action", _has_one_operation, id="action"),
+    pytest.param("api_endpoint", _has_a_returning_operation, id="api_endpoint"),
+    pytest.param(
+        "external_contract",
+        _has_a_guaranteed_operation,
+        id="external_contract",
+        marks=post_lines_xfail(),
+    ),
+]
+
+
 @pytest.mark.trace("TC-065", "FR-005-AC-9")
+@pytest.mark.parametrize(("name", "demand"), OPERATION_DEMANDS)
 def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_demand(
-    quire_engine, semantic_module, bundle_index
+    quire_engine, semantic_module, bundle_index, name, demand
 ):
-    action = extract(
-        quire_engine, semantic_module, bundle_index, SKELETONS_DIR / "action.md"
+    record = extract(
+        quire_engine, semantic_module, bundle_index, SKELETONS_DIR / f"{name}.md"
     )
-    assert len(action["operations"]) == 1
+    assert demand(record), (name, record["operations"])
 
-    endpoint = extract(
-        quire_engine, semantic_module, bundle_index, SKELETONS_DIR / "api_endpoint.md"
-    )
-    assert [op for op in endpoint["operations"] if op.get("returns")]
 
-    contract = extract(
-        quire_engine,
-        semantic_module,
-        bundle_index,
-        SKELETONS_DIR / "external_contract.md",
-    )
-    assert [op for op in contract["operations"] if op.get("post")]
+#: The ten cases FR-005 Behavior names, pinned by file so that deleting one and
+#: duplicating another cannot keep TC-054 green.
+NEGATIVE_FIXTURES = (
+    "api_endpoint-no-returning-operation.md",
+    "data_schema-with-operations.md",
+    "queue-no-identity-row.md",
+    "action-two-operations.md",
+    "ui_component-identity-row.md",
+    "external_contract-no-invariants.md",
+    "rate_limit-no-invariants.md",
+    "properties-both-forms.md",
+    "operation-dangling-post-clause.md",
+    "type-token-not-identifier.md",
+)
+
+NEGATIVE_CODES = {
+    "semantic.record-invalid",
+    "semantic.properties-both-forms",
+    "semantic.dangling-clause-ref",
+    "semantic.invalid-type-token",
+}
+
+#: The one negative fixture whose refusal depends on the engine reading `Post:`.
+DANGLING_POST_FIXTURE = "operation-dangling-post-clause.md"
 
 
 @pytest.mark.trace("TC-054", "FR-005-AC-5")
-def test_every_negative_fixture_fails_for_its_own_reason(quire_engine):
+def test_the_negative_fixture_set_is_the_named_ten_covering_every_code():
     fixtures = sorted(NEGATIVE_DIR.glob("*.md"))
-    # The ten cases FR-005 Behavior names, pinned by file so that deleting one
-    # and duplicating another cannot keep this row green.
-    named = {
-        "api_endpoint-no-returning-operation.md",
-        "data_schema-with-operations.md",
-        "queue-no-identity-row.md",
-        "action-two-operations.md",
-        "ui_component-identity-row.md",
-        "external_contract-no-invariants.md",
-        "rate_limit-no-invariants.md",
-        "properties-both-forms.md",
-        "operation-dangling-post-clause.md",
-        "type-token-not-identifier.md",
-    }
-    assert named <= {p.name for p in fixtures}, named - {p.name for p in fixtures}
-    expected_codes = {
-        "semantic.record-invalid",
-        "semantic.properties-both-forms",
-        "semantic.dangling-clause-ref",
-        "semantic.invalid-type-token",
-    }
-    seen: set[str] = set()
-    for path in fixtures:
-        text = path.read_text()
-        front = frontmatter(text)
-        assert front["expect"] in expected_codes, path.name
-        assert front["because"], f"{path.name} does not say why it must fail"
-        seen.add(front["expect"])
-        result = quire_engine.validate_document(front["type"], str(PACKAGE_ROOT), text)
-        assert not result["is_valid"], path.name
-        messages = [e["message"] for e in result["errors"]]
-        assert any(front["expect"] in m for m in messages), (path.name, messages)
-        # The fixture must fail for its own reason, not merely with its code:
-        # seven of the ten surface as `semantic.record-invalid`.
-        hit = next(m for m in messages if front["expect"] in m)
-        assert len(hit) > len(
-            front["expect"]
-        ), f"{path.name}: the error carries no detail"
-    assert seen == expected_codes
+    names = {p.name for p in fixtures}
+    assert set(NEGATIVE_FIXTURES) <= names, set(NEGATIVE_FIXTURES) - names
+    expected = {frontmatter(p.read_text())["expect"] for p in fixtures}
+    assert expected == NEGATIVE_CODES
+
+
+@pytest.mark.trace("TC-054", "FR-005-AC-5")
+@pytest.mark.parametrize(
+    "name",
+    [
+        pytest.param(
+            name,
+            id=name,
+            marks=[post_lines_xfail()] if name == DANGLING_POST_FIXTURE else [],
+        )
+        for name in sorted(p.name for p in NEGATIVE_DIR.glob("*.md"))
+    ],
+)
+def test_every_negative_fixture_fails_for_its_own_reason(quire_engine, name):
+    path = NEGATIVE_DIR / name
+    text = path.read_text()
+    front = frontmatter(text)
+    assert front["expect"] in NEGATIVE_CODES, path.name
+    assert front["because"], f"{path.name} does not say why it must fail"
+    result = quire_engine.validate_document(front["type"], str(PACKAGE_ROOT), text)
+    assert not result["is_valid"], path.name
+    messages = [e["message"] for e in result["errors"]]
+    assert any(front["expect"] in m for m in messages), (path.name, messages)
+    # The fixture must fail for its own reason, not merely with its code:
+    # seven of the ten surface as `semantic.record-invalid`.
+    hit = next(m for m in messages if front["expect"] in m)
+    assert len(hit) > len(front["expect"]), f"{path.name}: the error carries no detail"
 
 
 @pytest.mark.trace("TC-055", "FR-005-AC-6")
@@ -355,9 +398,9 @@ def test_the_repository_carries_no_corpus_or_vendored_fixture():
 def test_skeleton_titles_are_distinct_identifiers_and_object_equals_type():
     """One title per object type. The three `*.sysml.md` alternates share their
     table skeleton's `id` and `title` by intent (FR-005), so uniqueness is
-    measured over the ten object types, not over the thirteen files."""
+    measured over the fourteen object types, not over the seventeen files."""
     titles: dict[str, str] = {}
-    for path in skeleton_paths():
+    for path in all_skeletons():
         front = frontmatter(path.read_text())
         title = front["title"]
         assert IDENTIFIER.match(title), (path.name, title)

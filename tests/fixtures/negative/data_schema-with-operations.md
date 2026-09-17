@@ -1,12 +1,12 @@
 ---
-id: negative-002
+id: negative_002
 title: "RecordThatDeclaresBehaviour"
 type: data_schema
 object: data_schema
 expect: semantic.record-invalid
 because: "DataSchema.json forbids `operations`: a record declares data, not behaviour"
 ---
-# [negative-002] RecordThatDeclaresBehaviour
+# [negative_002] RecordThatDeclaresBehaviour
 
 ## Properties
 
