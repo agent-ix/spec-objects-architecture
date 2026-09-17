@@ -28,14 +28,26 @@ namespace AgentIx.SpecObjects.Architecture;
 // ---------------------------------------------------------------------------
 
 /**
- * The frontmatter every object type's documents share. An object id is a word
- * id: letters, digits and underscores, starting with a letter; hyphens are not
- * allowed. The model is open, so the other frontmatter keys an object type
- * declares pass through.
+ * The id of an artifact whose type is one of this module's object types: a
+ * letter, then letters, digits and underscores. A hyphen is refused.
+ * Artifact-type ids such as `FR-100` are not object ids and are not governed
+ * by this pattern. The manifest's shared `id` locator carries the same
+ * pattern, so Quire refuses a hyphenated object id at validation.
+ */
+@pattern("^[A-Za-z][A-Za-z0-9_]*$")
+scalar ObjectId extends string;
+
+/**
+ * The frontmatter every object-type artifact carries, shared by all fourteen
+ * object types. Keys beyond these (`relationships`, ...) are governed
+ * elsewhere and admitted here.
  */
 model ObjectFrontmatter {
-  @pattern("^[A-Za-z][A-Za-z0-9_]*$")
-  id: string;
+  id: ObjectId;
+  @minLength(1) title: string;
+  @minLength(1) type: string;
+  object?: string;
+  ...Record<unknown>;
 }
 
 // ---------------------------------------------------------------------------

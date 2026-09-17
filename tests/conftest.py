@@ -16,6 +16,7 @@ Two policies are enforced here and nowhere else:
 
 from __future__ import annotations
 
+import functools
 import hashlib
 import json
 import pathlib
@@ -81,14 +82,21 @@ SYSTEMS_EXTRACTION_ISSUE_REASON = (
     "record, so the required members are absent and the record fails "
     f"`semantic.record-invalid`; {SYSTEMS_EXTRACTION_ISSUE}"
 )
-#: FCD #172 adds the `featureOrder` member; the Markdown shape that carries it,
-#: and its extraction, are not yet defined.
-INTERFACE_FEATURE_ORDER_ISSUE = "agent-ix/filament-core-data#172"
+#: The quire-rs issue that owns lowering the interface `## Features` table into
+#: the record's `featureOrder` (quire-rs FR-075, PR #450).
+INTERFACE_FEATURE_ORDER_ISSUE = "agent-ix/quire-rs#448"
 INTERFACE_FEATURE_ORDER_REASON = (
-    "Interface.json requires `featureOrder`, and no authored shape or "
-    "extraction carries it yet, so the record fails `semantic.record-invalid`; "
+    "Interface.json requires `featureOrder`, and the engine yields the "
+    "`## Features` table but does not lower it into the record, so the record "
+    "fails `semantic.record-invalid`; "
     f"{INTERFACE_FEATURE_ORDER_ISSUE}"
 )
+
+#: FR-003: an object id is a letter, then letters, digits and underscores.
+#: `typespec/main.tsp` states it once as `ObjectId`; the manifest's shared `id`
+#: locator carries it as a capturing `regex`.
+OBJECT_ID_PATTERN = "^[A-Za-z][A-Za-z0-9_]*$"
+OBJECT_ID_LOCATOR_REGEX = "^([A-Za-z][A-Za-z0-9_]*)$"
 
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",
@@ -132,6 +140,7 @@ SUPPORT_MODELS = (
     "PortDirection",
     "ConnectionDirection",
     "ConnectionEnd",
+    "ObjectId",
     "ObjectFrontmatter",
 )
 
@@ -211,14 +220,87 @@ def all_skeletons() -> list[pathlib.Path]:
     return sorted(SKELETONS_DIR.glob("*.md"))
 
 
+def _engine_lowers(markdown: str, kind: str, body_extraction: dict, key: str) -> bool:
+    """Whether the installed engine lowers a declared table into the record key
+    `key`. Probed on a minimal document, never on a shipped skeleton, so a
+    skeleton's own defects cannot flip its expected failure."""
+    try:
+        import quire
+
+        record = quire.extract_semantic(
+            {
+                "markdown": markdown,
+                "module": {
+                    "contractVersion": "1.0.0",
+                    "semanticCore": "0.1.0",
+                    "package": "agent-ix/spec-objects-architecture",
+                    "exports": [kind],
+                },
+                "path": f"spec/{kind}.md",
+                "bundle": {"package": "agent-ix/spec-objects-architecture"},
+                "bodyExtraction": body_extraction,
+            }
+        )
+    except (
+        Exception
+    ):  # noqa: BLE001 - an engine without the feature refuses the request
+        return False
+    return key in (record.get("model") or {})
+
+
+def _table_locator(section: str, columns: list[str]) -> dict:
+    return {
+        "yield_pattern": {
+            "match": {
+                "table": {
+                    "from": "table_row",
+                    "under_section": section,
+                    "required": True,
+                    "assert": {"columns": columns, "min_rows": 1},
+                }
+            }
+        }
+    }
+
+
+@functools.cache
+def engine_lowers_systems_tables() -> bool:
+    """agent-ix/quire-rs#446: the engine lowers a systems table into the record."""
+    return _engine_lowers(
+        "---\nid: tank_pump\ntitle: TankPump\ntype: part\nobject: part\n---\n"
+        "# [tank_pump] TankPump\n\n## Part\n\n"
+        "| Owner | Declared Type | Multiplicity |\n|---|---|---|\n"
+        "| tank_pump | String | 1..1 |\n",
+        "part",
+        _table_locator("Part", ["Owner", "Declared Type", "Multiplicity"]),
+        "part",
+    )
+
+
+@functools.cache
+def engine_lowers_feature_order() -> bool:
+    """agent-ix/quire-rs#448: the engine lowers a `## Features` table into the
+    record's `featureOrder`."""
+    return _engine_lowers(
+        "---\nid: flow\ntitle: Flow\ntype: interface\nobject: interface\n---\n"
+        "# [flow] Flow\n\n## Operations\n\n### run\n\nReturns: Bytes[1..1]\n\n"
+        "## Features\n\n| Feature | Kind |\n|---|---|\n| run | operation |\n",
+        "interface",
+        _table_locator("Features", ["Feature", "Kind"]),
+        "featureOrder",
+    )
+
+
 def validation_gap(path: pathlib.Path) -> str | None:
-    """The named defect that keeps a skeleton from validating today, if any.
+    """The named defect that keeps a skeleton from validating with the
+    installed engine, if any.
 
     Each is a known defect, not a requirement: FR-005 and FR-007 require every
-    skeleton to validate with zero errors."""
-    if is_systems_skeleton(path):
+    skeleton to validate with zero errors. An engine that carries the fix
+    (probed, not assumed) has no gap, so the row runs as a plain pass."""
+    if is_systems_skeleton(path) and not engine_lowers_systems_tables():
         return SYSTEMS_EXTRACTION_ISSUE_REASON
-    if path.stem == "interface":
+    if path.stem == "interface" and not engine_lowers_feature_order():
         return INTERFACE_FEATURE_ORDER_REASON
     return None
 

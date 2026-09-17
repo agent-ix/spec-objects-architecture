@@ -68,6 +68,11 @@ def extract(quire_engine, module, bundle, path):
                 f"{frontmatter(path.read_text())['id']}"
             ),
             "bundle": bundle,
+            # The object type's own locators, as a manifest-driven consumer
+            # passes them, so the tables it declares are extractable.
+            "bodyExtraction": object_type(frontmatter(path.read_text())["type"])[
+                "body_extraction"
+            ],
         }
     )
 

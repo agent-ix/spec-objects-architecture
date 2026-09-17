@@ -2,10 +2,12 @@
 
 The five QSpec FR-152 kinds — `interface`, `part`, `port`, `connection`,
 `allocation` — each declared once as an object type with a `construct:`
-(filament-core-service FR-035 CR-004). The engine yields each systems table
-row but does not lower it into the record (agent-ix/quire-rs#446), so the
-record-shape rows here are verified against hand-built records, and TC-106
-pins the known defect rather than stating the requirement.
+(filament-core-service FR-035 CR-004). The record-shape rows are verified
+against hand-built records named with QSpec #86 TC-197's declaration keys.
+Lowering the systems tables (agent-ix/quire-rs#446) and the interface
+`## Features` table (agent-ix/quire-rs#448) into the record is the engine's
+work; the rows that depend on it probe the installed engine and stay strict
+expected failures on one that does not lower them yet.
 """
 
 from __future__ import annotations
@@ -17,16 +19,20 @@ import re
 import pytest
 
 from tests.conftest import (
+    FIXTURES_DIR,
     MODEL_OF,
     PACKAGE_ROOT,
     SCHEMAS_DIR,
+    SKELETONS_DIR,
     SYSTEMS_KINDS,
     SYSTEMS_TYPES,
+    engine_lowers_systems_tables,
     load_manifest,
     locators,
     object_type,
     sha256_of,
     systems_skeletons,
+    validation_params,
 )
 from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
 
@@ -70,18 +76,21 @@ FR075_TABLE_KEYS = {"Value", "State", "Step", "From", "Term", "Member", "Type"}
 EDGE_VERBS = {"owned_by", "typed_by", "connects", "allocates", "allocated_to"}
 SYSTEMS_ROLES = {"systems-part", "systems-port", "systems-interface"}
 
+# QSpec #86 TC-197 fixture Y: node identities are `ix://test/orders/<artifact
+# id>`, and each record names TC-197's declaration keys (`Sys`, `Pump`,
+# `Flow`, `sys_pump`, `pump_out`, `tank_in`, `Pump/run`).
 PKG = "ix://test/orders/"
 ONE = {"lower": 1, "upper": 1}
 RECORDS = {
     "part": {
-        "owner": f"{PKG}sys_pump",
-        "declaredType": {"target": f"{PKG}pump"},
+        "owner": f"{PKG}Sys",
+        "declaredType": {"target": f"{PKG}Pump"},
         "multiplicity": ONE,
     },
     "port": {
         "owner": f"{PKG}sys_pump",
         "direction": "out",
-        "interfaceType": {"target": f"{PKG}flow"},
+        "interfaceType": {"target": f"{PKG}Flow"},
         "multiplicity": ONE,
     },
     "connection": {
@@ -90,7 +99,7 @@ RECORDS = {
         "flowDirection": "source-to-target",
     },
     "allocation": {
-        "sourceElement": f"{PKG}flow/rate",
+        "sourceElement": f"{PKG}Pump/run",
         "targetElement": f"{PKG}sys_pump",
     },
 }
@@ -279,6 +288,7 @@ def test_each_skeleton_yields_one_row_matching_its_columns(quire_engine, path):
             assert _is_reference(cell), (column, cell)
 
 
+@pytest.mark.trace("TC-105", "FR-007-AC-6")
 def test_a_reference_is_an_artifact_id_or_an_id_and_member():
     assert _is_reference("scoring_engine")
     assert _is_reference("quant_codec/score_ip_batch")
@@ -288,16 +298,17 @@ def test_a_reference_is_an_artifact_id_or_an_id_and_member():
 
 @pytest.mark.trace("TC-106", "FR-007-AC-7")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
-def test_known_defect_skeleton_validation_fails_on_the_unlowered_record(
-    quire_engine, path
-):
-    """Pins a known defect, not the requirement. FR-007-AC-7 requires zero
-    errors; today each systems skeleton yields exactly one, because
-    agent-ix/quire-rs#446 does not lower the table into the record. When it
-    lands this test fails and the strict xfails in the skeleton-validation
-    tests flip."""
+def test_skeleton_validation_matches_the_installed_engine(quire_engine, path):
+    """FR-007-AC-7 requires zero errors. An engine that lowers the systems
+    tables (agent-ix/quire-rs#446, probed) must deliver exactly that; one that
+    does not yields exactly one error, the record missing its first member,
+    and anything else turns this row red."""
     kind = path.stem
     result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), path.read_text())
+    if engine_lowers_systems_tables():
+        assert result["errors"] == [], result["errors"]
+        assert result["is_valid"]
+        return
     assert not result["is_valid"]
     (error,) = result["errors"]
     first = next(iter(RECORDS[kind]))
@@ -355,20 +366,20 @@ def _with_relationship(text: str, verb: str, target: str) -> str:
     )
 
 
+SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
+
+
 @pytest.mark.trace("TC-110", "FR-007-AC-10")
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
-    """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge and its
-    registry entry match spec-objects-business; the construct names the IR
-    member `supertypes` and constrains it to interfaces."""
+    """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
+    equals spec-objects-business's, pinned with its source revision; the
+    construct names the IR member `supertypes` and constrains it to
+    interfaces."""
+    pinned = json.loads(SOB_SPECIALIZES.read_text())
+    assert pinned["source"]["repository"] == "agent-ix/spec-objects-business"
+    assert re.fullmatch(r"[0-9a-f]{40}", pinned["source"]["revision"])
     manifest = load_manifest()
-    assert manifest["edge_types"]["specializes"] == {
-        "description": (
-            "Generalization: the source type specializes the target type and "
-            "inherits its declarations."
-        ),
-        "category": "structural",
-        "inverse": "generalizes",
-    }
+    assert manifest["edge_types"]["specializes"] == pinned["specializes"]
     interface = object_type("interface")
     assert interface["allowed_links"]["specializes"] == ["interface"]
     construct = interface["construct"]
@@ -376,17 +387,76 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     assert construct["references"]["supertypes"] == ["systems-interface"]
 
     text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
-    special = _with_relationship(text, "specializes", "flow")
+    special = _with_relationship(text, "specializes", "Flow")
     edges = quire_engine.extract("interface", str(PACKAGE_ROOT), special)["edges"]
-    assert {"target": "flow", "edge_type": "specializes"} in edges
+    assert {"target": "Flow", "edge_type": "specializes"} in edges
     warnings = quire_engine.validate_document("interface", str(PACKAGE_ROOT), special)[
         "warnings"
     ]
     assert not [w for w in warnings if w["reason"] == "disallowed-edge-type"]
     refused = quire_engine.validate_document(
-        "interface", str(PACKAGE_ROOT), _with_relationship(text, "owned_by", "flow")
+        "interface", str(PACKAGE_ROOT), _with_relationship(text, "owned_by", "Flow")
     )["warnings"]
     assert any(
         w["reason"] == "disallowed-edge-type" and "owned_by" in w["message"]
         for w in refused
     ), refused
+
+
+INTERFACE_SKELETON = SKELETONS_DIR / "interface.md"
+
+
+def _features_rows(text: str) -> list[list[str]]:
+    section = text.split("\n## Features\n", 1)[1]
+    rows = [line for line in section.splitlines() if line.startswith("|")]
+    assert rows[0] == "| Feature | Kind |", rows[0]
+    return [[c.strip() for c in row.strip("|").split("|")] for row in rows[2:]]
+
+
+@pytest.mark.trace("TC-112", "FR-007-AC-11")
+def test_the_interface_features_table_carries_the_feature_order(quire_engine):
+    loc = locators(object_type("interface"))["features"]
+    assert loc == {
+        "from": "table_row",
+        "under_section": "Features",
+        "required": True,
+        "assert": {"columns": ["Feature", "Kind"], "min_rows": 1},
+    }
+    text = INTERFACE_SKELETON.read_text()
+    operations = re.findall(r"^### (\w+)$", text.split("\n## Operations\n", 1)[1], re.M)
+    assert operations
+    assert _features_rows(text) == [[name, "operation"] for name in operations]
+    removed = text.replace("\n## Features\n", "\n## Feature List\n")
+    assert removed != text
+    result = quire_engine.validate_document("interface", str(PACKAGE_ROOT), removed)
+    assert not result["is_valid"]
+    assert any(
+        "required 'features'" in e["message"] and "missing" in e["message"]
+        for e in result["errors"]
+    ), result["errors"]
+
+
+@pytest.mark.trace("TC-112", "FR-007-AC-11")
+@pytest.mark.parametrize("path", validation_params([INTERFACE_SKELETON]))
+def test_the_interface_skeleton_lowers_its_feature_order(
+    quire_engine, semantic_block, path
+):
+    text = path.read_text()
+    result = quire_engine.validate_document("interface", str(PACKAGE_ROOT), text)
+    assert result["errors"] == [], result["errors"]
+    record = quire_engine.extract_semantic(
+        {
+            "markdown": text,
+            "module": {
+                "contractVersion": semantic_block["contract_version"],
+                "semanticCore": semantic_block["semantic_core"],
+                "package": semantic_block["package"],
+                "exports": semantic_block["exports"],
+            },
+            "path": "spec/interface.md",
+            "bundle": {"package": semantic_block["package"]},
+            "bodyExtraction": object_type("interface")["body_extraction"],
+        }
+    )
+    order = [entry["name"] for entry in record["model"]["featureOrder"]]
+    assert order == [row[0] for row in _features_rows(text)]

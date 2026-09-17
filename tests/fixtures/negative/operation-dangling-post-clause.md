@@ -31,3 +31,9 @@ Score one payload.
 Returns: Decimal(18,9)[1..1]
 
 Post: NoSuchClause
+
+## Features
+
+| Feature | Kind |
+|---|---|
+| score | operation |

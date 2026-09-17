@@ -23,6 +23,9 @@ object: interface
      - An interface's features are fields and operations (QSpec FR-152,
        FR-208), ordered as one sequence across both; Interface.json admits
        `fields` and `operations` and requires `featureOrder`.
+     - "## Features" (H2, required): one table with the header
+       `Feature | Kind`, one row per declared field (`field`) and operation
+       (`operation`). Row order is the feature order.
      - Keep headings unique per level. -->
 # [quant_codec] QuantCodec
 
@@ -92,3 +95,14 @@ payload in the order given.
 | candidate_payloads | Bytes | 1..* ordered | |
 
 Returns: Decimal(18,9)[1..* ordered]
+
+## Features
+
+The interface's features in declaration order: every operation above, one row
+each.
+
+| Feature | Kind |
+|---|---|
+| prepare_ip_query | operation |
+| score_ip_candidate | operation |
+| score_ip_batch | operation |

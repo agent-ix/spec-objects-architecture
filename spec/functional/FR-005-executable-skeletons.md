@@ -55,6 +55,7 @@ refuse.
 - The `action` skeleton SHALL declare exactly one operation, because `Action` admits exactly one.
 - The `api_endpoint` skeleton SHALL declare at least one operation carrying a `Returns:` line, and the `external_contract` skeleton at least one operation carrying a `Post:` line, because those are the item rules their schemas enforce.
 - Each skeleton whose type requires `clauses` (`external_contract`, `extension_point`, `binary_format`, `rate_limit`) SHALL author `## Invariants` with one `### <clauseId>` per clause, each owning exactly one ```` ```ocl ```` fence.
+- The `interface` skeleton SHALL author the [FR-007](./FR-007-systems-model-kinds.md) `## Features` table, one `operation` row per `### <name>` under `## Operations`, in that order.
 - The `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, and `interface` skeletons SHALL carry no `## Invariants` section, so the module ships both the clause-bearing and the clause-free availability state.
 - Each skeleton's frontmatter SHALL carry `object: <type name>` beside `type: <type name>`, because Quire runs the semantic layer (extraction and record validation) on the `object:` archetype of a document; a skeleton without it validates its headings only.
 - The manifest SHALL gain a `required: false` `section_body` locator for every `## Properties`, `## Invariants`, and `## Operations` section a skeleton introduces, so the section is asserted by the manifest and remains optional for existing artifacts.

@@ -1,5 +1,6 @@
-"""Additive-compatibility tests (NFR-001): the current module stays additive
-over the checked-in 0.2.0 set.
+"""Compatibility tests (NFR-001): the current module is additive over the
+checked-in 0.2.0 set apart from its two declared breaks, the object id pattern
+and the interface `## Features` table.
 
 The population is the frozen baseline under `tests/fixtures/baseline-0.2.0/`:
 the 0.2.0 `body_extraction` locators, the 0.2.0 edge vocabulary, and all ten
@@ -16,6 +17,7 @@ import pytest
 
 from tests.conftest import (
     BASELINE_DIR,
+    OBJECT_ID_LOCATOR_REGEX,
     PACKAGE_ROOT,
     frontmatter,
     locators,
@@ -79,7 +81,10 @@ def test_no_baseline_locator_definition_changed():
         old = (extraction or {})["yield_pattern"]["match"]
         new = locators(object_type(name))
         for key, facets in old.items():
-            if new.get(key) != facets:
+            current = dict(new.get(key) or {})
+            if key == "id":
+                assert current.pop("regex") == OBJECT_ID_LOCATOR_REGEX, name
+            if current != facets:
                 changed.append(f"{name}.{key}")
     assert changed == []
 
@@ -105,35 +110,46 @@ def test_no_object_type_changed_its_edge_vocabulary_or_roles():
         assert current.get("roles") == expected_roles, name
 
 
+def _missing(kind: str, key: str) -> str:
+    return f"[{kind}] required '{key}'"
+
+
 @pytest.mark.trace("TC-061", "NFR-001-AC-2")
-def test_every_baseline_skeleton_validates_under_the_new_manifest(quire_engine):
+def test_every_baseline_skeleton_draws_only_the_declared_breaks(quire_engine):
     """Measured, not assumed: the ten 0.2.0 skeletons carry no frontmatter
     `object:` key, so Quire runs headings-only validation on them and the
-    typed record is never assembled or checked. That is what makes the current
-    module additive for the artifacts that exist today.
+    typed record is never assembled or checked.
 
-    The baseline is frozen, so its ids keep their 0.2.0 hyphenated form. The
-    object-id rule (FR-003-AC-9) refuses that form, so each skeleton is
-    validated with its id in word form, and the frozen form is asserted to
-    draw exactly the one frontmatter `id` error and nothing else."""
+    The baseline is frozen, so its ids keep their 0.2.0 hyphenated form. With
+    that id each skeleton draws only its required `id` missing (FR-003-AC-9);
+    with its id in word form it validates, except `interface`, which draws
+    only its required `features` missing (FR-007-AC-11)."""
     baseline = baseline_skeletons()
     assert len(baseline) == 10
     failures = {}
     for path in baseline:
         text = path.read_text()
         front = frontmatter(text)
+        kind = front["type"]
         assert "object" not in front, path.name
         assert "-" in front["id"], path.name
-        frozen = quire_engine.validate_document(front["type"], str(PACKAGE_ROOT), text)
-        (error,) = frozen["errors"]
-        assert error["reason"] == "frontmatter", (path.name, error)
-        assert "(at id)" in error["message"], (path.name, error)
+        frozen = quire_engine.validate_document(kind, str(PACKAGE_ROOT), text)
+        messages = {e["message"].split(" (")[0] for e in frozen["errors"]}
+        expected = {_missing(kind, "id")}
+        if kind == "interface":
+            expected.add(_missing(kind, "features"))
+        assert messages == expected, (path.name, frozen["errors"])
         result = quire_engine.validate_document(
-            front["type"], str(PACKAGE_ROOT), _word_id(text, front["id"])
+            kind, str(PACKAGE_ROOT), _word_id(text, front["id"])
         )
-        if result["errors"]:
+        allowed = {_missing(kind, "features")} if kind == "interface" else set()
+        found = {e["message"].split(" (")[0] for e in result["errors"]}
+        if found != allowed:
             failures[path.name] = [e["message"] for e in result["errors"]]
     assert failures == {}
+
+
+FEATURES_TABLE = "\n## Features\n\n| Feature | Kind |\n|---|---|\n| run | operation |\n"
 
 
 def _word_id(text: str, hyphenated: str) -> str:
@@ -200,7 +216,13 @@ def test_every_020_locator_yield_is_byte_identical_across_versions(quire_engine)
     for path in baseline_skeletons():
         name = path.stem
         text = path.read_text()
-        extracted = quire_engine.extract(name, str(PACKAGE_ROOT), text)
+        # The two declared breaks are lifted from the input, never from the
+        # oracle: the id in word form and, on `interface`, a `## Features`
+        # table appended after every 0.2.0 section.
+        authored = _word_id(text, frontmatter(text)["id"])
+        if name == "interface":
+            authored += FEATURES_TABLE
+        extracted = quire_engine.extract(name, str(PACKAGE_ROOT), authored)
         records = extracted["extraction"]
         assert len(records) == 1, (name, records)
         record = records[0]

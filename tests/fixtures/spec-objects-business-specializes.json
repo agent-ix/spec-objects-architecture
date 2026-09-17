@@ -1,0 +1,13 @@
+{
+  "source": {
+    "repository": "agent-ix/spec-objects-business",
+    "revision": "48b213a30e6f2f533f1f37d58ed150ddb9c6befa",
+    "path": "spec_objects_business/manifest.yaml",
+    "key": "edge_types.specializes"
+  },
+  "specializes": {
+    "description": "Generalization: the source type specializes the target type and inherits its declarations.",
+    "category": "structural",
+    "inverse": "generalizes"
+  }
+}

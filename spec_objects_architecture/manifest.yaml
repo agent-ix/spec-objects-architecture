@@ -24,7 +24,7 @@ semantic:
   imports: {}
   targets: [json-schema, markdown]
   mappings: [typed-table, sysml-fence, ocl-clause]
-  compatibility_posture: additive
+  compatibility_posture: strict
   legacy_forms: warning
 nav:
   category:
@@ -54,7 +54,6 @@ artifact_types: []
 lint_rules: []
 object_types:
 - name: api_endpoint
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable, measurable, configurable]
   allowed_links:
     exposes: [domain-object]
@@ -72,10 +71,15 @@ object_types:
   body_extraction:
     yield_pattern:
       match:
+        # FR-003: an object id uses underscores, never hyphens. The pattern
+        # equals `ObjectId` in typespec/main.tsp; a hyphenated id yields no
+        # value, so the required locator refuses it. Every object type shares
+        # this locator.
         id: &id001
           from: frontmatter_field
           path:
           - id
+          regex: ^([A-Za-z][A-Za-z0-9_]*)$
           required: true
         title: &id002
           from: frontmatter_field
@@ -104,7 +108,6 @@ object_types:
           after_heading: Operations
           required: false
 - name: data_schema
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     contains: [data_schema, enumeration]
     represents: [domain-object]
@@ -128,7 +131,6 @@ object_types:
           after_heading: Properties
           required: false
 - name: queue
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable, configurable]
   allowed_links:
     carries: [data_schema, event]
@@ -152,7 +154,6 @@ object_types:
           after_heading: Properties
           required: false
 - name: action
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed]
   allowed_links:
     triggers: [process, action]
@@ -178,7 +179,6 @@ object_types:
           after_heading: Operations
           required: false
 - name: ui_component
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable]
   allowed_links:
     contains: [ui_component]
@@ -209,15 +209,15 @@ object_types:
 # 9 users. Internal contracts -> `interface`; external-system contracts
 # -> `external_contract`; service-client FRs -> relationship edges.
 - name: interface
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, systems-interface]
   allowed_links:
     contains: [api_endpoint]
     references: [data_schema]
     specializes: [interface]
   # FR-007: the QSpec FR-152 Interface kind — its features are fields and
-  # operations, ordered as one sequence by `featureOrder`. Meaning id from
-  # agent-ix/quire-specification#86 (FR-208).
+  # operations, ordered as one sequence by `featureOrder`, which the
+  # `## Features` table carries in row order (quire-rs FR-075, #448). Meaning
+  # id from agent-ix/quire-specification#86 (FR-208).
   construct:
     identity: none
     shape: interface
@@ -254,8 +254,14 @@ object_types:
           from: section_body
           after_heading: Operations
           required: false
+        features:
+          from: table_row
+          under_section: Features
+          required: true
+          assert:
+            columns: [Feature, Kind]
+            min_rows: 1
 - name: external_contract
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed]
   allowed_links:
     implements: [interface]
@@ -295,7 +301,6 @@ object_types:
           after_heading: Invariants
           required: false
 - name: extension_point
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     extends: [interface]
     references: [interface]
@@ -331,7 +336,6 @@ object_types:
           after_heading: Invariants
           required: false
 - name: binary_format
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     serializes: [data_schema]
     references: [data_schema]
@@ -358,7 +362,6 @@ object_types:
           after_heading: Invariants
           required: false
 - name: rate_limit
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     throttles: [api_endpoint, action]
   data_schema:
@@ -386,7 +389,6 @@ object_types:
 # (filament-core-service FR-035 CR-004). Meaning ids come from
 # agent-ix/quire-specification#86 (FR-208).
 - name: part
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [systems-part]
   allowed_links:
     owned_by: ["*"]
@@ -418,7 +420,6 @@ object_types:
             columns: [Owner, Declared Type, Multiplicity]
             min_rows: 1
 - name: port
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [systems-port]
   allowed_links:
     owned_by: [systems-part]
@@ -454,7 +455,6 @@ object_types:
             columns: [Owner, Direction, Interface, Multiplicity]
             min_rows: 1
 - name: connection
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     connects: [systems-port]
   construct:
@@ -487,7 +487,6 @@ object_types:
             columns: [Source, Source Multiplicity, Target, Target Multiplicity, Direction]
             min_rows: 1
 - name: allocation
-  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     allocates: ["*"]
     allocated_to: [systems-part]

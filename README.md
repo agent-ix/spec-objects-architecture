@@ -42,7 +42,7 @@ quire validate spec/**/*.md --module node_modules/@agent-ix/spec-objects-archite
 | Action | `action` | A discrete action/task defined by a required `Inputs` section listing every input it consumes, with type and source. |
 | UI component | `ui_component` | A frontend component defined by a required `Props` section enumerating every prop with name, type, and behavior. |
 | Rate limit | `rate_limit` | A throttling policy defined by a required `Thresholds` section listing the concrete limits, windows, and the response when a limit is exceeded. |
-| Interface | `interface` | A language-neutral operations contract *within* the system, defined by a required `Contract` section holding a YAML code block (name, types, operations, invariants). |
+| Interface | `interface` | A language-neutral operations contract *within* the system, defined by a required `Contract` section holding a YAML code block (name, types, operations, invariants), and a required `Features` table (`Feature \| Kind`) ordering its fields and operations. |
 | External contract | `external_contract` | A contract with a system *outside* this one, with a required `Contract` section plus optional `Endpoints` and `Behavior` sections for the consumed/exposed surface and interaction semantics. |
 | Extension point | `extension_point` | First-class pluggability: a required `Contract` section naming the interface it exposes, plus optional `Registration` and `Stability` sections for discovery and compatibility guarantees. |
 | Binary format | `binary_format` | A persisted binary layout defined by a required `Layout` section holding a YAML code block of record types with per-field name/offset/size/type/endianness. |

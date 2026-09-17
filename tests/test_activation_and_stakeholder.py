@@ -167,9 +167,7 @@ def test_a_shipped_skeleton_validates_against_the_module_the_service_serves(
 
 
 @pytest.mark.trace("TC-006", "StR-001-VC-2")
-def test_the_agent_cli_generator_produces_artifacts_that_validate(
-    quire_engine, tmp_path
-):
+def test_the_agent_cli_generator_renders_every_skeleton(quire_engine, tmp_path):
     """The generator criterion, discharged by a real generator run.
 
     What this row counts: every shipped skeleton (the FR-005 set and the

@@ -4,12 +4,25 @@
   "type": "object",
   "properties": {
     "id": {
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ObjectId.json"
+    },
+    "title": {
       "type": "string",
-      "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+      "minLength": 1
+    },
+    "type": {
+      "type": "string",
+      "minLength": 1
+    },
+    "object": {
+      "type": "string"
     }
   },
   "required": [
-    "id"
+    "id",
+    "title",
+    "type"
   ],
-  "description": "The frontmatter every object type's documents share. An object id is a word\nid: letters, digits and underscores, starting with a letter; hyphens are not\nallowed. The model is open, so the other frontmatter keys an object type\ndeclares pass through."
+  "unevaluatedProperties": {},
+  "description": "The frontmatter every object-type artifact carries, shared by all fourteen\nobject types. Keys beyond these (`relationships`, ...) are governed\nelsewhere and admitted here."
 }
