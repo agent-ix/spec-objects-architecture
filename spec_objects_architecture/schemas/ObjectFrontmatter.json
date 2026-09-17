@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ObjectFrontmatter.json",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*$"
+    }
+  },
+  "required": [
+    "id"
+  ],
+  "description": "The frontmatter every object type's documents share. An object id is a word\nid: letters, digits and underscores, starting with a letter; hyphens are not\nallowed. The model is open, so the other frontmatter keys an object type\ndeclares pass through."
+}

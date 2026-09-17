@@ -1,12 +1,12 @@
 ---
-id: negative-006
+id: negative_006
 title: "ContractWithoutGuarantees"
 type: external_contract
 object: external_contract
 expect: semantic.record-invalid
 because: "ExternalContract.json requires at least one clause: this kind exists to pin guarantees"
 ---
-# [negative-006] ContractWithoutGuarantees
+# [negative_006] ContractWithoutGuarantees
 
 ## Contract
 

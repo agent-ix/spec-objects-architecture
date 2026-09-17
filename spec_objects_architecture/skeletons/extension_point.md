@@ -1,5 +1,5 @@
 ---
-id: extension-point-001
+id: extension_point_001
 title: "RendererRegistryExtension"
 type: extension_point
 object: extension_point
@@ -27,12 +27,12 @@ object: extension_point
      - ExtensionPoint.json forbids `fields`, so there is no
        "## Properties" section.
      - Keep headings unique per level. -->
-# [extension-point-001] RendererRegistryExtension
+# [extension_point_001] RendererRegistryExtension
 
 ## Contract
 
 Modules contribute object renderers through the `RendererRegistry` interface
-(interface-002): per `object_type_name`, a module registers the React
+(interface_002): per `object_type_name`, a module registers the React
 component and configuration this library needs to render that type — with no
 modification to the host library's source.
 

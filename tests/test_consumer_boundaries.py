@@ -50,7 +50,7 @@ def filament(quire_engine, object_types):
     return quire_engine.extract_filament_core(
         {
             "project_id": "spec-objects-architecture",
-            "document_id": "api-endpoint-001",
+            "document_id": "api_endpoint_001",
             "rel_path": str(path),
             "markdown": path.read_text(),
             "repo_name": "spec-objects-architecture",
@@ -130,10 +130,10 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
     strict=True,
     reason=(
         "A bundle index built one entry per document — which is what "
-        "`BundleIndex::from_documents` does — lists `data-schema-001` twice "
+        "`BundleIndex::from_documents` does — lists `data_schema_001` twice "
         "and then reports every reference to it as "
         '`semantic.ambiguous-type: type "ArtifactRecord" names '
-        "data-schema-001 and data-schema-001`, naming the same id on both "
+        "data_schema_001 and data_schema_001`, naming the same id on both "
         "sides. agent-ix/quire-rs#398 owns collapsing entries that share an "
         "id. The module keys its index by id, which is the correct "
         "construction; this row records that the engine does not yet."
@@ -153,7 +153,7 @@ def test_a_per_file_bundle_index_does_not_make_a_declaration_ambiguous_with_itse
             "markdown": path.read_text(),
             "module": semantic_module,
             "path": str(path),
-            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/api-endpoint-001",
+            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/api_endpoint_001",
             "bundle": {
                 "package": manifest["semantic"]["package"],
                 "objects": objects,

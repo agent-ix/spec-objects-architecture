@@ -39,7 +39,9 @@ data rather than a hard-coded kind list.
   vocabulary: `owner`, `declaredType`, `multiplicity`, `direction`,
   `interfaceType`, `sourceEnd`, `targetEnd`, `flowDirection`,
   `sourceElement`, `targetElement`, `fields`, `operations`, `featureOrder`,
-  `clauses` and `relationships`.
+  `supertypes`, `clauses` and `relationships`.
+- The `specializes` edge verb as spec-objects-business declares it
+  (structural, inverse `generalizes`).
 
 ## Outputs
 
@@ -52,7 +54,8 @@ data rather than a hard-coded kind list.
 - Skeletons `skeletons/part.md`, `port.md`, `connection.md` and
   `allocation.md`.
 - Edge verbs `owned_by`, `typed_by`, `connects`, `allocates`, `allocated_to`
-  and roles `systems-part`, `systems-port`, `systems-interface`.
+  and roles `systems-part`, `systems-port`, `systems-interface`; the verb
+  `specializes` on `interface`.
 
 ## Behavior
 
@@ -66,12 +69,13 @@ data rather than a hard-coded kind list.
 - The kind of an allocation's source (a part, a port or an operation) SHALL be enforced by the QSL model `quire.model.systems.allocation/v1` and its binder, not by construct `references`.
 - `interface` SHALL declare shape `interface` with `fields` optional, `operations` optional and `featureOrder` required, and no minimum-feature rule.
 - An interface's features SHALL be its fields and operations, ordered as one sequence across both by `featureOrder`, which lists the interface's own field and operation names.
+- An interface SHALL declare its supertypes as `specializes` relationships to other interfaces: the verb is declared exactly as spec-objects-business declares it, `interface` admits `specializes: [interface]`, and the construct declares `supertypes` optional, referencing `systems-interface`.
 - Every construct SHALL bind `meaning` to `quire.meaning.systems.<kind>/v1`.
 - Every construct `references` entry SHALL name only roles the manifest declares, never `*`.
 - Each of `part`, `port`, `connection` and `allocation` SHALL author its members as one row of one table under an H2 named for the kind, extracted by one required `table_row` locator asserting the column header and `min_rows: 1`.
 - The `connection` table SHALL carry `Source`, `Source Multiplicity`, `Target`, `Target Multiplicity` and `Direction` columns.
 - A systems table's first column SHALL NOT be a quire-rs FR-075 model-table key.
-- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`, and skeleton ids SHALL use underscores (QSpec #86 TC-197).
+- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`, and skeleton ids SHALL be word ids per [FR-003](./FR-003-semantic-manifest-contract.md) (QSpec #86 TC-197).
 - Each systems skeleton SHALL validate with zero errors, its record carrying every FR-152 member of its kind.
 
 ## Constraints
@@ -93,6 +97,7 @@ data rather than a hard-coded kind list.
 | FR-007-AC-7 | `validate_document` on each systems skeleton reports zero errors, and its record carries every FR-152 member of its kind. | Test |
 | FR-007-AC-8 | Renaming a systems skeleton's H2 fails with the required locator missing, and reordering its columns fails with a column mismatch. | Test |
 | FR-007-AC-9 | An interface record with only fields, one with only operations, and one with both validates against `Interface.json` with its `featureOrder`; one without `featureOrder` fails; the construct declares `fields` and `operations` optional, `featureOrder` required, and no rule. | Test |
+| FR-007-AC-10 | `specializes` is declared as spec-objects-business declares it; `interface` admits `specializes: [interface]`; the construct declares `supertypes` optional with `references` `[systems-interface]`; an interface document with a `specializes` relationship extracts that edge with no `disallowed-edge-type` warning, while an `owned_by` relationship draws one. | Test |
 
 ## Dependencies
 

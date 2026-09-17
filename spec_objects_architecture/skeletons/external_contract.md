@@ -1,5 +1,5 @@
 ---
-id: external-contract-001
+id: external_contract_001
 title: "IdentityServiceContract"
 type: external_contract
 object: external_contract
@@ -26,7 +26,7 @@ object: external_contract
        ExternalContract.json forbids `fields`, so there is no
        "## Properties" section.
      - Keep headings unique per level. -->
-# [external-contract-001] IdentityServiceContract
+# [external_contract_001] IdentityServiceContract
 
 ## Contract
 

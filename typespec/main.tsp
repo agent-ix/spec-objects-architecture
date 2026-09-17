@@ -24,6 +24,21 @@ using AgentIx.Semantic.Core;
 namespace AgentIx.SpecObjects.Architecture;
 
 // ---------------------------------------------------------------------------
+// Object frontmatter
+// ---------------------------------------------------------------------------
+
+/**
+ * The frontmatter every object type's documents share. An object id is a word
+ * id: letters, digits and underscores, starting with a letter; hyphens are not
+ * allowed. The model is open, so the other frontmatter keys an object type
+ * declares pass through.
+ */
+model ObjectFrontmatter {
+  @pattern("^[A-Za-z][A-Za-z0-9_]*$")
+  id: string;
+}
+
+// ---------------------------------------------------------------------------
 // Open marker models (used only as `@contains` predicates)
 // ---------------------------------------------------------------------------
 

@@ -33,11 +33,12 @@ nav:
     icon: Network
     order: 52
 # FR-007: the edge verbs and roles the systems-model kinds (QSpec FR-152)
-# introduce. No verb or role here exists in spec-artifacts-iso or
-# spec-objects-business, so a registry that loads those modules merges these
-# without a duplicate entry. The other verbs and roles this manifest uses are
-# declared by spec-artifacts-iso.
+# introduce. `specializes` is declared exactly as spec-objects-business
+# declares it, so a registry that loads both merges one definition; no other
+# verb or role here exists in spec-artifacts-iso or spec-objects-business. The
+# other verbs and roles this manifest uses are declared by spec-artifacts-iso.
 edge_types:
+  specializes: { description: "Generalization: the source type specializes the target type and inherits its declarations.", category: structural, inverse: generalizes }
   owned_by: { description: "Systems element is owned by its owning type or part.", category: structural }
   typed_by: { description: "Systems element is typed by a type or interface.", category: structural }
   connects: { description: "Connection joins the ports at its source and target ends.", category: structural }
@@ -53,6 +54,7 @@ artifact_types: []
 lint_rules: []
 object_types:
 - name: api_endpoint
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable, measurable, configurable]
   allowed_links:
     exposes: [domain-object]
@@ -102,6 +104,7 @@ object_types:
           after_heading: Operations
           required: false
 - name: data_schema
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     contains: [data_schema, enumeration]
     represents: [domain-object]
@@ -125,6 +128,7 @@ object_types:
           after_heading: Properties
           required: false
 - name: queue
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable, configurable]
   allowed_links:
     carries: [data_schema, event]
@@ -148,6 +152,7 @@ object_types:
           after_heading: Properties
           required: false
 - name: action
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed]
   allowed_links:
     triggers: [process, action]
@@ -173,6 +178,7 @@ object_types:
           after_heading: Operations
           required: false
 - name: ui_component
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, deployable]
   allowed_links:
     contains: [ui_component]
@@ -203,10 +209,12 @@ object_types:
 # 9 users. Internal contracts -> `interface`; external-system contracts
 # -> `external_contract`; service-client FRs -> relationship edges.
 - name: interface
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed, systems-interface]
   allowed_links:
     contains: [api_endpoint]
     references: [data_schema]
+    specializes: [interface]
   # FR-007: the QSpec FR-152 Interface kind — its features are fields and
   # operations, ordered as one sequence by `featureOrder`. Meaning id from
   # agent-ix/quire-specification#86 (FR-208).
@@ -217,8 +225,11 @@ object_types:
       featureOrder: required
       fields: optional
       operations: optional
+      supertypes: optional
       clauses: optional
       relationships: optional
+    references:
+      supertypes: [systems-interface]
     meaning: quire.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
@@ -244,6 +255,7 @@ object_types:
           after_heading: Operations
           required: false
 - name: external_contract
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [externally-exposed]
   allowed_links:
     implements: [interface]
@@ -283,6 +295,7 @@ object_types:
           after_heading: Invariants
           required: false
 - name: extension_point
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     extends: [interface]
     references: [interface]
@@ -318,6 +331,7 @@ object_types:
           after_heading: Invariants
           required: false
 - name: binary_format
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     serializes: [data_schema]
     references: [data_schema]
@@ -344,6 +358,7 @@ object_types:
           after_heading: Invariants
           required: false
 - name: rate_limit
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     throttles: [api_endpoint, action]
   data_schema:
@@ -371,6 +386,7 @@ object_types:
 # (filament-core-service FR-035 CR-004). Meaning ids come from
 # agent-ix/quire-specification#86 (FR-208).
 - name: part
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [systems-part]
   allowed_links:
     owned_by: ["*"]
@@ -402,6 +418,7 @@ object_types:
             columns: [Owner, Declared Type, Multiplicity]
             min_rows: 1
 - name: port
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   roles: [systems-port]
   allowed_links:
     owned_by: [systems-part]
@@ -437,6 +454,7 @@ object_types:
             columns: [Owner, Direction, Interface, Multiplicity]
             min_rows: 1
 - name: connection
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     connects: [systems-port]
   construct:
@@ -469,6 +487,7 @@ object_types:
             columns: [Source, Source Multiplicity, Target, Target Multiplicity, Direction]
             min_rows: 1
 - name: allocation
+  frontmatter_schema_ref: schemas/ObjectFrontmatter.json
   allowed_links:
     allocates: ["*"]
     allocated_to: [systems-part]

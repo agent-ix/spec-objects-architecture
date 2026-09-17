@@ -1,5 +1,5 @@
 ---
-id: queue-001
+id: queue_001
 title: "ArtifactIngestQueue"
 type: queue
 object: queue
@@ -8,7 +8,7 @@ object: queue
      same fields as queue.md, authored as one ```sysml``` fence instead of the
      typed table (FR-005-AC-2). One artifact carries one form; the alternate is
      a separate file, never a second block in the same artifact. -->
-# [queue-001] ArtifactIngestQueue
+# [queue_001] ArtifactIngestQueue
 
 ## Properties
 

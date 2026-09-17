@@ -78,14 +78,14 @@ def worktree_copy(tmp_path: pathlib.Path) -> pathlib.Path:
 
 
 @pytest.mark.trace("TC-010", "FR-002-AC-1")
-def test_emitted_set_is_the_thirtyeight_files_the_toolchain_records():
+def test_emitted_set_is_the_thirtynine_files_the_toolchain_records():
     record = toolchain()
     expected = sorted(
         [f"{MODEL_OF[name]}.json" for name in EXPORTS]
         + [f"{model}.json" for model in SUPPORT_MODELS]
     )
     assert sorted(record["files"]) == expected
-    assert len(expected) == 38
+    assert len(expected) == 39
     assert sorted(shipped_schemas()) == expected
     assert record["compiler"] == {"name": "@typespec/compiler", "version": "1.15.0"}
     assert record["emitter"] == {"name": "@typespec/json-schema", "version": "1.15.0"}

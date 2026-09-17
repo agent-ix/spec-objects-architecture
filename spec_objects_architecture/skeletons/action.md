@@ -1,5 +1,5 @@
 ---
-id: action-001
+id: action_001
 title: "VerifyArtifactChecksum"
 type: action
 object: action
@@ -17,7 +17,7 @@ object: action
      - An action declares one invocation, not data: Action.json forbids
        `fields`, so there is no "## Properties" section.
      - Keep headings unique per level. -->
-# [action-001] VerifyArtifactChecksum
+# [action_001] VerifyArtifactChecksum
 
 ## Inputs
 

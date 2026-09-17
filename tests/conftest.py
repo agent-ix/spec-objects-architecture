@@ -132,6 +132,7 @@ SUPPORT_MODELS = (
     "PortDirection",
     "ConnectionDirection",
     "ConnectionEnd",
+    "ObjectFrontmatter",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.

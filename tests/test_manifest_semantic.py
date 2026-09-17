@@ -6,6 +6,7 @@ what Quire's loader refuses.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 
 import pytest
@@ -204,3 +205,40 @@ def test_the_refusal_names_the_offending_key_and_path(quire_engine, tmp_path):
     with pytest.raises(quire_engine.QuireBaseError) as error:
         quire_engine.Registry.load_from([str(unknown)])
     assert "foo" in str(error.value)
+
+
+OBJECT_ID = re.compile(r"^[A-Za-z][A-Za-z0-9_]*$")
+
+
+@pytest.mark.trace("TC-111", "FR-003-AC-9")
+def test_every_object_type_constrains_its_id_to_word_form():
+    schema = json.loads(
+        (PACKAGE_ROOT / "schemas" / "ObjectFrontmatter.json").read_text()
+    )
+    assert schema["properties"]["id"]["pattern"] == OBJECT_ID.pattern
+    assert schema["required"] == ["id"]
+    for ot in object_types():
+        assert ot["frontmatter_schema_ref"] == "schemas/ObjectFrontmatter.json", ot[
+            "name"
+        ]
+    documents = (
+        sorted(SKELETONS_DIR.glob("*.md"))
+        + sorted((REPO_ROOT / "tests" / "fixtures").glob("[!b]*/*.md"))
+        + sorted((REPO_ROOT / "tests" / "fixtures").glob("*.md"))
+    )
+    assert len(documents) > 17
+    for path in documents:
+        assert OBJECT_ID.match(frontmatter(path.read_text())["id"]), path
+
+
+@pytest.mark.trace("TC-111", "FR-003-AC-9")
+def test_an_underscore_id_validates_and_a_hyphenated_id_is_refused(quire_engine):
+    text = (SKELETONS_DIR / "queue.md").read_text()
+    assert "id: queue_001\n" in text
+    assert quire_engine.validate_document("queue", str(PACKAGE_ROOT), text)["is_valid"]
+    hyphenated = text.replace("id: queue_001\n", "id: queue-001\n", 1)
+    result = quire_engine.validate_document("queue", str(PACKAGE_ROOT), hyphenated)
+    assert not result["is_valid"]
+    assert [(e["reason"], "(at id)" in e["message"]) for e in result["errors"]] == [
+        ("frontmatter", True)
+    ], result["errors"]

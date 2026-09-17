@@ -294,7 +294,7 @@ def test_the_extractor_reports_an_unresolvable_token_as_unresolved_type(
             "markdown": path.read_text(),
             "module": semantic_module,
             "path": str(path),
-            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/unresolved-001",
+            "sourceIdentity": "ix://agent-ix/spec-objects-architecture/unresolved_001",
             "bundle": bundle_index,
         }
     )

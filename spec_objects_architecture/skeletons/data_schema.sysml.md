@@ -1,5 +1,5 @@
 ---
-id: data-schema-001
+id: data_schema_001
 title: "ArtifactRecord"
 type: data_schema
 object: data_schema
@@ -9,7 +9,7 @@ object: data_schema
      instead of the typed table (FR-005-AC-2). One artifact carries one form;
      the alternate is a separate file, never a second block in the same
      artifact. -->
-# [data-schema-001] ArtifactRecord
+# [data_schema_001] ArtifactRecord
 
 ## Properties
 

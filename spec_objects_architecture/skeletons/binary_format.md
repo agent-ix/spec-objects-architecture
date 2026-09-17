@@ -1,5 +1,5 @@
 ---
-id: binary-format-001
+id: binary_format_001
 title: "IndexMetadataBlock"
 type: binary_format
 object: binary_format
@@ -23,7 +23,7 @@ object: binary_format
        BinaryFormat.json forbids `fields` and `operations`, so there is
        neither a "## Properties" nor an "## Operations" section.
      - Keep headings unique per level. -->
-# [binary-format-001] IndexMetadataBlock
+# [binary_format_001] IndexMetadataBlock
 
 ## Layout
 

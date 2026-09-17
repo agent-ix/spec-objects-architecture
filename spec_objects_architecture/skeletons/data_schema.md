@@ -1,5 +1,5 @@
 ---
-id: data-schema-001
+id: data_schema_001
 title: "ArtifactRecord"
 type: data_schema
 object: data_schema
@@ -21,7 +21,7 @@ object: data_schema
      - A record declares data, not behaviour: DataSchema.json forbids
        `operations`, so there is no "## Operations" section.
      - Keep headings unique per level. -->
-# [data-schema-001] ArtifactRecord
+# [data_schema_001] ArtifactRecord
 
 ## Properties
 

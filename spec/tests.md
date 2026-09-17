@@ -30,13 +30,13 @@ schemas (US-001, FR-002..FR-006, NFR-001, IT-002). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **160/160 rows backed
-(100%)**: 89 `TC-` rows from the Test Case Summary below plus 71 criterion
-rows minted from the requirements (4 FR-001, 10 FR-002, 8 FR-003, 16 FR-004,
-10 FR-005, 6 FR-006, 9 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
+What the numbers count. `quire coverage` reports **163/163 rows backed
+(100%)**: 91 `TC-` rows from the Test Case Summary below plus 72 criterion
+rows minted from the requirements (4 FR-001, 10 FR-002, 9 FR-003, 16 FR-004,
+10 FR-005, 6 FR-006, 10 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is
 a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **259 passed, 7 skipped, 16 xfailed**. The 7 skips are the
+reports **262 passed, 7 skipped, 16 xfailed**. The 7 skips are the
 environment-gated rows (4 need a running `filament-core-service`, 3 are the
 opt-in Quoin roundtrip, which was run separately and passed); the 16 xfails are
 the expected failures named under Test Environment. No row is green because a
@@ -71,11 +71,11 @@ test was skipped.
 |---|---|---|---|
 | FR-001 | FR-001-AC-1..4 | TC-001..TC-004 | 🚧 AC-1 is an expected failure on filament-core-service#25; AC-2..AC-4 need a running filament-core |
 | FR-002 | FR-002-AC-1..10, FR-002-CON-1..5 | TC-010..TC-019, TC-071..TC-079, TC-087 | ✅ |
-| FR-003 | FR-003-AC-1..8, FR-003-CON-1..2 | TC-020..TC-028, TC-090 | ✅ AC-6's naming half is an expected failure |
+| FR-003 | FR-003-AC-1..9, FR-003-CON-1..2 | TC-020..TC-028, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
-| FR-007 | FR-007-AC-1..9, FR-007-CON-1 | TC-100..TC-109 | 🚧 AC-7 is an expected failure on quire-rs#446 |
+| FR-007 | FR-007-AC-1..10, FR-007-CON-1 | TC-100..TC-110 | 🚧 AC-7 is an expected failure on quire-rs#446 |
 
 ### Non-Functional Requirement Coverage
 
@@ -148,10 +148,10 @@ test was skipped.
 | TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1 | ✅ falsified three ways and restored: a `corpus/` probe, a `fixtures/semantic-module` probe and a `.gitmodules` each turn it red |
 | TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8 | ✅ |
 | TC-060 | Zero 0.2.0 locators changed | Unit | P0 | NFR-001-AC-1 | ✅ |
-| TC-061 | Every checked-in 0.2.0 skeleton validates under 0.4.0 with zero errors; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
+| TC-061 | Every checked-in 0.2.0 skeleton validates under 0.4.0 with zero errors once its id is in word form, and its frozen hyphenated id draws only the frontmatter `id` error; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
 | TC-062 | No 0.2.0 skeleton carries a `## Properties` section in any form, so the `semantic.legacy-properties-form` count over the ten of them is 0 | Integration | P1 | NFR-001-AC-3 | ✅ the measured population is empty, and the row asserts the emptiness rather than a warning the module cannot produce |
 | TC-063 | Each 0.2.0 locator's yield is identical under 0.2.0 and 0.4.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
-| TC-064 | Every 0.2.0 object type's `allowed_links` set is identical at 0.2.0 and 0.4.0, and its `roles` set is identical except the named `interface` addition | Unit | P1 | NFR-001-AC-5 | ✅ |
+| TC-064 | Every 0.2.0 object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.4.0 except the named `interface` additions | Unit | P1 | NFR-001-AC-5 | ✅ |
 | TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ |
 | TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
@@ -183,6 +183,8 @@ test was skipped.
 | TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
 | TC-108 | No systems schema or construct, `interface` included, declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1 | ✅ |
 | TC-109 | An interface with only fields, only operations, or both validates with its `featureOrder`; none without it; the construct makes both features optional and has no rule | Unit | P0 | FR-007-AC-9 | ✅ |
+| TC-110 | An interface declares supertypes: `specializes` is declared as spec-objects-business declares it, `interface` admits it to `interface`, the construct names `supertypes` optional referencing `systems-interface`, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
+| TC-111 | Every object type references `ObjectFrontmatter.json`, whose `id` pattern admits word ids only; every shipped skeleton and fixture id matches; an underscore id validates and a hyphenated id is refused at `id` | Integration | P0 | FR-003-AC-9 | ✅ |
 
 ## Test Environment
 

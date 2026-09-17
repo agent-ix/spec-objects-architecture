@@ -44,6 +44,7 @@
     "LayoutField.json",
     "LayoutType.json",
     "LimitScope.json",
+    "ObjectFrontmatter.json",
     "OrderingScope.json",
     "Part.json",
     "Port.json",
@@ -60,5 +61,5 @@
     "VersioningPolicy.json",
     "VersioningScheme.json"
   ],
-  "digest": "sha256:92a6a242a785e24da21715f42db82b22ec185f3a97eb0c6575982bd1b78be46d"
+  "digest": "sha256:067a6b567cc4da3440bdd32f3685ca86cca15eb52ebe4e9d76a8c8350b34c447"
 }

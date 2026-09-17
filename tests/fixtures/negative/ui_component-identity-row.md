@@ -1,12 +1,12 @@
 ---
-id: negative-005
+id: negative_005
 title: "ComponentWithIdentifiedProp"
 type: ui_component
 object: ui_component
 expect: semantic.record-invalid
 because: "UiComponent.json admits zero identity fields; props are not identified"
 ---
-# [negative-005] ComponentWithIdentifiedProp
+# [negative_005] ComponentWithIdentifiedProp
 
 ## Properties
 

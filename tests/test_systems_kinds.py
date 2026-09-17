@@ -32,7 +32,7 @@ from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
 
 # QSpec FR-152 members per kind, named in FCD IR member form.
 FR152_MEMBERS = {
-    "interface": {"fields", "operations", "featureOrder"},
+    "interface": {"fields", "operations", "featureOrder"},  # and `supertypes`, an edge
     "part": {"owner", "declaredType", "multiplicity"},
     "port": {"owner", "direction", "interfaceType", "multiplicity"},
     "connection": {"sourceEnd", "targetEnd", "flowDirection"},
@@ -343,3 +343,50 @@ def test_no_member_beyond_fr152(kind):
     assert set(schema["properties"]) == FR152_MEMBERS[kind]
     assert set(schema["required"]) == FR152_MEMBERS[kind]
     assert required == FR152_MEMBERS[kind]
+
+
+def _with_relationship(text: str, verb: str, target: str) -> str:
+    front = "object: interface\n"
+    assert front in text
+    return text.replace(
+        front,
+        f"{front}relationships:\n  - type: {verb}\n    target: {target}\n",
+        1,
+    )
+
+
+@pytest.mark.trace("TC-110", "FR-007-AC-10")
+def test_an_interface_declares_supertypes_by_specializes(quire_engine):
+    """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge and its
+    registry entry match spec-objects-business; the construct names the IR
+    member `supertypes` and constrains it to interfaces."""
+    manifest = load_manifest()
+    assert manifest["edge_types"]["specializes"] == {
+        "description": (
+            "Generalization: the source type specializes the target type and "
+            "inherits its declarations."
+        ),
+        "category": "structural",
+        "inverse": "generalizes",
+    }
+    interface = object_type("interface")
+    assert interface["allowed_links"]["specializes"] == ["interface"]
+    construct = interface["construct"]
+    assert construct["members"]["supertypes"] == "optional"
+    assert construct["references"]["supertypes"] == ["systems-interface"]
+
+    text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
+    special = _with_relationship(text, "specializes", "flow")
+    edges = quire_engine.extract("interface", str(PACKAGE_ROOT), special)["edges"]
+    assert {"target": "flow", "edge_type": "specializes"} in edges
+    warnings = quire_engine.validate_document("interface", str(PACKAGE_ROOT), special)[
+        "warnings"
+    ]
+    assert not [w for w in warnings if w["reason"] == "disallowed-edge-type"]
+    refused = quire_engine.validate_document(
+        "interface", str(PACKAGE_ROOT), _with_relationship(text, "owned_by", "flow")
+    )["warnings"]
+    assert any(
+        w["reason"] == "disallowed-edge-type" and "owned_by" in w["message"]
+        for w in refused
+    ), refused

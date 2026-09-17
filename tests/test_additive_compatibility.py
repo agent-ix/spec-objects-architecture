@@ -86,16 +86,19 @@ def test_no_baseline_locator_definition_changed():
 
 @pytest.mark.trace("TC-064", "NFR-001-AC-5")
 def test_no_object_type_changed_its_edge_vocabulary_or_roles():
-    """Every 0.2.0 `allowed_links` set is unchanged, and every 0.2.0 `roles`
-    set is unchanged except for the one addition NFR-001-AC-5 names:
-    `interface` gains `systems-interface` (FR-007), appended after its 0.2.0
-    roles, so a port can reference the interface it is typed by."""
+    """Every 0.2.0 `allowed_links` and `roles` set is unchanged except for the
+    two additions NFR-001-AC-5 names, both on `interface` (FR-007): the role
+    `systems-interface`, appended after its 0.2.0 roles, so a port can
+    reference the interface it is typed by; and the verb `specializes`, so an
+    interface can declare its supertypes."""
     added_roles = {"interface": ["systems-interface"]}
+    added_links = {"interface": {"specializes": ["interface"]}}
     baseline = json.loads((BASELINE_DIR / "edge_vocabulary.json").read_text())
     assert baseline["version"] == "0.2.0"
     for name, expected in baseline["object_types"].items():
         current = object_type(name)
-        assert current.get("allowed_links") == expected["allowed_links"], name
+        expected_links = {**expected["allowed_links"], **added_links.get(name, {})}
+        assert current.get("allowed_links") == expected_links, name
         expected_roles = expected["roles"]
         if name in added_roles:
             expected_roles = (expected_roles or []) + added_roles[name]
@@ -107,19 +110,36 @@ def test_every_baseline_skeleton_validates_under_the_new_manifest(quire_engine):
     """Measured, not assumed: the ten 0.2.0 skeletons carry no frontmatter
     `object:` key, so Quire runs headings-only validation on them and the
     typed record is never assembled or checked. That is what makes the current
-    module additive for the artifacts that exist today."""
+    module additive for the artifacts that exist today.
+
+    The baseline is frozen, so its ids keep their 0.2.0 hyphenated form. The
+    object-id rule (FR-003-AC-9) refuses that form, so each skeleton is
+    validated with its id in word form, and the frozen form is asserted to
+    draw exactly the one frontmatter `id` error and nothing else."""
     baseline = baseline_skeletons()
     assert len(baseline) == 10
     failures = {}
     for path in baseline:
         text = path.read_text()
-        assert "object" not in frontmatter(text), path.name
+        front = frontmatter(text)
+        assert "object" not in front, path.name
+        assert "-" in front["id"], path.name
+        frozen = quire_engine.validate_document(front["type"], str(PACKAGE_ROOT), text)
+        (error,) = frozen["errors"]
+        assert error["reason"] == "frontmatter", (path.name, error)
+        assert "(at id)" in error["message"], (path.name, error)
         result = quire_engine.validate_document(
-            frontmatter(text)["type"], str(PACKAGE_ROOT), text
+            front["type"], str(PACKAGE_ROOT), _word_id(text, front["id"])
         )
         if result["errors"]:
             failures[path.name] = [e["message"] for e in result["errors"]]
     assert failures == {}
+
+
+def _word_id(text: str, hyphenated: str) -> str:
+    return text.replace(
+        f"id: {hyphenated}\n", f"id: {hyphenated.replace('-', '_')}\n", 1
+    )
 
 
 @pytest.mark.trace("TC-061", "NFR-001-AC-2")
@@ -137,6 +157,7 @@ def test_every_baseline_skeleton_validates_under_the_new_manifest(quire_engine):
 )
 def test_a_legacy_form_artifact_that_declares_its_object_is_not_an_error(quire_engine):
     text = (BASELINE_DIR / "skeletons" / "data_schema.md").read_text()
+    text = _word_id(text, frontmatter(text)["id"])
     text = text.replace(
         "type: data_schema\n", "type: data_schema\nobject: data_schema\n", 1
     )

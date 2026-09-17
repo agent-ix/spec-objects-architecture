@@ -1,12 +1,12 @@
 ---
-id: negative-007
+id: negative_007
 title: "LimitWithoutInvariants"
 type: rate_limit
 object: rate_limit
 expect: semantic.record-invalid
 because: "RateLimit.json requires at least one clause pinning what happens at the limit"
 ---
-# [negative-007] LimitWithoutInvariants
+# [negative_007] LimitWithoutInvariants
 
 ## Thresholds
 

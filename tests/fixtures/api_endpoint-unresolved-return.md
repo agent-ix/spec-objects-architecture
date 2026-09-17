@@ -1,12 +1,12 @@
 ---
-id: unresolved-001
+id: unresolved_001
 title: "EndpointReturningUnknownRecord"
 type: api_endpoint
 object: api_endpoint
 expect: semantic.unresolved-type
 because: "the return names a token no skeleton of this module declares (FR-006-AC-5)"
 ---
-# [unresolved-001] EndpointReturningUnknownRecord
+# [unresolved_001] EndpointReturningUnknownRecord
 
 ## Endpoint
 
