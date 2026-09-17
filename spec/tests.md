@@ -30,8 +30,8 @@ schemas (US-001, FR-002..FR-006, NFR-001, IT-002). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **163/163 rows backed
-(100%)**: 91 `TC-` rows from the Test Case Summary below plus 72 criterion
+What the numbers count. `quire coverage` reports **164/164 rows backed
+(100%)**: 91 `TC-` rows from the Test Case Summary below plus 73 criterion
 rows minted from the requirements (4 FR-001, 10 FR-002, 9 FR-003, 16 FR-004,
 10 FR-005, 6 FR-006, 10 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is

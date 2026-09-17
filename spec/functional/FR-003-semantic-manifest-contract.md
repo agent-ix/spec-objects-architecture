@@ -79,8 +79,8 @@ meaning.
 | FR-003-AC-5 | `quoin module install path:<module dir>` exits zero and `quoin module` lists `spec-objects-architecture`; the previously installed entry is restored afterwards. | Demonstration |
 | FR-003-AC-6 | A manifest copy whose `semantic` block gains a key `foo` is refused by Quire's loader naming `foo`; a copy whose digest is altered is refused naming the path. | Test |
 | FR-003-AC-7 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0, including the eight definitions this repo's issue #7 records as truncated. | Test |
-| FR-003-AC-8 | Handed this manifest's fourteen reference-form `data_schema` values verbatim, `extract_filament_core` answers one `semantic.data-schema-unresolved-reference` at error severity per exported object type; handed the same schemas resolved into the snapshot, it answers none. | Test || FR-003-AC-9 | Every object type declares `frontmatter_schema_ref: schemas/ObjectFrontmatter.json`, whose `id` pattern is `^[A-Za-z][A-Za-z0-9_]*$`; every shipped skeleton and fixture id matches it; a skeleton with an underscore id validates, and the same skeleton with a hyphenated id is refused with a frontmatter error at `id`. | Test |
-
+| FR-003-AC-8 | Handed this manifest's fourteen reference-form `data_schema` values verbatim, `extract_filament_core` answers one `semantic.data-schema-unresolved-reference` at error severity per exported object type; handed the same schemas resolved into the snapshot, it answers none. | Test |
+| FR-003-AC-9 | Every object type declares `frontmatter_schema_ref: schemas/ObjectFrontmatter.json`, whose `id` pattern is `^[A-Za-z][A-Za-z0-9_]*$`; every shipped skeleton and fixture id matches it; a skeleton with an underscore id validates, and the same skeleton with a hyphenated id is refused with a frontmatter error at `id`. | Test |
 
 ## Dependencies
 
