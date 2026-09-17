@@ -231,32 +231,28 @@ def all_skeletons() -> list[pathlib.Path]:
     return sorted(SKELETONS_DIR.glob("*.md"))
 
 
-def _engine_lowers(markdown: str, kind: str, body_extraction: dict, key: str) -> bool:
-    """Whether the installed engine lowers a declared table into the record key
-    `key`. Probed on a minimal document, never on a shipped skeleton, so a
-    skeleton's own defects cannot flip its expected failure."""
+def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None):
+    """Extract a minimal probe document, or `None` when no engine is installed
+    (`require_quire` fails those tests by name). Any other engine error
+    propagates: a probe never hides a defect unrelated to its feature."""
     try:
         import quire
-
-        record = quire.extract_semantic(
-            {
-                "markdown": markdown,
-                "module": {
-                    "contractVersion": "1.0.0",
-                    "semanticCore": "0.1.0",
-                    "package": "agent-ix/spec-objects-architecture",
-                    "exports": [kind],
-                },
-                "path": f"spec/{kind}.md",
-                "bundle": {"package": "agent-ix/spec-objects-architecture"},
-                "bodyExtraction": body_extraction,
-            }
-        )
-    except (
-        Exception
-    ):  # noqa: BLE001 - an engine without the feature refuses the request
-        return False
-    return key in (record.get("model") or {})
+    except ImportError:
+        return None
+    request = {
+        "markdown": markdown,
+        "module": {
+            "contractVersion": "1.0.0",
+            "semanticCore": "0.1.0",
+            "package": "agent-ix/spec-objects-architecture",
+            "exports": [kind],
+        },
+        "path": f"spec/{kind}.md",
+        "bundle": {"package": "agent-ix/spec-objects-architecture"},
+    }
+    if body_extraction is not None:
+        request["bodyExtraction"] = body_extraction
+    return quire.extract_semantic(request)
 
 
 def _table_locator(section: str, columns: list[str]) -> dict:
@@ -277,61 +273,48 @@ def _table_locator(section: str, columns: list[str]) -> dict:
 @functools.cache
 def engine_lowers_systems_tables() -> bool:
     """agent-ix/quire-rs#446: the engine lowers a systems table into the record."""
-    return _engine_lowers(
+    record = _extract_probe(
         "---\nid: tank_pump\ntitle: TankPump\ntype: part\nobject: part\n---\n"
         "# [tank_pump] TankPump\n\n## Part\n\n"
         "| Owner | Declared Type | Multiplicity |\n|---|---|---|\n"
         "| tank_pump | String | 1..1 |\n",
         "part",
         _table_locator("Part", ["Owner", "Declared Type", "Multiplicity"]),
-        "part",
     )
+    part = ((record or {}).get("model") or {}).get("part") or {}
+    return all(part.get(member) for member in ("owner", "declaredType", "multiplicity"))
 
 
 @functools.cache
 def engine_lowers_feature_order() -> bool:
     """agent-ix/quire-rs#448: the engine lowers a `## Features` table into the
     record's `featureOrder`."""
-    return _engine_lowers(
+    record = _extract_probe(
         "---\nid: flow\ntitle: Flow\ntype: interface\nobject: interface\n---\n"
         "# [flow] Flow\n\n## Operations\n\n### run\n\nReturns: Bytes[1..1]\n\n"
         "## Features\n\n| Feature | Kind |\n|---|---|\n| run | operation |\n",
         "interface",
         _table_locator("Features", ["Feature", "Kind"]),
-        "featureOrder",
     )
+    order = ((record or {}).get("model") or {}).get("featureOrder") or []
+    return [entry.get("name") for entry in order] == ["run"]
 
 
 @functools.cache
 def engine_reads_post_lines() -> bool:
     """agent-ix/quire-rs#431: the engine reads a `Post:` line under an operation
     as a `post` clause reference."""
-    try:
-        import quire
-
-        record = quire.extract_semantic(
-            {
-                "markdown": (
-                    "---\nid: probe\ntitle: Probe\ntype: external_contract\n"
-                    "object: external_contract\n---\n# [probe] Probe\n\n"
-                    "## Invariants\n\n### Holds\n\n```ocl\ncontext Probe\n"
-                    "inv Holds:\n  true\n```\n\n## Operations\n\n### run\n\n"
-                    "Post: Holds\n"
-                ),
-                "module": {
-                    "contractVersion": "1.0.0",
-                    "semanticCore": "0.1.0",
-                    "package": "agent-ix/spec-objects-architecture",
-                    "exports": ["external_contract"],
-                },
-                "path": "spec/probe.md",
-                "bundle": {"package": "agent-ix/spec-objects-architecture"},
-            }
-        )
-    except Exception:  # noqa: BLE001 - an absent engine is reported by require_quire
+    record = _extract_probe(
+        "---\nid: probe\ntitle: Probe\ntype: external_contract\n"
+        "object: external_contract\n---\n# [probe] Probe\n\n"
+        "## Invariants\n\n### Holds\n\n```ocl\ncontext Probe\n"
+        "inv Holds:\n  true\n```\n\n## Operations\n\n### run\n\n"
+        "Post: Holds\n",
+        "external_contract",
+    )
+    if record is None:  # no engine: `require_quire` fails the row by name
         return True
-    operations = record.get("operations") or []
-    return any(op.get("post") for op in operations)
+    return any(op.get("post") for op in record.get("operations") or [])
 
 
 def post_lines_xfail():

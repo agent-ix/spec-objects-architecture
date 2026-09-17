@@ -26,7 +26,8 @@ relationships:
 
 This matrix is the verification contract for the module: the manifest
 activation requirement (FR-001, issue #1 era) and the issue #8 semantic data
-schemas (US-001, FR-002..FR-006, NFR-001, IT-002). Coverage is complete when
+schemas (US-001, FR-002..FR-006, NFR-001, IT-002), and the issue #10 systems
+kinds (FR-007). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
@@ -36,7 +37,7 @@ rows minted from the requirements (4 FR-001, 10 FR-002, 9 FR-003, 16 FR-004,
 10 FR-005, 6 FR-006, 11 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is
 a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **263 passed, 7 skipped, 17 xfailed**. The 7 skips are the
+reports **275 passed, 7 skipped, 17 xfailed**. The 7 skips are the
 environment-gated rows (4 need a running `filament-core-service`, 3 are the
 opt-in Quoin roundtrip, which was run separately and passed); the 17 xfails are
 the expected failures named under Test Environment. No row is green because a
@@ -141,7 +142,7 @@ test was skipped.
 | TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
 | TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
 | TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4 | ✅ |
-| TC-054 | Every negative fixture fails with its `expect:` code and the ten named cases exist | Integration | P0 | FR-005-AC-5 | ✅ |
+| TC-054 | Every negative fixture fails with its `expect:` code and the ten named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
 | TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6 | ✅ |
 | TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7 | ✅ |
 | TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
@@ -152,7 +153,7 @@ test was skipped.
 | TC-062 | No 0.2.0 skeleton carries a `## Properties` section in any form, so the `semantic.legacy-properties-form` count over the ten of them is 0 | Integration | P1 | NFR-001-AC-3 | ✅ the measured population is empty, and the row asserts the emptiness rather than a warning the module cannot produce |
 | TC-063 | Each 0.2.0 locator's yield, id in word form, is identical under 0.2.0 and 0.4.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
 | TC-064 | Every 0.2.0 object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.4.0 except the named `interface` additions | Unit | P1 | NFR-001-AC-5 | ✅ |
-| TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ |
+| TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ #431 conditional xfail: the external contract case only |
 | TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
 | TC-072 | A coordinated version bump re-emits every `$id`/`$ref` at the new version with matching digests; bumping one half of the pair fails the check | Integration | P1 | FR-002-AC-8, FR-002-CON-5 | ✅ |
@@ -219,13 +220,15 @@ PR #450 both probes hold and every one of those rows passes. A third probe,
 operation as a `post` clause reference; an engine that does not
 (`agent-ix/quire-rs#431`) carries strict expected failures on the
 `external_contract` skeleton validation rows (TC-006, TC-025, TC-050, and the
-untraced skeleton-validates test), TC-054 and TC-065. Operation contract lines
+untraced skeleton-validates test), the dangling-post fixture case of TC-054 and
+the external contract case of TC-065. Operation contract lines
 are `Pre:` and `Post:`.
 
 Measured with `make test` on 2026-09-17: the `pypi.ix` quire 0.46.0 wheel
-gives 263 passed, 7 skipped, 17 xfailed; a wheel built from quire-rs main
-`724ad29` gives 257 passed, 7 skipped, 23 xfailed; a wheel built from quire-rs
-PR #450 `f7907ba` gives 270 passed, 7 skipped, 10 xfailed. None fails.
+gives 275 passed, 7 skipped, 17 xfailed. At commit `2f27953`, where TC-054 and
+TC-065 each ran as one test, a wheel built from quire-rs main `724ad29` gave
+257 passed, 7 skipped, 23 xfailed, and a wheel built from quire-rs PR #450
+`f7907ba` gave 270 passed, 7 skipped, 10 xfailed. None failed.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only
