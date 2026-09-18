@@ -103,13 +103,15 @@ POST_LINES_REASON = (
     f"{POST_LINES_ISSUE}"
 )
 
-#: The quire-rs issue (same #431 umbrella, landed by PR #432) that owns
-#: `ModelFeature::Generalization.declared_by_mappings`: the refusal a
-#: `specializes` relationship draws with `semantic.feature-not-extractable`
-#: (reason `generalization`) when `semantic.mappings` omits the token. An
-#: engine that does not carry it yet silently drops the relationship with no
-#: diagnostic instead of refusing it (agent-ix/spec-objects-architecture#14).
-GENERALIZATION_GATE_ISSUE = "agent-ix/quire-rs#431"
+#: `ModelFeature::Generalization.declared_by_mappings` (the refusal a
+#: `specializes` relationship draws with `semantic.feature-not-extractable`,
+#: reason `generalization`, when `semantic.mappings` omits the token) landed
+#: on quire-rs main in PR #432 (`6eec7e8`, closing #431). No tag contains it
+#: and pypi.ix's published quire 0.46.0 predates it, so the installed engine
+#: still silently drops the relationship instead of refusing it. quire-rs#463
+#: tracks bumping and publishing a wheel from `6eec7e8` or later so this gate
+#: becomes reachable (agent-ix/spec-objects-architecture#14).
+GENERALIZATION_GATE_ISSUE = "agent-ix/quire-rs#463"
 GENERALIZATION_GATE_REASON = (
     "the installed engine does not gate a `specializes` relationship on "
     "`semantic.mappings` declaring `generalization` yet, so dropping the "
@@ -359,6 +361,16 @@ def engine_gates_generalization_mapping() -> bool:
         d.get("code") == "semantic.feature-not-extractable"
         and d.get("reason") == "generalization"
         for d in diagnostics
+    )
+
+
+def generalization_gate_xfail():
+    """A strict xfail on an engine that does not gate `specializes` on the
+    `generalization` mapping yet; agent-ix/quire-rs#463."""
+    return pytest.mark.xfail(
+        condition=not engine_gates_generalization_mapping(),
+        strict=True,
+        reason=GENERALIZATION_GATE_REASON,
     )
 
 
