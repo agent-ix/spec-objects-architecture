@@ -70,7 +70,12 @@ def test_the_semantic_block_carries_the_nine_admitted_keys_and_ten_exports(
     assert semantic_block["exports"] == list(EXPORTS)
     assert semantic_block["imports"] == {}
     assert semantic_block["targets"] == ["json-schema", "markdown"]
-    assert semantic_block["mappings"] == ["typed-table", "sysml-fence", "ocl-clause"]
+    assert semantic_block["mappings"] == [
+        "typed-table",
+        "sysml-fence",
+        "ocl-clause",
+        "generalization",
+    ]
     assert semantic_block["compatibility_posture"] == "strict"
     assert semantic_block["legacy_forms"] == "warning"
 
