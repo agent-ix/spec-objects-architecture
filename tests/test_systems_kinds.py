@@ -373,8 +373,12 @@ SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
     equals spec-objects-business's, pinned with its source revision; the
-    construct names the IR member `supertypes` and constrains it to
-    interfaces."""
+    construct names the IR member `supertypes` optional and declares no
+    `references` entry for it — the filament-core-data semantic-ir reader
+    already constrains a supertype reference to the same kind
+    (`CONSTRUCT_TARGET_KIND`, FCD FR-141), and `supertypes` is outside the
+    closed `references` member vocabulary FCD FR-142 states, so naming it
+    there makes FCD's reader refuse the whole module (FCD#173)."""
     pinned = json.loads(SOB_SPECIALIZES.read_text())
     assert pinned["source"]["repository"] == "agent-ix/spec-objects-business"
     assert re.fullmatch(r"[0-9a-f]{40}", pinned["source"]["revision"])
@@ -384,7 +388,7 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     assert interface["allowed_links"]["specializes"] == ["interface"]
     construct = interface["construct"]
     assert construct["members"]["supertypes"] == "optional"
-    assert construct["references"]["supertypes"] == ["systems-interface"]
+    assert "supertypes" not in construct.get("references", {})
 
     text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
     special = _with_relationship(text, "specializes", "Flow")
@@ -401,6 +405,41 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
         w["reason"] == "disallowed-edge-type" and "owned_by" in w["message"]
         for w in refused
     ), refused
+
+
+# filament-core-data FR-142 (`ix://agent-ix/filament-core-data/FR-142`): the
+# closed vocabulary of reference members a construct's `references` block may
+# name. `supertypes` is outside this set; naming it there makes the FCD
+# semantic-ir reader refuse the whole module with MODULE_REFUSED at load time
+# (filament-core-data#173). FR-141 already refuses a supertype reference of
+# another kind with `CONSTRUCT_TARGET_KIND`, independent of any
+# construct-level `references` declaration.
+FCD_FR142_REFERENCE_MEMBERS = {
+    "owner",
+    "members",
+    "persists",
+    "interfaceType",
+    "declaredType",
+    "sourceElement",
+    "targetElement",
+    "sourceEnd",
+    "targetEnd",
+    "transitions",
+    "steps",
+}
+
+
+@pytest.mark.trace("TC-110", "FR-007-AC-10")
+def test_every_construct_reference_member_is_in_the_fcd_vocabulary():
+    """Every `references` key any construct in this manifest declares is one
+    of FCD FR-142's reference members, so the module loads under FCD's
+    reader rather than being refused with MODULE_REFUSED."""
+    for ot in load_manifest()["object_types"]:
+        construct = ot.get("construct")
+        if not construct:
+            continue
+        for member in construct.get("references", {}):
+            assert member in FCD_FR142_REFERENCE_MEMBERS, (ot["name"], member)
 
 
 INTERFACE_SKELETON = SKELETONS_DIR / "interface.md"
