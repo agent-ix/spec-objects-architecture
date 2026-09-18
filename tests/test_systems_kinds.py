@@ -409,9 +409,11 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
 
 # filament-core-data FR-142 (`ix://agent-ix/filament-core-data/FR-142`): the
 # closed vocabulary of reference members a construct's `references` block may
-# name. A member outside this set (`supertypes`, refused by CONSTRUCT_TARGET_KIND
-# already, per FR-141) makes the FCD semantic-ir reader refuse the whole
-# module with MODULE_REFUSED at load time (filament-core-data#173).
+# name. `supertypes` is outside this set; naming it there makes the FCD
+# semantic-ir reader refuse the whole module with MODULE_REFUSED at load time
+# (filament-core-data#173). FR-141 already refuses a supertype reference of
+# another kind with `CONSTRUCT_TARGET_KIND`, independent of any
+# construct-level `references` declaration.
 FCD_FR142_REFERENCE_MEMBERS = {
     "owner",
     "members",
