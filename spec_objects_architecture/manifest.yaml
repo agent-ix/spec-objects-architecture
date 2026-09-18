@@ -228,8 +228,6 @@ object_types:
       supertypes: optional
       clauses: optional
       relationships: optional
-    references:
-      supertypes: [systems-interface]
     meaning: quire.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
