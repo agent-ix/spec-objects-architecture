@@ -23,7 +23,7 @@ semantic:
   - allocation
   imports: {}
   targets: [json-schema, markdown]
-  mappings: [typed-table, sysml-fence, ocl-clause]
+  mappings: [typed-table, sysml-fence, ocl-clause, generalization]
   compatibility_posture: strict
   legacy_forms: warning
 nav:

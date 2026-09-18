@@ -27,6 +27,7 @@ from tests.conftest import (
     SYSTEMS_KINDS,
     SYSTEMS_TYPES,
     engine_lowers_systems_tables,
+    generalization_gate_xfail,
     load_manifest,
     locators,
     object_type,
@@ -35,6 +36,7 @@ from tests.conftest import (
     validation_params,
 )
 from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
+from tests.test_manifest_semantic import module_copy
 
 # QSpec FR-152 members per kind, named in FCD IR member form.
 FR152_MEMBERS = {
@@ -405,6 +407,63 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
         w["reason"] == "disallowed-edge-type" and "owned_by" in w["message"]
         for w in refused
     ), refused
+
+
+def _feature_not_extractable(errors: list[dict]) -> list[dict]:
+    return [
+        e
+        for e in errors
+        if "feature-not-extractable" in e["message"]
+        and "generalization" in e["message"]
+    ]
+
+
+def _drop_generalization(data):
+    data["semantic"]["mappings"] = [
+        m for m in data["semantic"]["mappings"] if m != "generalization"
+    ]
+
+
+@pytest.mark.trace("TC-113", "FR-007-AC-12")
+def test_generalization_mapping_lets_specializes_extract(quire_engine):
+    """agent-ix/spec-objects-architecture#14: quire-rs FR-075
+    `ModelFeature::Generalization.declared_by_mappings` refuses an
+    interface's `specializes` relationship with
+    `semantic.feature-not-extractable` unless `generalization` is in
+    `semantic.mappings`. TC-110 already asserts the edge extracts and draws
+    no `disallowed-edge-type` warning; this asserts the mapping token itself
+    is declared and that declaring it draws no such diagnostic. This half
+    holds on every installed engine; the removal half that reproduces the
+    diagnostic is a separate, xfail-marked test below."""
+    assert "generalization" in load_manifest()["semantic"]["mappings"]
+
+    text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
+    special = _with_relationship(text, "specializes", "Flow")
+
+    declared = quire_engine.validate_document("interface", str(PACKAGE_ROOT), special)
+    assert not _feature_not_extractable(declared["errors"]), declared["errors"]
+    edges = quire_engine.extract("interface", str(PACKAGE_ROOT), special)["edges"]
+    assert {"target": "Flow", "edge_type": "specializes"} in edges
+
+
+@generalization_gate_xfail()
+@pytest.mark.trace("TC-113", "FR-007-AC-12")
+def test_generalization_mapping_removal_is_refused(quire_engine, tmp_path):
+    """agent-ix/spec-objects-architecture#14: dropping `generalization` from
+    a manifest copy's `semantic.mappings` must reproduce
+    `semantic.feature-not-extractable` for the same `specializes`
+    relationship the declared half extracts cleanly. quire 0.46.0 (pypi.ix)
+    predates the gate (PR #432, `6eec7e8`, on no tag), so this is a strict
+    expected failure until agent-ix/quire-rs#463 publishes a wheel that
+    carries it."""
+    text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
+    special = _with_relationship(text, "specializes", "Flow")
+
+    without = module_copy(tmp_path / "without-generalization", _drop_generalization)
+    refused = quire_engine.validate_document(
+        "interface", str(without / "module"), special
+    )
+    assert _feature_not_extractable(refused["errors"]), refused["errors"]
 
 
 # filament-core-data FR-142 (`ix://agent-ix/filament-core-data/FR-142`): the

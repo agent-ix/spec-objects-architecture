@@ -103,6 +103,22 @@ POST_LINES_REASON = (
     f"{POST_LINES_ISSUE}"
 )
 
+#: `ModelFeature::Generalization.declared_by_mappings` (the refusal a
+#: `specializes` relationship draws with `semantic.feature-not-extractable`,
+#: reason `generalization`, when `semantic.mappings` omits the token) landed
+#: on quire-rs main in PR #432 (`6eec7e8`, closing #431). No tag contains it
+#: and pypi.ix's published quire 0.46.0 predates it, so the installed engine
+#: still silently drops the relationship instead of refusing it. quire-rs#463
+#: tracks bumping and publishing a wheel from `6eec7e8` or later so this gate
+#: becomes reachable (agent-ix/spec-objects-architecture#14).
+GENERALIZATION_GATE_ISSUE = "agent-ix/quire-rs#463"
+GENERALIZATION_GATE_REASON = (
+    "the installed engine does not gate a `specializes` relationship on "
+    "`semantic.mappings` declaring `generalization` yet, so dropping the "
+    "token from a manifest copy yields no `semantic.feature-not-extractable` "
+    f"diagnostic; {GENERALIZATION_GATE_ISSUE}"
+)
+
 #: FR-003: an object id is a letter, then letters, digits and underscores.
 #: `typespec/main.tsp` states it once as `ObjectId`; the manifest's shared `id`
 #: locator carries it as a capturing `regex`.
@@ -321,6 +337,40 @@ def post_lines_xfail():
     """A strict xfail on an engine that does not read `Post:` lines."""
     return pytest.mark.xfail(
         condition=not engine_reads_post_lines(), strict=True, reason=POST_LINES_REASON
+    )
+
+
+@functools.cache
+def engine_gates_generalization_mapping() -> bool:
+    """agent-ix/quire-rs#431 (PR #432): `ModelFeature::Generalization` refuses
+    a `specializes` relationship with `semantic.feature-not-extractable`
+    (reason `generalization`) when the module's `semantic.mappings` omits the
+    token. Probed with no `mappings` key at all, which is the same absence as
+    omitting `generalization` alone; an engine that does not carry the gate
+    yet answers with no diagnostic instead of one."""
+    record = _extract_probe(
+        "---\nid: probe\ntitle: Probe\ntype: interface\nobject: interface\n"
+        "relationships:\n  - type: specializes\n    target: other\n---\n"
+        "# [probe] Probe\n\n## Contract\n\n```yaml\nfoo: bar\n```\n",
+        "interface",
+    )
+    if record is None:  # no engine: `require_quire` fails the row by name
+        return True
+    diagnostics = record.get("diagnostics") or []
+    return any(
+        d.get("code") == "semantic.feature-not-extractable"
+        and d.get("reason") == "generalization"
+        for d in diagnostics
+    )
+
+
+def generalization_gate_xfail():
+    """A strict xfail on an engine that does not gate `specializes` on the
+    `generalization` mapping yet; agent-ix/quire-rs#463."""
+    return pytest.mark.xfail(
+        condition=not engine_gates_generalization_mapping(),
+        strict=True,
+        reason=GENERALIZATION_GATE_REASON,
     )
 
 

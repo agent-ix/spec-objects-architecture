@@ -31,15 +31,15 @@ kinds (FR-007). Coverage is complete when
 every acceptance criterion, named constraint, and NFR metric maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **166/166 rows backed
-(100%)**: 92 `TC-` rows from the Test Case Summary below plus 74 criterion
+What the numbers count. `quire coverage` reports **168/168 rows backed
+(100%)**: 93 `TC-` rows from the Test Case Summary below plus 75 criterion
 rows minted from the requirements (4 FR-001, 10 FR-002, 9 FR-003, 16 FR-004,
-10 FR-005, 6 FR-006, 11 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
+10 FR-005, 6 FR-006, 12 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
 is *backed* when a source symbol carries a binding trace tag for it — that is
 a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **275 passed, 7 skipped, 17 xfailed**. The 7 skips are the
+reports **277 passed, 7 skipped, 18 xfailed**. The 7 skips are the
 environment-gated rows (4 need a running `filament-core-service`, 3 are the
-opt-in Quoin roundtrip, which was run separately and passed); the 17 xfails are
+opt-in Quoin roundtrip, which was run separately and passed); the 18 xfails are
 the expected failures named under Test Environment. No row is green because a
 test was skipped.
 
@@ -76,7 +76,7 @@ test was skipped.
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure; TC-050 on `interface` is an expected failure on quire-rs#448 |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
-| FR-007 | FR-007-AC-1..11, FR-007-CON-1 | TC-100..TC-112 | 🚧 AC-7 is an expected failure on quire-rs#446; AC-11's validation half is an expected failure on quire-rs#448 |
+| FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | 🚧 AC-7 is an expected failure on quire-rs#446; AC-11's validation half is an expected failure on quire-rs#448; AC-12's removal half is an expected failure on quire-rs#463 |
 
 ### Non-Functional Requirement Coverage
 
@@ -187,6 +187,7 @@ test was skipped.
 | TC-110 | An interface declares supertypes: `specializes` equals the spec-objects-business declaration pinned with its source revision, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
 | TC-111 | `ObjectId` states the word-id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; an underscore id validates and a hyphenated id is refused with its required `id` missing | Integration | P0 | FR-003-AC-9 | ✅ |
 | TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ locator, rows and refusal pass; the validation half is an expected failure on quire-rs#448 and passes against quire-rs PR #450 |
+| TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ the declaration half passes; the removal half is an expected failure on quire-rs#431. PR #432 (`6eec7e8`) is on no tag and is not in pypi.ix quire 0.46.0. It passes against the first quire wheel published from main at or after `6eec7e8` (0.47.0 or later, agent-ix/quire-rs#463) |
 
 ## Test Environment
 
@@ -222,10 +223,22 @@ operation as a `post` clause reference; an engine that does not
 `external_contract` skeleton validation rows (TC-006, TC-025, TC-050, and the
 untraced skeleton-validates test), the dangling-post fixture case of TC-054 and
 the external contract case of TC-065. Operation contract lines
-are `Pre:` and `Post:`.
+are `Pre:` and `Post:`. A fourth probe, `engine_gates_generalization_mapping`,
+checks that `ModelFeature::Generalization` (landed on quire-rs main by PR #432,
+`6eec7e8`, closing #431) refuses a `specializes` relationship with
+`semantic.feature-not-extractable` when `generalization` is absent from
+`semantic.mappings`. `6eec7e8` is on no tag, and pypi.ix's published quire
+0.46.0 predates it, so the installed engine still drops the relationship
+silently instead of refusing it. TC-113's declaration half (that
+`generalization` is declared, and that declaring it extracts the edge with no
+diagnostic) holds on every engine; its removal half — that dropping the token
+from a manifest copy reproduces the diagnostic — is its own test, strict
+`xfail` on the probe (`generalization_gate_xfail` in `tests/conftest.py`), and
+turns into a pass once `agent-ix/quire-rs#463` publishes a wheel built from
+`6eec7e8` or later.
 
-Measured with `make test` on 2026-09-17: the `pypi.ix` quire 0.46.0 wheel
-gives 275 passed, 7 skipped, 17 xfailed. At commit `2f27953`, where TC-054 and
+Measured with `make test` on 2026-09-18: the `pypi.ix` quire 0.46.0 wheel
+gives 277 passed, 7 skipped, 18 xfailed. At commit `2f27953`, where TC-054 and
 TC-065 each ran as one test, a wheel built from quire-rs main `724ad29` gave
 257 passed, 7 skipped, 23 xfailed, and a wheel built from quire-rs PR #450
 `f7907ba` gave 270 passed, 7 skipped, 10 xfailed. None failed.
