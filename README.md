@@ -1,5 +1,7 @@
 # spec-objects-architecture
 
+[![Discord](https://img.shields.io/badge/Discord-Join%20us-5865F2?logo=discord&logoColor=white)](https://discord.gg/6qsdhSPE)
+
 > Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, rate_limit, interface, external_contract, extension_point, binary_format, part, port, connection, allocation)
 
 This is an Agent-IX Filament module loaded by [`quire-cli`](https://github.com/agent-ix/quire-cli) and [`quoin`](https://github.com/agent-ix/quoin). It provides tier-2 embedded `object_types` — a `manifest.yaml` plus per-kind authoring `skeletons/` used to author and validate Markdown spec artifacts.
