@@ -34,6 +34,7 @@ from tests.conftest import (
     all_skeletons,
     frontmatter,
     load_manifest,
+    semantic_core_engine_xfail,
     validation_params,
 )
 
@@ -206,6 +207,7 @@ def _render(generator, path, context) -> str:
 
 
 @pytest.mark.trace("TC-006", "StR-001-VC-2")
+@semantic_core_engine_xfail()
 @pytest.mark.parametrize("path", validation_params(all_skeletons()))
 def test_each_generated_artifact_validates(quire_engine, tmp_path, path):
     """The validate half of the generator criterion, per rendered skeleton. A

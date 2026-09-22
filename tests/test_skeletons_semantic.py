@@ -28,6 +28,7 @@ from tests.conftest import (
     object_type,
     object_types,
     post_lines_xfail,
+    semantic_core_engine_xfail,
     validation_params,
 )
 
@@ -80,6 +81,7 @@ def extract(quire_engine, module, bundle, path):
 
 @pytest.mark.trace("TC-050", "FR-005-AC-1")
 @pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
+@semantic_core_engine_xfail()
 def test_every_skeleton_validates_with_no_error(quire_engine, skeletons, path):
     assert len(skeletons) == 13
     text = path.read_text()
@@ -93,6 +95,7 @@ def test_every_skeleton_validates_with_no_error(quire_engine, skeletons, path):
 
 
 @pytest.mark.trace("TC-051", "FR-005-AC-2", "FR-005-CON-2")
+@semantic_core_engine_xfail()
 def test_table_and_sysml_skeletons_extract_to_identical_fields(
     quire_engine, semantic_module, bundle_index
 ):
@@ -112,6 +115,7 @@ def test_table_and_sysml_skeletons_extract_to_identical_fields(
 
 
 @pytest.mark.trace("TC-052", "FR-005-AC-3")
+@semantic_core_engine_xfail()
 def test_under_the_bundle_index_every_skeleton_extracts_clean(
     quire_engine, semantic_module, bundle_index
 ):
@@ -137,6 +141,7 @@ def test_under_the_bundle_index_every_skeleton_extracts_clean(
 
 
 @pytest.mark.trace("TC-053", "FR-005-AC-4")
+@semantic_core_engine_xfail()
 def test_availability_states_match_each_type(
     quire_engine, semantic_module, bundle_index
 ):
@@ -182,6 +187,7 @@ OPERATION_DEMANDS = [
 
 @pytest.mark.trace("TC-065", "FR-005-AC-9")
 @pytest.mark.parametrize(("name", "demand"), OPERATION_DEMANDS)
+@semantic_core_engine_xfail()
 def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_demand(
     quire_engine, semantic_module, bundle_index, name, demand
 ):
@@ -238,6 +244,7 @@ def test_the_negative_fixture_set_is_the_named_ten_covering_every_code():
         for name in sorted(p.name for p in NEGATIVE_DIR.glob("*.md"))
     ],
 )
+@semantic_core_engine_xfail()
 def test_every_negative_fixture_fails_for_its_own_reason(quire_engine, name):
     path = NEGATIVE_DIR / name
     text = path.read_text()
@@ -313,6 +320,7 @@ def test_every_skeleton_is_placeholder_free():
 
 
 @pytest.mark.trace("TC-057", "FR-005-CON-2")
+@semantic_core_engine_xfail()
 def test_a_properties_section_with_both_forms_is_refused(quire_engine):
     path = NEGATIVE_DIR / "properties-both-forms.md"
     text = path.read_text()

@@ -23,7 +23,7 @@ operation-shaped types are separated by keys (`routes`, `registration`,
 
 ## Inputs
 
-- semantic-core 0.1.0 grammar models: `FieldDecl`, `RelationDecl`,
+- semantic-core 0.3.0 grammar models: `FieldDecl`, `RelationDecl`,
   `OperationDecl`, `ClauseRef`, `TypeRef`, `EnumValue`, `Identifier`,
   `SemanticId`, `KernelScalar`.
 - The declaration record Quire assembles per artifact: `fields` from
@@ -49,7 +49,7 @@ Each model SHALL enforce its row of the following table. "Identity field"
 means a `FieldDecl` with `identity: true`; "returning operation" an
 `OperationDecl` carrying `returns`; "guaranteed operation" an `OperationDecl`
 whose `post` holds at least one `ClauseRef`. All three readings are
-semantic-core 0.1.0 reader conventions (the identity flag is set only by a
+semantic-core 0.3.0 reader conventions (the identity flag is set only by a
 bare `identity` keyword in a Constraints cell and is absent, not `false`,
 otherwise), so a semantic-core release that renders `identity: false` or
 changes the operation shape is a breaking change to these schemas and SHALL be
@@ -75,7 +75,7 @@ handled by a manifest version bump, not by widening a rule.
 - `StabilityPolicy` SHALL be `{ compatibility: CompatibilityWindow, deprecation_window?: string }` with `CompatibilityWindow` the closed set `major`, `minor`, `none`.
 - `RecordLayout` SHALL be `{ name: Identifier, tag?: string, size?: int32 (min 0), fields: LayoutField[] (minItems 1) }`, and `LayoutField` `{ name: Identifier, offset: int32 (min 0), size: uint32 | Identifier, type: LayoutType }` with `LayoutType` the closed set `u8`, `u16`, `u32`, `u64`, `i8`, `i16`, `i32`, `i64`, `f32`, `f64`, `bytes`, `item_pointer`. A `LayoutField.size` naming an `Identifier` names a sibling field of the same record whose value carries the length; `Endianness` is the closed set `little`, `big`.
 - `Threshold` SHALL be `{ scope: LimitScope, metric: Identifier, limit: float64 (min 0), window: string (minLength 1), on_exceeded: ExceedResponse }` with `LimitScope` the closed set `per_token`, `per_tenant`, `per_ip`, `global` and `ExceedResponse` `{ status: int32 (min 100, max 599), retry_after?: boolean, behavior?: string }`.
-- Every `fields`, `params`, `clauses`, `operations`, `relations`, and `associated_types` item SHALL be validated by `$ref` to the semantic-core 0.1.0 model, never by a copied definition.
+- Every `fields`, `params`, `clauses`, `operations`, `relations`, and `associated_types` item SHALL be validated by `$ref` to the semantic-core 0.3.0 model, never by a copied definition.
 - The TypeSpec source SHALL express the item rules through the official emitter's decorators over open marker models: `@contains(IdentityField)` for "≥ 1 identity field", `@contains(IdentityField) @minContains(0) @maxContains(0)` for "0 identity fields", `@contains(ReturningOperation)` for "≥ 1 returning operation", and `@contains(GuaranteedOperation)` for "≥ 1 guaranteed operation"; `@maxItems(1)` expresses the action rule.
 - Every cross-reference a declaration makes (`type.target`, `RelationDecl.target`, `carries`, `requires`, `renders`, `throttles`, `serializes`, `triggers`, `exposes`, `provider`) SHALL be a `SemanticId` or `KernelScalar` per semantic-core, so a bare token is rejected by the schema; resolution against the bundle, and the placeholder `ix://<org>/<repo>/unresolved/<Token>` with its `semantic.unresolved-type` finding, exist today for `type.target` only (quire-rs FR-070) and for the other keys once `agent-ix/quoin#335` publishes their mapping.
 - Each schema SHALL describe the declared shape only, never a runtime occurrence (an HTTP request, an enqueued message, a rendered component instance), which is why `Queue` declares the message envelope's fields and no delivery timestamp of a particular message.

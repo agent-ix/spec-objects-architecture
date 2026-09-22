@@ -50,7 +50,7 @@ share one authoritative definition of what the module activates against
 - The functional requirement that the manifest activates idempotently against
   `filament-core-service`, and the integration test that verifies it.
 - The semantic-module contract (issue #8): a TypeSpec source importing
-  `@agent-ix/semantic-core` 0.1.0, the emitted JSON Schema per declared type
+  `@agent-ix/semantic-core` 0.3.0, the emitted JSON Schema per declared type
   shipped under `spec_objects_architecture/schemas/`, the manifest `semantic`
   block with reference-form `data_schema`, and the skeletons rewritten as
   executable typed fixtures with negative counterparts.

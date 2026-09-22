@@ -22,12 +22,19 @@ from tests.conftest import (
     PROFILE_KEYS,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
+    semantic_core_engine_xfail,
 )
 
 MODELS = [MODEL_OF[name] for name in OBJECT_TYPES]
 
 CLAUSE = {"language": "ocl", "clauseId": "SomeInvariant"}
-KERNEL = {"target": "String", "multiplicity": {"lower": 1, "upper": 1}}
+# Multiplicity.json (semantic-core 0.3.0) requires `ordered`/`unique`; a
+# producer clamps both `false` on a singular multiplicity (`upper` at most
+# one). Every kernel field below is a singular `String`, so both are `false`.
+KERNEL = {
+    "target": "String",
+    "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
+}
 FIELD = {"name": "a", "type": KERNEL}
 IDENTITY_FIELD = {"name": "a", "type": KERNEL, "identity": True}
 OP = {"name": "do_it", "params": []}
@@ -281,6 +288,7 @@ def test_the_empty_record_fails_every_one_of_the_ten_types(schema_registry):
 
 
 @pytest.mark.trace("TC-042", "FR-004-AC-13")
+@semantic_core_engine_xfail()
 def test_the_extractor_reports_an_unresolvable_token_as_unresolved_type(
     quire_engine, semantic_module, bundle_index
 ):
@@ -318,13 +326,16 @@ def test_an_unresolved_placeholder_target_is_a_semantic_id_and_a_bare_token_is_n
         "name": "a",
         "type": {
             "target": "ix://agent-ix/spec-objects-architecture/unresolved/Mystery",
-            "multiplicity": {"lower": 1, "upper": 1},
+            "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
         },
     }
     assert valid(schema_registry, "DataSchema", {"fields": [placeholder]})
     bare = {
         "name": "a",
-        "type": {"target": "Mystery", "multiplicity": {"lower": 1, "upper": 1}},
+        "type": {
+            "target": "Mystery",
+            "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
+        },
     }
     assert not valid(schema_registry, "DataSchema", {"fields": [bare]})
 

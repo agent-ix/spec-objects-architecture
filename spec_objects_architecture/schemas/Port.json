@@ -4,16 +4,16 @@
   "type": "object",
   "properties": {
     "owner": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
     },
     "direction": {
       "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/PortDirection.json"
     },
     "interfaceType": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/TypeRef.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/TypeRef.json"
     },
     "multiplicity": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Multiplicity.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Multiplicity.json"
     }
   },
   "required": [

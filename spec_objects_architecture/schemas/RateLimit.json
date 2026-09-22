@@ -6,7 +6,7 @@
     "clauses": {
       "type": "array",
       "items": {
-        "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/ClauseRef.json"
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/ClauseRef.json"
       },
       "minItems": 1
     },
@@ -19,7 +19,7 @@
     "throttles": {
       "type": "array",
       "items": {
-        "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
       }
     }
   },

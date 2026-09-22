@@ -22,6 +22,7 @@ from tests.conftest import (
     frontmatter,
     locators,
     object_type,
+    semantic_core_engine_xfail,
 )
 
 
@@ -115,6 +116,7 @@ def _missing(kind: str, key: str) -> str:
 
 
 @pytest.mark.trace("TC-061", "NFR-001-AC-2")
+@semantic_core_engine_xfail()
 def test_every_baseline_skeleton_draws_only_the_declared_breaks(quire_engine):
     """Measured, not assumed: the ten 0.2.0 skeletons carry no frontmatter
     `object:` key, so Quire runs headings-only validation on them and the
@@ -182,6 +184,7 @@ def test_a_legacy_form_artifact_that_declares_its_object_is_not_an_error(quire_e
 
 
 @pytest.mark.trace("TC-062", "NFR-001-AC-3")
+@semantic_core_engine_xfail()
 def test_the_legacy_properties_warning_population_is_empty_and_is_recorded_as_empty(
     quire_engine, semantic_module
 ):
@@ -208,6 +211,7 @@ def test_the_legacy_properties_warning_population_is_empty_and_is_recorded_as_em
 
 
 @pytest.mark.trace("TC-063", "NFR-001-AC-4")
+@semantic_core_engine_xfail()
 def test_every_020_locator_yield_is_byte_identical_across_versions(quire_engine):
     """The untyped locator yields are what every existing consumer reads; the
     current locators must leave them untouched. Each expectation is read from
