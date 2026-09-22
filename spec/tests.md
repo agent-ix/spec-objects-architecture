@@ -221,7 +221,7 @@ rather than pass silently — but on quire 0.47.1 it holds and no case is
 marked.
 
 Measured with `make test` on 2026-09-22: quire 0.47.1 from `internal-pypi`
-gives 291 passed, 7 skipped, 4 xfailed. None failed.
+gives 273 passed, 7 skipped, 4 xfailed. None failed.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only

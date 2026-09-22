@@ -163,7 +163,7 @@ def _word_id(text: str, hyphenated: str) -> str:
     strict=True,
     reason=(
         "The engine defect NFR-001's Verification names: once a legacy-form "
-        "artifact carries `object:`, quire 0.46.0 assembles its declaration "
+        "artifact carries `object:`, quire 0.47.1 assembles its declaration "
         "record as `{}` and checks it against the type schema "
         "unconditionally, so it fails `semantic.record-invalid` at error "
         "severity even under `legacy_forms: warning`. "

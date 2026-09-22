@@ -210,7 +210,7 @@ def all_skeletons() -> list[pathlib.Path]:
     return sorted(SKELETONS_DIR.glob("*.md"))
 
 
-def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None):
+def _extract_probe(markdown: str, kind: str):
     """Extract a minimal probe document, or `None` when no engine is installed
     (`require_quire` fails those tests by name). Any other engine error
     propagates: a probe never hides a defect unrelated to its feature."""
@@ -229,8 +229,6 @@ def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None
         "path": f"spec/{kind}.md",
         "bundle": {"package": "agent-ix/spec-objects-architecture"},
     }
-    if body_extraction is not None:
-        request["bodyExtraction"] = body_extraction
     return quire.extract_semantic(request)
 
 
@@ -271,16 +269,6 @@ def validation_gap(path: pathlib.Path) -> str | None:
     if path.stem == "external_contract" and not engine_reads_post_lines():
         return POST_LINES_REASON
     return None
-
-
-def validation_params(paths: list[pathlib.Path]) -> list:
-    """`paths` as pytest params, each known-defect skeleton a strict xfail."""
-    params = []
-    for path in paths:
-        reason = validation_gap(path)
-        marks = [pytest.mark.xfail(strict=True, reason=reason)] if reason else []
-        params.append(pytest.param(path, id=path.name, marks=marks))
-    return params
 
 
 def sha256_of(path: pathlib.Path) -> str:

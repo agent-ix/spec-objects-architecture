@@ -7,7 +7,7 @@ type: StR
 
 ## Stakeholder Need
 
-The Filament platform, spec authors, and agent CLI generators **SHALL** obtain extractable graph entities for the ten technical architecture concerns this module contributes — API endpoints, data schemas, queues, actions, UI components, interfaces, external contracts, extension points, binary formats, and rate limits — from architecture specs. The need is stated from the consumers' perspective and avoids prescribing a mechanism. The `integration` object type this need once named was retired by format-walkthrough decision #8: an internal contract is an `interface`, an external one an `external_contract`.
+The Filament platform, spec authors, and agents **SHALL** obtain extractable graph entities for the ten technical architecture concerns this module contributes — API endpoints, data schemas, queues, actions, UI components, interfaces, external contracts, extension points, binary formats, and rate limits — from architecture specs. The need is stated from the consumers' perspective and avoids prescribing a mechanism. The `integration` object type this need once named was retired by format-walkthrough decision #8: an internal contract is an `interface`, an external one an `external_contract`.
 
 ## Rationale
 
