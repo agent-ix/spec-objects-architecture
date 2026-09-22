@@ -22,7 +22,6 @@ from tests.conftest import (
     PROFILE_KEYS,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
-    semantic_core_engine_xfail,
 )
 
 MODELS = [MODEL_OF[name] for name in OBJECT_TYPES]
@@ -288,7 +287,6 @@ def test_the_empty_record_fails_every_one_of_the_ten_types(schema_registry):
 
 
 @pytest.mark.trace("TC-042", "FR-004-AC-13")
-@semantic_core_engine_xfail()
 def test_the_extractor_reports_an_unresolvable_token_as_unresolved_type(
     quire_engine, semantic_module, bundle_index
 ):

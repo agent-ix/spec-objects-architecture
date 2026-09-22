@@ -6,8 +6,8 @@ The five QSpec FR-152 kinds — `interface`, `part`, `port`, `connection`,
 against hand-built records named with QSpec #86 TC-197's declaration keys.
 Lowering the systems tables (agent-ix/quire-rs#446) and the interface
 `## Features` table (agent-ix/quire-rs#448) into the record is the engine's
-work; the rows that depend on it probe the installed engine and stay strict
-expected failures on one that does not lower them yet.
+work; both landed on quire-rs main at or after `6eec7e8`, published in
+quire 0.47.1.
 """
 
 from __future__ import annotations
@@ -26,15 +26,12 @@ from tests.conftest import (
     SKELETONS_DIR,
     SYSTEMS_KINDS,
     SYSTEMS_TYPES,
-    engine_lowers_systems_tables,
     generalization_gate_xfail,
     load_manifest,
     locators,
     object_type,
-    semantic_core_engine_xfail,
     sha256_of,
     systems_skeletons,
-    validation_params,
 )
 from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
 from tests.test_manifest_semantic import module_copy
@@ -285,7 +282,6 @@ def test_edge_verbs_and_roles_are_declared_and_used():
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
-@semantic_core_engine_xfail()
 def test_each_skeleton_yields_one_row_matching_its_columns(quire_engine, path):
     kind = path.stem
     text = path.read_text()
@@ -311,28 +307,17 @@ def test_a_reference_is_an_artifact_id_or_an_id_and_member():
 
 @pytest.mark.trace("TC-106", "FR-007-AC-7")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
-@semantic_core_engine_xfail()
 def test_skeleton_validation_matches_the_installed_engine(quire_engine, path):
-    """FR-007-AC-7 requires zero errors. An engine that lowers the systems
-    tables (agent-ix/quire-rs#446, probed) must deliver exactly that; one that
-    does not yields exactly one error, the record missing its first member,
-    and anything else turns this row red."""
+    """FR-007-AC-7 requires zero errors: the engine lowers the systems tables
+    into the record (agent-ix/quire-rs#446, landed in quire 0.47.1)."""
     kind = path.stem
     result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), path.read_text())
-    if engine_lowers_systems_tables():
-        assert result["errors"] == [], result["errors"]
-        assert result["is_valid"]
-        return
-    assert not result["is_valid"]
-    (error,) = result["errors"]
-    first = next(iter(RECORDS[kind]))
-    assert error["message"].startswith("semantic.record-invalid"), error
-    assert f'"{first}" is a required property' in error["message"], error
+    assert result["errors"] == [], result["errors"]
+    assert result["is_valid"]
 
 
 @pytest.mark.trace("TC-107", "FR-007-AC-8")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
-@semantic_core_engine_xfail()
 def test_a_missing_section_or_wrong_columns_is_refused(quire_engine, path):
     kind = path.stem
     text = path.read_text()
@@ -385,7 +370,6 @@ SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
 
 
 @pytest.mark.trace("TC-110", "FR-007-AC-10")
-@semantic_core_engine_xfail()
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
     equals spec-objects-business's, pinned with its source revision; the
@@ -439,7 +423,6 @@ def _drop_generalization(data):
 
 
 @pytest.mark.trace("TC-113", "FR-007-AC-12")
-@semantic_core_engine_xfail()
 def test_generalization_mapping_lets_specializes_extract(quire_engine):
     """agent-ix/spec-objects-architecture#14: quire-rs FR-075
     `ModelFeature::Generalization.declared_by_mappings` refuses an
@@ -527,7 +510,6 @@ def _features_rows(text: str) -> list[list[str]]:
 
 
 @pytest.mark.trace("TC-112", "FR-007-AC-11")
-@semantic_core_engine_xfail()
 def test_the_interface_features_table_carries_the_feature_order(quire_engine):
     loc = locators(object_type("interface"))["features"]
     assert loc == {
@@ -551,11 +533,8 @@ def test_the_interface_features_table_carries_the_feature_order(quire_engine):
 
 
 @pytest.mark.trace("TC-112", "FR-007-AC-11")
-@pytest.mark.parametrize("path", validation_params([INTERFACE_SKELETON]))
-def test_the_interface_skeleton_lowers_its_feature_order(
-    quire_engine, semantic_block, path
-):
-    text = path.read_text()
+def test_the_interface_skeleton_lowers_its_feature_order(quire_engine, semantic_block):
+    text = INTERFACE_SKELETON.read_text()
     result = quire_engine.validate_document("interface", str(PACKAGE_ROOT), text)
     assert result["errors"] == [], result["errors"]
     record = quire_engine.extract_semantic(

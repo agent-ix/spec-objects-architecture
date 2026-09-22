@@ -2,11 +2,8 @@
 
 Two policies are enforced here and nowhere else:
 
-* **The engine is a hard dependency of the semantic rows.** ``quire`` is not
-  declared in ``pyproject.toml`` — no index a repository may commit against
-  carries 0.46.0 (``internal-pypi`` serves 0.33.0 at most and no ``quire-rs``
-  tag carries the semantic layer), so the wheel is provisioned by
-  ``make dev-quire`` and ``agent-ix/quire-rs#392`` is the blocking issue. When
+* **The engine is a hard dependency of the semantic rows.** ``quire`` is a
+  dev dependency resolved from ``internal-pypi`` (``poetry install``). When
   it is absent the semantic tests **fail**; they never skip, because a skipped
   row is not coverage (FR-005).
 * **The emitted schemas are read from the committed tree**, and every
@@ -47,9 +44,9 @@ SEMANTIC_CORE_BASE = "https://schemas.agent-ix.org/semantic-core/0.3.0/"
 
 QUIRE_MISSING = (
     "the Quire wheel exposing `extract_semantic` is not installed in this "
-    "environment. Run `make dev-quire` (agent-ix/quire-rs#392 tracks publishing "
-    "0.46.0 to an index this repository may depend on). The semantic tests fail "
-    "rather than skip, because a skipped row is not coverage."
+    "environment. Run `poetry install` (quire is a dev dependency from "
+    "internal-pypi). The semantic tests fail rather than skip, because a "
+    "skipped row is not coverage."
 )
 
 OBJECT_TYPES = (
@@ -74,23 +71,6 @@ SYSTEMS_KINDS = ("interface", "part", "port", "connection", "allocation")
 
 #: Every exported object type, in manifest `semantic.exports` order.
 EXPORTS = OBJECT_TYPES + SYSTEMS_TYPES
-
-#: The quire-rs issue that owns lowering the systems tables into the record.
-SYSTEMS_EXTRACTION_ISSUE = "agent-ix/quire-rs#446"
-SYSTEMS_EXTRACTION_ISSUE_REASON = (
-    "the engine yields the systems table but does not lower it into the "
-    "record, so the required members are absent and the record fails "
-    f"`semantic.record-invalid`; {SYSTEMS_EXTRACTION_ISSUE}"
-)
-#: The quire-rs issue that owns lowering the interface `## Features` table into
-#: the record's `featureOrder` (quire-rs FR-075, PR #450).
-INTERFACE_FEATURE_ORDER_ISSUE = "agent-ix/quire-rs#448"
-INTERFACE_FEATURE_ORDER_REASON = (
-    "Interface.json requires `featureOrder`, and the engine yields the "
-    "`## Features` table but does not lower it into the record, so the record "
-    "fails `semantic.record-invalid`; "
-    f"{INTERFACE_FEATURE_ORDER_ISSUE}"
-)
 
 #: The quire-rs issue that owns reading `Pre:`/`Post:` operation contract lines.
 #: An engine that does not read them extracts no `post` clause reference, so
@@ -117,27 +97,6 @@ GENERALIZATION_GATE_REASON = (
     "`semantic.mappings` declaring `generalization` yet, so dropping the "
     "token from a manifest copy yields no `semantic.feature-not-extractable` "
     f"diagnostic; {GENERALIZATION_GATE_ISSUE}"
-)
-
-#: The manifest declares `semantic_core: 0.3.0` (the only real, published
-#: version — 0.1.0/0.2.0 never left a private dev-only mirror). quire-rs
-#: vendors semantic-core bundles by exact version string
-#: (`src/semantic/vendored.rs` `SEMANTIC_CORE_VERSIONS`) and the installed
-#: wheel (pypi.ix's quire 0.46.0, the latest published anywhere) only vendors
-#: 0.1.0, so every call through the engine for THIS module now fails: a direct
-#: `extract_semantic` call raises `semantic.unsupported-semantic-core`, and
-#: `validate_document`/`Registry.load_from` (which read the manifest from disk
-#: themselves) silently load zero archetypes, so they report
-#: `quire.QuireSchemaError: unknown archetype: <kind>` instead. Confirmed
-#: empirically (verified against 0.3.0 directly, not assumed from the error
-#: string). agent-ix/quire-rs#487 tracks vendoring 0.3.0 and publishing a
-#: wheel that carries it.
-SEMANTIC_CORE_ENGINE_ISSUE = "agent-ix/quire-rs#487"
-SEMANTIC_CORE_ENGINE_REASON = (
-    "the installed quire wheel (0.46.0, the latest published anywhere) only "
-    "vendors semantic-core 0.1.0 and this module's real semantic_core is "
-    "0.3.0, so extract_semantic/validate_document/Registry.load_from all "
-    f"fail against it; {SEMANTIC_CORE_ENGINE_ISSUE}"
 )
 
 #: FR-003: an object id is a letter, then letters, digits and underscores.
@@ -250,9 +209,8 @@ def is_systems_skeleton(path: pathlib.Path) -> bool:
 
 
 def declaration_skeletons() -> list[pathlib.Path]:
-    """The FR-005 skeleton set: every shipped skeleton except the four FR-007
-    systems skeletons, whose records the engine cannot yet assemble
-    (agent-ix/quire-rs#446)."""
+    """The FR-005 skeleton set: every shipped skeleton except the four
+    systems-model skeletons, which FR-007 governs separately."""
     return [
         path
         for path in sorted(SKELETONS_DIR.glob("*.md"))
@@ -280,15 +238,7 @@ def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None
         "markdown": markdown,
         "module": {
             "contractVersion": "1.0.0",
-            # Deliberately NOT `semantic_block["semantic_core"]`: the
-            # installed quire wheel (0.46.0) only vendors a semantic-core
-            # 0.1.0 bundle and raises `semantic.unsupported-semantic-core`
-            # for any other value (verified empirically against 0.3.0). These
-            # probes exercise engine *behaviors* unrelated to which
-            # semantic-core version is declared, so they pin the one version
-            # the installed engine can actually extract against, independent
-            # of the manifest's real (0.3.0) pin.
-            "semanticCore": "0.1.0",
+            "semanticCore": load_manifest()["semantic"]["semantic_core"],
             "package": "agent-ix/spec-objects-architecture",
             "exports": [kind],
         },
@@ -298,51 +248,6 @@ def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None
     if body_extraction is not None:
         request["bodyExtraction"] = body_extraction
     return quire.extract_semantic(request)
-
-
-def _table_locator(section: str, columns: list[str]) -> dict:
-    return {
-        "yield_pattern": {
-            "match": {
-                "table": {
-                    "from": "table_row",
-                    "under_section": section,
-                    "required": True,
-                    "assert": {"columns": columns, "min_rows": 1},
-                }
-            }
-        }
-    }
-
-
-@functools.cache
-def engine_lowers_systems_tables() -> bool:
-    """agent-ix/quire-rs#446: the engine lowers a systems table into the record."""
-    record = _extract_probe(
-        "---\nid: tank_pump\ntitle: TankPump\ntype: part\nobject: part\n---\n"
-        "# [tank_pump] TankPump\n\n## Part\n\n"
-        "| Owner | Declared Type | Multiplicity |\n|---|---|---|\n"
-        "| tank_pump | String | 1..1 |\n",
-        "part",
-        _table_locator("Part", ["Owner", "Declared Type", "Multiplicity"]),
-    )
-    part = ((record or {}).get("model") or {}).get("part") or {}
-    return all(part.get(member) for member in ("owner", "declaredType", "multiplicity"))
-
-
-@functools.cache
-def engine_lowers_feature_order() -> bool:
-    """agent-ix/quire-rs#448: the engine lowers a `## Features` table into the
-    record's `featureOrder`."""
-    record = _extract_probe(
-        "---\nid: flow\ntitle: Flow\ntype: interface\nobject: interface\n---\n"
-        "# [flow] Flow\n\n## Operations\n\n### run\n\nReturns: Bytes[1..1]\n\n"
-        "## Features\n\n| Feature | Kind |\n|---|---|\n| run | operation |\n",
-        "interface",
-        _table_locator("Features", ["Feature", "Kind"]),
-    )
-    order = ((record or {}).get("model") or {}).get("featureOrder") or []
-    return [entry.get("name") for entry in order] == ["run"]
 
 
 @functools.cache
@@ -403,67 +308,16 @@ def generalization_gate_xfail():
     )
 
 
-@functools.cache
-def engine_accepts_module_semantic_core() -> bool:
-    """Whether the installed quire engine vendors a bundle for this module's
-    *real* declared `semantic_core` (read from the manifest — unlike
-    `_extract_probe`'s fixed-at-0.1.0 requests above, which probe unrelated
-    engine behaviors and must keep working regardless of this module's own
-    pin). Probed empirically against the manifest value, never assumed from
-    the version number alone."""
-    try:
-        import quire
-    except ImportError:
-        return True  # `require_quire` fails those tests by name.
-    version = load_manifest()["semantic"]["semantic_core"]
-    request = {
-        "markdown": (
-            "---\nid: probe\ntitle: Probe\ntype: data_schema\n"
-            "object: data_schema\n---\n# [probe] Probe\n\n"
-            "## Schema\n\n```json\n{}\n```\n"
-        ),
-        "module": {
-            "contractVersion": "1.0.0",
-            "semanticCore": version,
-            "package": "agent-ix/spec-objects-architecture",
-            "exports": ["data_schema"],
-        },
-        "path": "spec/probe.md",
-        "bundle": {"package": "agent-ix/spec-objects-architecture"},
-    }
-    try:
-        quire.extract_semantic(request)
-    except TypeError as error:
-        if "semantic.unsupported-semantic-core" in str(error):
-            return False
-        raise
-    return True
-
-
-def semantic_core_engine_xfail():
-    """A strict xfail on an installed engine that does not vendor this
-    module's declared `semantic_core` yet; agent-ix/quire-rs#487. Covers both
-    failure shapes: a direct `extract_semantic` `TypeError` and the silent
-    zero-archetype load that `validate_document`/`Registry.load_from` turn
-    into `unknown archetype: <kind>`."""
-    return pytest.mark.xfail(
-        condition=not engine_accepts_module_semantic_core(),
-        strict=True,
-        reason=SEMANTIC_CORE_ENGINE_REASON,
-    )
-
-
 def validation_gap(path: pathlib.Path) -> str | None:
     """The named defect that keeps a skeleton from validating with the
     installed engine, if any.
 
-    Each is a known defect, not a requirement: FR-005 and FR-007 require every
+    A known defect, not a requirement: FR-005 and FR-007 require every
     skeleton to validate with zero errors. An engine that carries the fix
-    (probed, not assumed) has no gap, so the row runs as a plain pass."""
-    if is_systems_skeleton(path) and not engine_lowers_systems_tables():
-        return SYSTEMS_EXTRACTION_ISSUE_REASON
-    if path.stem == "interface" and not engine_lowers_feature_order():
-        return INTERFACE_FEATURE_ORDER_REASON
+    (probed, not assumed) has no gap, so the row runs as a plain pass. The
+    systems-table (agent-ix/quire-rs#446) and interface `featureOrder`
+    (agent-ix/quire-rs#448) lowerings landed on quire-rs main at or after
+    `6eec7e8`, published in quire 0.47.1, so those two gaps are gone."""
     if path.stem == "external_contract" and not engine_reads_post_lines():
         return POST_LINES_REASON
     return None

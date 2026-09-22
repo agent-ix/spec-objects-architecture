@@ -34,8 +34,6 @@ from tests.conftest import (
     all_skeletons,
     frontmatter,
     load_manifest,
-    semantic_core_engine_xfail,
-    validation_params,
 )
 
 # The filament-core-service module-manifest schema at revision `e33070e`
@@ -207,12 +205,9 @@ def _render(generator, path, context) -> str:
 
 
 @pytest.mark.trace("TC-006", "StR-001-VC-2")
-@semantic_core_engine_xfail()
-@pytest.mark.parametrize("path", validation_params(all_skeletons()))
+@pytest.mark.parametrize("path", all_skeletons(), ids=lambda p: p.name)
 def test_each_generated_artifact_validates(quire_engine, tmp_path, path):
-    """The validate half of the generator criterion, per rendered skeleton. A
-    skeleton with a named defect (conftest `validation_gap`) is a strict
-    expected failure, never a skip."""
+    """The validate half of the generator criterion, per rendered skeleton."""
     generator = shutil.which("minijinja-cli")
     assert generator is not None, "minijinja-cli is not on PATH"
     context = tmp_path / "context.json"
