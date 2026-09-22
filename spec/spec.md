@@ -158,9 +158,8 @@ artifact types.
 ### Intended Users
 
 The Filament platform (which activates and serves the contributed
-ObjectTypes), spec authors (who model architecture using them), and agent CLI
-generators such as `minijinja-cli` (which produce artifacts from the shipped
-skeletons and schemas).
+ObjectTypes), spec authors (who model architecture using them), and agents
+(which author artifacts from the shipped skeletons and schemas).
 
 ## Requirements Architecture
 

@@ -58,7 +58,7 @@ test was skipped.
 
 | Stakeholder Req | Trace to US/FR | Test/Validation | Coverage Status |
 |---|---|---|---|
-| StR-001 | US-001, FR-001..FR-006 | TC-005, TC-006, TC-007 | 🚧 VC-1 needs a running filament-core; VC-2 and VC-3 pass |
+| StR-001 | US-001, FR-001..FR-006 | TC-005, TC-007 | 🚧 VC-1 needs a running filament-core; VC-3 passes |
 
 ### User Story Coverage
 
@@ -100,7 +100,6 @@ test was skipped.
 | TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03 | 🚧 needs a running filament-core |
 | TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02 | 🚧 needs a running filament-core |
 | TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
-| TC-006 | `minijinja-cli` renders every shipped skeleton and each rendered artifact validates against this module | Integration | P2 | StR-001-VC-2 | ✅ render and validation pass for all seventeen |
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
 | TC-010 | Emitted set equals the fourteen object-type models plus the declared support models; `toolchain.json` records compiler and emitter 1.15.0 | Unit | P0 | FR-002-AC-1 | ✅ |
 | TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name under the manifest-version base | Unit | P0 | FR-002-AC-2 | ✅ |
@@ -207,10 +206,10 @@ ambiguous with itself).
 
 Quire 0.47.1 (built from quire-rs main at or after `6eec7e8`) carries the
 lowerings and gates that used to need a conditional probe: the systems tables
-into the record (`agent-ix/quire-rs#446`, TC-006, TC-106), the interface
-`## Features` table into `featureOrder` (`agent-ix/quire-rs#448`, TC-006,
+into the record (`agent-ix/quire-rs#446`, TC-106), the interface
+`## Features` table into `featureOrder` (`agent-ix/quire-rs#448`, 
 TC-025, TC-050, TC-112), reading a `Post:` line under an operation as a `post`
-clause reference (`agent-ix/quire-rs#431`; TC-006, TC-025, TC-050, TC-054's
+clause reference (`agent-ix/quire-rs#431`; TC-025, TC-050, TC-054's
 dangling-post fixture case, TC-065's external-contract case), and
 `ModelFeature::Generalization` refusing a `specializes` relationship with
 `semantic.feature-not-extractable` when `generalization` is absent from
