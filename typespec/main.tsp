@@ -11,7 +11,7 @@ using AgentIx.Semantic.Core;
  * validating that type's Quire declaration record (fields, relations, clauses,
  * operations; quire-rs FR-070..FR-072) with type-specific required keys,
  * forbidden keys, and item rules (FR-004). Every grammar item is a `$ref` to
- * `@agent-ix/semantic-core` 0.1.0 and is never redeclared here (FR-004-CON-1);
+ * `@agent-ix/semantic-core` 0.3.0 and is never redeclared here (FR-004-CON-1);
  * this namespace contributes archetype shapes only.
  *
  * The `$id` base embeds the manifest `version` by intent (FR-002-CON-5): one

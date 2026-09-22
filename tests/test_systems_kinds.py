@@ -31,6 +31,7 @@ from tests.conftest import (
     load_manifest,
     locators,
     object_type,
+    semantic_core_engine_xfail,
     sha256_of,
     systems_skeletons,
     validation_params,
@@ -82,7 +83,11 @@ SYSTEMS_ROLES = {"systems-part", "systems-port", "systems-interface"}
 # id>`, and each record names TC-197's declaration keys (`Sys`, `Pump`,
 # `Flow`, `sys_pump`, `pump_out`, `tank_in`, `Pump/run`).
 PKG = "ix://test/orders/"
-ONE = {"lower": 1, "upper": 1}
+# Multiplicity.json (semantic-core 0.3.0) requires `ordered`/`unique`; a
+# producer clamps both `false` on a singular multiplicity (`upper` at most
+# one). `ONE` is singular everywhere it is used below (one `Pump`, one
+# `sys_pump`), so both are `false`.
+ONE = {"lower": 1, "upper": 1, "ordered": False, "unique": False}
 RECORDS = {
     "part": {
         "owner": f"{PKG}Sys",
@@ -151,7 +156,12 @@ def test_a_connection_end_names_its_port_and_admits_a_multiplicity(schema_regist
     """QSpec #86 TC-197 Y05: an end may state its multiplicity."""
     connection = schema_registry("Connection")
     record = RECORDS["connection"]
-    many = {"lower": 0}
+    # `upper` absent is a genuine unbounded collection (any number of flows at
+    # this end), but this fixture exercises only the schema's optional-`upper`
+    # wiring (QSpec #86 TC-197 Y05) — it asserts nothing about the order or
+    # distinctness of what flows through the end, so both are `false` rather
+    # than an unevidenced `true`.
+    many = {"lower": 0, "ordered": False, "unique": False}
     with_multiplicity = {
         **record,
         "sourceEnd": {"type": f"{PKG}pump_out", "multiplicity": ONE},
@@ -275,6 +285,7 @@ def test_edge_verbs_and_roles_are_declared_and_used():
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
+@semantic_core_engine_xfail()
 def test_each_skeleton_yields_one_row_matching_its_columns(quire_engine, path):
     kind = path.stem
     text = path.read_text()
@@ -300,6 +311,7 @@ def test_a_reference_is_an_artifact_id_or_an_id_and_member():
 
 @pytest.mark.trace("TC-106", "FR-007-AC-7")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
+@semantic_core_engine_xfail()
 def test_skeleton_validation_matches_the_installed_engine(quire_engine, path):
     """FR-007-AC-7 requires zero errors. An engine that lowers the systems
     tables (agent-ix/quire-rs#446, probed) must deliver exactly that; one that
@@ -320,6 +332,7 @@ def test_skeleton_validation_matches_the_installed_engine(quire_engine, path):
 
 @pytest.mark.trace("TC-107", "FR-007-AC-8")
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
+@semantic_core_engine_xfail()
 def test_a_missing_section_or_wrong_columns_is_refused(quire_engine, path):
     kind = path.stem
     text = path.read_text()
@@ -372,6 +385,7 @@ SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
 
 
 @pytest.mark.trace("TC-110", "FR-007-AC-10")
+@semantic_core_engine_xfail()
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
     equals spec-objects-business's, pinned with its source revision; the
@@ -425,6 +439,7 @@ def _drop_generalization(data):
 
 
 @pytest.mark.trace("TC-113", "FR-007-AC-12")
+@semantic_core_engine_xfail()
 def test_generalization_mapping_lets_specializes_extract(quire_engine):
     """agent-ix/spec-objects-architecture#14: quire-rs FR-075
     `ModelFeature::Generalization.declared_by_mappings` refuses an
@@ -512,6 +527,7 @@ def _features_rows(text: str) -> list[list[str]]:
 
 
 @pytest.mark.trace("TC-112", "FR-007-AC-11")
+@semantic_core_engine_xfail()
 def test_the_interface_features_table_carries_the_feature_order(quire_engine):
     loc = locators(object_type("interface"))["features"]
     assert loc == {

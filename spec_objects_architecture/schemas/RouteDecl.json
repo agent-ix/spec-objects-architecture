@@ -11,7 +11,7 @@
       "minLength": 1
     },
     "operation": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Identifier.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Identifier.json"
     }
   },
   "required": [

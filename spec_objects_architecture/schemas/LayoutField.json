@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "name": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Identifier.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Identifier.json"
     },
     "offset": {
       "type": "integer",
@@ -19,7 +19,7 @@
           "maximum": 4294967295
         },
         {
-          "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Identifier.json"
+          "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Identifier.json"
         }
       ]
     },

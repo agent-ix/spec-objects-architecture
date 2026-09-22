@@ -4,10 +4,10 @@
   "type": "object",
   "properties": {
     "type": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
     },
     "multiplicity": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/Multiplicity.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Multiplicity.json"
     }
   },
   "required": [

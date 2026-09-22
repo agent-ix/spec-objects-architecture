@@ -4,7 +4,7 @@ version: 0.4.0
 description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
 semantic:
   contract_version: 1.0.0
-  semantic_core: 0.1.0
+  semantic_core: 0.3.0
   package: agent-ix/spec-objects-architecture
   exports:
   - api_endpoint
@@ -67,7 +67,7 @@ object_types:
     realizes: [business-intent]
   data_schema:
     schema: schemas/ApiEndpoint.json
-    digest: sha256:1c2bd1a9191d6a75a3d07959214ddcc6fd8e499713e2b327652a40ef987c4cd3
+    digest: sha256:afc0daa8c107f7cead628f73755d526fe52138e89bb5cbd1aa293098d106a28c
   body_extraction:
     yield_pattern:
       match:
@@ -114,7 +114,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/DataSchema.json
-    digest: sha256:ef31619b12d13a10a9d4a56bab58c2eb5b4b6b72dcd0b45f180247071e5d6bc0
+    digest: sha256:3db96df3b05e3ff00ac9b2b3126b1474ca34cc10536ac13178df4ccb061bff79
   body_extraction:
     yield_pattern:
       match:
@@ -137,7 +137,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/Queue.json
-    digest: sha256:2b6fc6c54d395a7f2823624a86177d0a582dccff57e06a0bde227603a05a93e8
+    digest: sha256:2597476e070d3a6341550761e75f437b2972333c2ff36fcd4a646f267a94a0c3
   body_extraction:
     yield_pattern:
       match:
@@ -163,7 +163,7 @@ object_types:
     operates_on: [domain-object]
   data_schema:
     schema: schemas/Action.json
-    digest: sha256:991db18bb82f1cda13c67a5a54d9b3e1dca7f82d924db0ef76caea99346f7f49
+    digest: sha256:3f7745741e97db4cbac0170b6581639e3d2e50e7c9ee7a13624a39ede4c2188f
   body_extraction:
     yield_pattern:
       match:
@@ -188,7 +188,7 @@ object_types:
     realizes: [business-intent]
   data_schema:
     schema: schemas/UiComponent.json
-    digest: sha256:4aad931ce3828f4b238cfa258b085f7b574d0b4d1238adc16e105cbad7aded4c
+    digest: sha256:17126e83c021b18cef4bab9d905ffc3e7d544481ff2b81e633b23e8aa84ded62
   body_extraction:
     yield_pattern:
       match:
@@ -231,7 +231,7 @@ object_types:
     meaning: quire.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
-    digest: sha256:f9bb3844c23908de143c28035a9883795fe883e1bc4a0484e216ff6210f37c38
+    digest: sha256:962fa77744ca95ae1edd8585791fdcc949d9fc2adc7bff59964fc6bcd63de720
   body_extraction:
     yield_pattern:
       match:
@@ -267,7 +267,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/ExternalContract.json
-    digest: sha256:f811ba48510690d5b42258fcf671d8fe3b7f33080e75bf3a3ac4400ee8901927
+    digest: sha256:bcc637816d4ea84b634c9b2e2575dcb17c95549e1d90378e421a686a66c86241
   body_extraction:
     yield_pattern:
       match:
@@ -304,7 +304,7 @@ object_types:
     references: [interface]
   data_schema:
     schema: schemas/ExtensionPoint.json
-    digest: sha256:a34c94f334fb5fa95bb9eeed9fb2ce82c65de15021a6494228c9cd48adaf6df5
+    digest: sha256:4c442a4dcb03826fa0b75813f78971f7b6fce03ae26dadd710afb19de1569089
   body_extraction:
     yield_pattern:
       match:
@@ -339,7 +339,7 @@ object_types:
     references: [data_schema]
   data_schema:
     schema: schemas/BinaryFormat.json
-    digest: sha256:559cc4d199f86015d3ba56fa81502241c43b6f87b76ddbf9685b0a0ea489562a
+    digest: sha256:9131e05a412b183bbc77a33c782b76c98aa530969ed24254cae12da93754a095
   body_extraction:
     yield_pattern:
       match:
@@ -364,7 +364,7 @@ object_types:
     throttles: [api_endpoint, action]
   data_schema:
     schema: schemas/RateLimit.json
-    digest: sha256:027e12eebd0648312704073c4b13764b4816318c2bb3bd210f59b0ef8faf4e6c
+    digest: sha256:a757927646e7fd841e17b5c8f61eadffa609338a85fb63aa740ef0ceb3ea67f4
   body_extraction:
     yield_pattern:
       match:
@@ -403,7 +403,7 @@ object_types:
     meaning: quire.meaning.systems.part/v1
   data_schema:
     schema: schemas/Part.json
-    digest: sha256:8b8403cff5472ac2a1a2df7b1a1e10f120eeda9c27dea6de23a99685d03d71aa
+    digest: sha256:c75b1fbc185171861d086d194e4ef3205eec72752d886ba33aefc9ac47c1df41
   body_extraction:
     yield_pattern:
       match:
@@ -438,7 +438,7 @@ object_types:
     meaning: quire.meaning.systems.port/v1
   data_schema:
     schema: schemas/Port.json
-    digest: sha256:7d3c4cd18acdf4858a9d891dc159fda08dca5e2f6b365decf1d5c8d90bb3de9e
+    digest: sha256:53c1396a04011f9609c1920a7598aaecbb25042874f3b8f6374e365f1765793d
   body_extraction:
     yield_pattern:
       match:
@@ -501,7 +501,7 @@ object_types:
     meaning: quire.meaning.systems.allocation/v1
   data_schema:
     schema: schemas/Allocation.json
-    digest: sha256:69627d8fd777c3aab9ad57fbde85667250b9a9fa483506e32c0ffc8adddc626c
+    digest: sha256:44dad75356dfa6cd5c0a8de2acddc5dbe7fa534269456e5843119ad77ad25579
   body_extraction:
     yield_pattern:
       match:

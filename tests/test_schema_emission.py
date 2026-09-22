@@ -247,7 +247,7 @@ def test_no_npmrc_no_local_dependency_and_exact_toolchain_pins():
     dev = package["devDependencies"]
     assert dev["@typespec/compiler"] == "1.15.0"
     assert dev["@typespec/json-schema"] == "1.15.0"
-    assert dev["@agent-ix/semantic-core"] == "0.1.0"
+    assert dev["@agent-ix/semantic-core"] == "0.3.0"
     assert "dependencies" not in package or not package["dependencies"]
     for section in ("dependencies", "devDependencies"):
         for name, spec in (package.get(section) or {}).items():

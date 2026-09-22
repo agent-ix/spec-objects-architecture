@@ -43,7 +43,7 @@ SEMANTIC_CORE_DIR = (
     / "json-schema"
 )
 
-SEMANTIC_CORE_BASE = "https://schemas.agent-ix.org/semantic-core/0.1.0/"
+SEMANTIC_CORE_BASE = "https://schemas.agent-ix.org/semantic-core/0.3.0/"
 
 QUIRE_MISSING = (
     "the Quire wheel exposing `extract_semantic` is not installed in this "
@@ -117,6 +117,27 @@ GENERALIZATION_GATE_REASON = (
     "`semantic.mappings` declaring `generalization` yet, so dropping the "
     "token from a manifest copy yields no `semantic.feature-not-extractable` "
     f"diagnostic; {GENERALIZATION_GATE_ISSUE}"
+)
+
+#: The manifest declares `semantic_core: 0.3.0` (the only real, published
+#: version — 0.1.0/0.2.0 never left a private dev-only mirror). quire-rs
+#: vendors semantic-core bundles by exact version string
+#: (`src/semantic/vendored.rs` `SEMANTIC_CORE_VERSIONS`) and the installed
+#: wheel (pypi.ix's quire 0.46.0, the latest published anywhere) only vendors
+#: 0.1.0, so every call through the engine for THIS module now fails: a direct
+#: `extract_semantic` call raises `semantic.unsupported-semantic-core`, and
+#: `validate_document`/`Registry.load_from` (which read the manifest from disk
+#: themselves) silently load zero archetypes, so they report
+#: `quire.QuireSchemaError: unknown archetype: <kind>` instead. Confirmed
+#: empirically (verified against 0.3.0 directly, not assumed from the error
+#: string). agent-ix/quire-rs#487 tracks vendoring 0.3.0 and publishing a
+#: wheel that carries it.
+SEMANTIC_CORE_ENGINE_ISSUE = "agent-ix/quire-rs#487"
+SEMANTIC_CORE_ENGINE_REASON = (
+    "the installed quire wheel (0.46.0, the latest published anywhere) only "
+    "vendors semantic-core 0.1.0 and this module's real semantic_core is "
+    "0.3.0, so extract_semantic/validate_document/Registry.load_from all "
+    f"fail against it; {SEMANTIC_CORE_ENGINE_ISSUE}"
 )
 
 #: FR-003: an object id is a letter, then letters, digits and underscores.
@@ -259,6 +280,14 @@ def _extract_probe(markdown: str, kind: str, body_extraction: dict | None = None
         "markdown": markdown,
         "module": {
             "contractVersion": "1.0.0",
+            # Deliberately NOT `semantic_block["semantic_core"]`: the
+            # installed quire wheel (0.46.0) only vendors a semantic-core
+            # 0.1.0 bundle and raises `semantic.unsupported-semantic-core`
+            # for any other value (verified empirically against 0.3.0). These
+            # probes exercise engine *behaviors* unrelated to which
+            # semantic-core version is declared, so they pin the one version
+            # the installed engine can actually extract against, independent
+            # of the manifest's real (0.3.0) pin.
             "semanticCore": "0.1.0",
             "package": "agent-ix/spec-objects-architecture",
             "exports": [kind],
@@ -371,6 +400,56 @@ def generalization_gate_xfail():
         condition=not engine_gates_generalization_mapping(),
         strict=True,
         reason=GENERALIZATION_GATE_REASON,
+    )
+
+
+@functools.cache
+def engine_accepts_module_semantic_core() -> bool:
+    """Whether the installed quire engine vendors a bundle for this module's
+    *real* declared `semantic_core` (read from the manifest — unlike
+    `_extract_probe`'s fixed-at-0.1.0 requests above, which probe unrelated
+    engine behaviors and must keep working regardless of this module's own
+    pin). Probed empirically against the manifest value, never assumed from
+    the version number alone."""
+    try:
+        import quire
+    except ImportError:
+        return True  # `require_quire` fails those tests by name.
+    version = load_manifest()["semantic"]["semantic_core"]
+    request = {
+        "markdown": (
+            "---\nid: probe\ntitle: Probe\ntype: data_schema\n"
+            "object: data_schema\n---\n# [probe] Probe\n\n"
+            "## Schema\n\n```json\n{}\n```\n"
+        ),
+        "module": {
+            "contractVersion": "1.0.0",
+            "semanticCore": version,
+            "package": "agent-ix/spec-objects-architecture",
+            "exports": ["data_schema"],
+        },
+        "path": "spec/probe.md",
+        "bundle": {"package": "agent-ix/spec-objects-architecture"},
+    }
+    try:
+        quire.extract_semantic(request)
+    except TypeError as error:
+        if "semantic.unsupported-semantic-core" in str(error):
+            return False
+        raise
+    return True
+
+
+def semantic_core_engine_xfail():
+    """A strict xfail on an installed engine that does not vendor this
+    module's declared `semantic_core` yet; agent-ix/quire-rs#487. Covers both
+    failure shapes: a direct `extract_semantic` `TypeError` and the silent
+    zero-archetype load that `validate_document`/`Registry.load_from` turn
+    into `unknown archetype: <kind>`."""
+    return pytest.mark.xfail(
+        condition=not engine_accepts_module_semantic_core(),
+        strict=True,
+        reason=SEMANTIC_CORE_ENGINE_REASON,
     )
 
 

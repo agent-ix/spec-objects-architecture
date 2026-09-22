@@ -30,7 +30,7 @@ import re
 import pytest
 import yaml
 
-from tests.conftest import validation_gap
+from tests.conftest import semantic_core_engine_xfail, validation_gap
 
 PKG_ROOT = pathlib.Path(__file__).resolve().parent.parent / "spec_objects_architecture"
 MANIFEST_PATH = PKG_ROOT / "manifest.yaml"
@@ -305,6 +305,7 @@ def _validation_cases() -> list:
 
 
 @pytest.mark.parametrize("name", _validation_cases())
+@semantic_core_engine_xfail()
 def test_skeleton_validates_via_quire(name: str) -> None:
     """Each filled skeleton passes ``validate_document``.
 
@@ -317,6 +318,7 @@ def test_skeleton_validates_via_quire(name: str) -> None:
     assert res["is_valid"], res["errors"]
 
 
+@semantic_core_engine_xfail()
 def test_required_section_deletion_fails_via_quire() -> None:
     """Deleting a required section makes ``validate_document`` fail."""
     quire = _quire_doc_validator()

@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "returns": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.1.0/TypeRef.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/TypeRef.json"
     }
   },
   "required": [
