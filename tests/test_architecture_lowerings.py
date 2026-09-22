@@ -26,7 +26,6 @@ from tests.conftest import (
     frontmatter,
     locators,
     object_type,
-    semantic_core_engine_xfail,
 )
 
 TYPE_PREFIX = "ix://agent-ix/spec-objects-architecture/type/"
@@ -63,7 +62,6 @@ def fence(path, heading: str, language: str) -> str:
 
 
 @pytest.mark.trace("TC-080", "FR-006-AC-1")
-@semantic_core_engine_xfail()
 def test_the_interface_contract_yaml_and_its_typed_operations_agree(
     quire_engine, semantic_module, bundle_index
 ):
@@ -96,7 +94,6 @@ def test_the_interface_contract_yaml_and_its_typed_operations_agree(
 
 
 @pytest.mark.trace("TC-081", "FR-006-AC-2")
-@semantic_core_engine_xfail()
 def test_the_data_schema_fence_and_its_typed_properties_agree(
     quire_engine, semantic_module, bundle_index
 ):
@@ -116,7 +113,6 @@ def test_the_data_schema_fence_and_its_typed_properties_agree(
 
 
 @pytest.mark.trace("TC-082", "FR-006-AC-3")
-@semantic_core_engine_xfail()
 def test_the_queue_message_format_and_its_typed_properties_agree(
     quire_engine, semantic_module, bundle_index
 ):
@@ -127,7 +123,6 @@ def test_the_queue_message_format_and_its_typed_properties_agree(
 
 
 @pytest.mark.trace("TC-083", "FR-006-AC-4")
-@semantic_core_engine_xfail()
 def test_every_api_endpoint_reference_resolves_to_a_shipped_data_schema(
     quire_engine, semantic_module, bundle_index
 ):
@@ -159,7 +154,6 @@ def test_every_api_endpoint_reference_resolves_to_a_shipped_data_schema(
 
 
 @pytest.mark.trace("TC-084", "FR-006-AC-5")
-@semantic_core_engine_xfail()
 def test_an_unknown_return_token_is_reported_and_placeheld_not_rewritten(
     quire_engine, semantic_module, bundle_index
 ):
@@ -179,7 +173,6 @@ def test_an_unknown_return_token_is_reported_and_placeheld_not_rewritten(
 
 
 @pytest.mark.trace("TC-085", "FR-006-AC-6", "FR-006-CON-1")
-@semantic_core_engine_xfail()
 def test_the_three_kernel_fence_locators_are_unchanged_and_still_yield(quire_engine):
     baseline = json.loads((BASELINE_DIR / "body_extraction.json").read_text())
     owned = {

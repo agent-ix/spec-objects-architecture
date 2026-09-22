@@ -58,7 +58,7 @@ test was skipped.
 
 | Stakeholder Req | Trace to US/FR | Test/Validation | Coverage Status |
 |---|---|---|---|
-| StR-001 | US-001, FR-001..FR-006 | TC-005, TC-006, TC-007 | 🚧 VC-1 needs a running filament-core; VC-2 and VC-3 pass |
+| StR-001 | US-001, FR-001..FR-006 | TC-005, TC-007 | 🚧 VC-1 needs a running filament-core; VC-3 passes |
 
 ### User Story Coverage
 
@@ -72,11 +72,11 @@ test was skipped.
 |---|---|---|---|
 | FR-001 | FR-001-AC-1..4 | TC-001..TC-004 | 🚧 AC-1 is an expected failure on filament-core-service#25; AC-2..AC-4 need a running filament-core |
 | FR-002 | FR-002-AC-1..10, FR-002-CON-1..5 | TC-010..TC-019, TC-071..TC-079, TC-087 | ✅ |
-| FR-003 | FR-003-AC-1..9, FR-003-CON-1..2 | TC-020..TC-028, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure; TC-025 on `interface` is an expected failure on quire-rs#448 |
+| FR-003 | FR-003-AC-1..9, FR-003-CON-1..2 | TC-020..TC-028, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
-| FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure; TC-050 on `interface` is an expected failure on quire-rs#448 |
+| FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
-| FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | 🚧 AC-7 is an expected failure on quire-rs#446; AC-11's validation half is an expected failure on quire-rs#448; AC-12's removal half is an expected failure on quire-rs#463 |
+| FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
 
 ### Non-Functional Requirement Coverage
 
@@ -100,7 +100,6 @@ test was skipped.
 | TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03 | 🚧 needs a running filament-core |
 | TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02 | 🚧 needs a running filament-core |
 | TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
-| TC-006 | `minijinja-cli` renders every shipped skeleton and each rendered artifact validates against this module | Integration | P2 | StR-001-VC-2 | ✅ render passes for all seventeen; validation of the four systems skeletons is an expected failure on quire-rs#446 and of `interface` on quire-rs#448 |
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
 | TC-010 | Emitted set equals the fourteen object-type models plus the declared support models; `toolchain.json` records compiler and emitter 1.15.0 | Unit | P0 | FR-002-AC-1 | ✅ |
 | TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name under the manifest-version base | Unit | P0 | FR-002-AC-2 | ✅ |
@@ -111,13 +110,13 @@ test was skipped.
 | TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency, exact toolchain pins in `package.json` | Static | P2 | FR-002-CON-2 | ✅ |
-| TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (npm.ix) | Unit | P2 | FR-002-CON-4 | ✅ |
+| TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (GitHub Packages) | Unit | P2 | FR-002-CON-4 | ✅ |
 | TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
 | TC-021 | Every exported type's `data_schema` is the reference form whose file hashes to the recorded digest | Unit | P0 | FR-003-AC-2 | ✅ |
 | TC-022 | Every 0.2.0 locator is unchanged against the checked-in baseline apart from the `id` regex | Unit | P0 | FR-003-AC-3 | ✅ |
 | TC-023 | Every added locator except `interface.features` is `required: false` | Unit | P1 | FR-003-AC-3, FR-003-CON-2 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
-| TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ `interface` is an expected failure on quire-rs#448 |
+| TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-026 | An unknown `semantic` key and an altered digest are each refused by the loader; the refusal names the key or path | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
 | TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
 | TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0 | Unit | P1 | FR-003-AC-7 | ✅ |
@@ -138,7 +137,7 @@ test was skipped.
 | TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1 | ✅ |
 | TC-045 | No shipped schema declares an observation key, so a declaration record cannot be read as an extraction from running code | Unit | P0 | FR-004-AC-15 | ✅ |
 | TC-046 | `relations` is admitted by six object types and refused by four, both halves asserted | Integration | P1 | FR-004-AC-16 | ✅ |
-| TC-050 | Every skeleton (ten plus three alternates) validates with no error | Integration | P0 | FR-005-AC-1 | ✅ `interface` is an expected failure on quire-rs#448 |
+| TC-050 | Every skeleton (ten plus three alternates) validates with no error | Integration | P0 | FR-005-AC-1 | ✅ |
 | TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
 | TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
 | TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4 | ✅ |
@@ -180,23 +179,22 @@ test was skipped.
 | TC-103 | FR-035 violations name no `construct` path; a `*` reference and an unknown member state are refused; each construct binds its FR-208 meaning; references name declared members and roles only | Integration | P0 | FR-007-AC-4 | ✅ |
 | TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5 | ✅ |
 | TC-105 | Each systems skeleton has an underscore id and extracts one row with one cell per column, each reference cell an artifact id or `<artifact id>/<member>` | Integration | P1 | FR-007-AC-6 | ✅ |
-| TC-106 | Each systems skeleton validates with zero errors, its record carrying every FR-152 member | Integration | P1 | FR-007-AC-7 | 🚧 on an engine that lowers the systems tables (probed) the test asserts zero errors, and passes against quire-rs PR #450; on quire 0.46.0 it pins the known defect (exactly one `semantic.record-invalid` per skeleton) on quire-rs#446 |
+| TC-106 | Each systems skeleton validates with zero errors, its record carrying every FR-152 member | Integration | P1 | FR-007-AC-7 | ✅ |
 | TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
 | TC-108 | No systems schema or construct, `interface` included, declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1 | ✅ |
 | TC-109 | An interface with only fields, only operations, or both validates with its `featureOrder`; none without it; the construct makes both features optional and has no rule | Unit | P0 | FR-007-AC-9 | ✅ |
 | TC-110 | An interface declares supertypes: `specializes` equals the spec-objects-business declaration pinned with its source revision, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
 | TC-111 | `ObjectId` states the word-id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; an underscore id validates and a hyphenated id is refused with its required `id` missing | Integration | P0 | FR-003-AC-9 | ✅ |
-| TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ locator, rows and refusal pass; the validation half is an expected failure on quire-rs#448 and passes against quire-rs PR #450 |
-| TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ the declaration half passes; the removal half is an expected failure on quire-rs#431. PR #432 (`6eec7e8`) is on no tag and is not in pypi.ix quire 0.46.0. It passes against the first quire wheel published from main at or after `6eec7e8` (0.47.0 or later, agent-ix/quire-rs#463) |
+| TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ |
+| TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
 
 ## Test Environment
 
 Every `Integration` row that names Quire runs against the Quire wheel FR-005
-Inputs pins, provisioned by `make dev-quire`. That wheel is not on any index
-this repository may commit a dependency against (`internal-pypi` serves 0.33.0
-at most); `agent-ix/quire-rs#392` is the blocking issue. The suite **fails**
-rather than skips when `extract_semantic` is absent, so no row here can be
-reported green without the engine under test.
+Inputs pins: `quire` is a dev dependency resolved from `internal-pypi` by
+`poetry install`. The suite **fails** rather than skips when
+`extract_semantic` is absent, so no row here can be reported green without
+the engine under test.
 
 Four rows carry an explicit expected failure, each naming the issue that owns
 it and none of them skipped: TC-001 (`agent-ix/filament-core-service#25`, the
@@ -204,44 +202,26 @@ FR-035 schema refuses the `lexicon` block), TC-026 (`agent-ix/quire-rs#221`
 and `#394`, the refusal names nothing), TC-061 (`agent-ix/quire-rs#391`, a
 legacy form declaring `object:` validates as `{}`), and TC-091
 (`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
-ambiguous with itself). The skeleton-validation tests carry the rest, each a
-strict expected failure per skeleton: the four systems-model skeletons
-(`part`, `port`, `connection`, `allocation`) on `agent-ix/quire-rs#446`, which
-does not yet lower the systems table into the record (TC-006, and the
-untraced skeleton-validates test; TC-106 pins the one error each produces
-today), and the `interface` skeleton on `agent-ix/quire-rs#448`, because
-`Interface.json` requires `featureOrder` and the engine does not yet lower the
-`## Features` table into it (TC-006, TC-025, TC-050, TC-112, and the untraced
-skeleton-validates test). Each of those expected failures is conditional on a
-probe of the installed engine (`engine_lowers_systems_tables`,
-`engine_lowers_feature_order` in `tests/conftest.py`), run on a minimal
-document rather than a shipped skeleton: against a wheel built from quire-rs
-PR #450 both probes hold and every one of those rows passes. A third probe,
-`engine_reads_post_lines`, checks that the engine reads a `Post:` line under an
-operation as a `post` clause reference; an engine that does not
-(`agent-ix/quire-rs#431`) carries strict expected failures on the
-`external_contract` skeleton validation rows (TC-006, TC-025, TC-050, and the
-untraced skeleton-validates test), the dangling-post fixture case of TC-054 and
-the external contract case of TC-065. Operation contract lines
-are `Pre:` and `Post:`. A fourth probe, `engine_gates_generalization_mapping`,
-checks that `ModelFeature::Generalization` (landed on quire-rs main by PR #432,
-`6eec7e8`, closing #431) refuses a `specializes` relationship with
-`semantic.feature-not-extractable` when `generalization` is absent from
-`semantic.mappings`. `6eec7e8` is on no tag, and pypi.ix's published quire
-0.46.0 predates it, so the installed engine still drops the relationship
-silently instead of refusing it. TC-113's declaration half (that
-`generalization` is declared, and that declaring it extracts the edge with no
-diagnostic) holds on every engine; its removal half — that dropping the token
-from a manifest copy reproduces the diagnostic — is its own test, strict
-`xfail` on the probe (`generalization_gate_xfail` in `tests/conftest.py`), and
-turns into a pass once `agent-ix/quire-rs#463` publishes a wheel built from
-`6eec7e8` or later.
+ambiguous with itself).
 
-Measured with `make test` on 2026-09-18: the `pypi.ix` quire 0.46.0 wheel
-gives 277 passed, 7 skipped, 18 xfailed. At commit `2f27953`, where TC-054 and
-TC-065 each ran as one test, a wheel built from quire-rs main `724ad29` gave
-257 passed, 7 skipped, 23 xfailed, and a wheel built from quire-rs PR #450
-`f7907ba` gave 270 passed, 7 skipped, 10 xfailed. None failed.
+Quire 0.47.1 (built from quire-rs main at or after `6eec7e8`) carries the
+lowerings and gates that used to need a conditional probe: the systems tables
+into the record (`agent-ix/quire-rs#446`, TC-106), the interface
+`## Features` table into `featureOrder` (`agent-ix/quire-rs#448`, 
+TC-025, TC-050, TC-112), reading a `Post:` line under an operation as a `post`
+clause reference (`agent-ix/quire-rs#431`; TC-025, TC-050, TC-054's
+dangling-post fixture case, TC-065's external-contract case), and
+`ModelFeature::Generalization` refusing a `specializes` relationship with
+`semantic.feature-not-extractable` when `generalization` is absent from
+`semantic.mappings` (PR #432, `agent-ix/quire-rs#463`, TC-113's removal half).
+`engine_reads_post_lines` in `tests/conftest.py` still probes the installed
+engine before TC-054/TC-065 mark a case `xfail` — the probe is conditional
+rather than deleted because a regression to an older wheel should fail loudly
+rather than pass silently — but on quire 0.47.1 it holds and no case is
+marked.
+
+Measured with `make test` on 2026-09-22: quire 0.47.1 from `internal-pypi`
+gives 273 passed, 7 skipped, 4 xfailed. None failed.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only

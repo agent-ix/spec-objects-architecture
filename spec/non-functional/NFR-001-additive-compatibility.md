@@ -113,7 +113,7 @@ and with its id in word form it validates, except `interface`, which draws
 only the required-`features` refusal.
 
 The engine defect behind the `object:` case is real but differently scoped:
-once a legacy-form artifact *does* declare `object:`, quire 0.46.0 assembles
+once a legacy-form artifact *does* declare `object:`, quire 0.47.1 assembles
 its declaration record as `{}` and validates it against the type schema
 unconditionally, so it fails `semantic.record-invalid` at error severity even
 under `legacy_forms: warning`. `agent-ix/quire-rs#391` owns that rule. The

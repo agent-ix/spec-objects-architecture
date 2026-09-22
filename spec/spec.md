@@ -114,11 +114,6 @@ share one authoritative definition of what the module activates against
   NFR-001-AC-2 itself holds — no 0.2.0 artifact carries `object:` — and the
   defect is carried as an explicit expected failure beside it rather than
   worked around by relaxing a schema.
-- Publishing the Quire 0.46.0 wheel to an index a repository may commit
-  against: `agent-ix/quire-rs#392`. `internal-pypi` serves 0.33.0 at most and
-  no `quire-rs` tag carries the semantic layer, so this module provisions the
-  wheel with a documented `make dev-quire` target and its semantic tests fail
-  rather than skip when the engine is absent (FR-005).
 - Resolving a reference-form `data_schema` into a stored snapshot at
   activation: `agent-ix/filament-core-service#23`. Until it lands the service
   stores the reference verbatim, which is what FR-001-AC-4 asserts. The
@@ -163,9 +158,8 @@ artifact types.
 ### Intended Users
 
 The Filament platform (which activates and serves the contributed
-ObjectTypes), spec authors (who model architecture using them), and agent CLI
-generators such as `minijinja-cli` (which produce artifacts from the shipped
-skeletons and schemas).
+ObjectTypes), spec authors (who model architecture using them), and agents
+(which author artifacts from the shipped skeletons and schemas).
 
 ## Requirements Architecture
 

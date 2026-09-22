@@ -29,9 +29,7 @@ from tests.conftest import (
     locators,
     object_type,
     object_types,
-    semantic_core_engine_xfail,
     sha256_of,
-    validation_params,
 )
 
 ADMITTED_KEYS = {
@@ -153,7 +151,6 @@ def test_the_prior_version_lexicon_block_is_byte_identical_now():
 
 
 @pytest.mark.trace("TC-024", "FR-003-AC-4")
-@semantic_core_engine_xfail()
 def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
     registry = quire_engine.Registry.load_from([str(REPO_ROOT)])
     names = set(registry.archetype_names())
@@ -162,8 +159,7 @@ def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
 
 
 @pytest.mark.trace("TC-025", "FR-003-AC-4")
-@pytest.mark.parametrize("path", validation_params(declaration_skeletons()))
-@semantic_core_engine_xfail()
+@pytest.mark.parametrize("path", declaration_skeletons(), ids=lambda p: p.name)
 def test_validate_document_reports_no_semantic_load_failure_for_any_skeleton(
     quire_engine, path
 ):
@@ -176,11 +172,10 @@ def test_validate_document_reports_no_semantic_load_failure_for_any_skeleton(
 
 
 @pytest.mark.trace("TC-026", "FR-003-AC-6")
-@semantic_core_engine_xfail()
 def test_an_unknown_semantic_key_and_an_altered_digest_are_refused(
     quire_engine, tmp_path
 ):
-    """Measured against quire 0.46.0 on this module: an unknown `semantic` key
+    """Measured against quire 0.47.1 on this module: an unknown `semantic` key
     drops every object type (the manifest is refused whole), while a wrong
     digest drops the refused object type alone. `agent-ix/quire-rs#394` reports
     a module-wide emptying for the digest case on another module; this test
@@ -220,7 +215,7 @@ def test_an_unknown_semantic_key_and_an_altered_digest_are_refused(
     strict=True,
     reason=(
         "FR-003-AC-6 requires the refusal to NAME the offending key and schema "
-        "path. quire 0.46.0 empties the registry silently instead: no "
+        "path. quire 0.47.1 empties the registry silently instead: no "
         "ArchetypeLoadFailure, no semantic.* code, nothing naming `foo` or the "
         "path. Blocked on agent-ix/quire-rs#221 (unknown key) and "
         "agent-ix/quire-rs#394 (digest). The criterion stands; the schema is "
@@ -276,7 +271,6 @@ def test_the_id_pattern_is_stated_once_and_carried_by_every_id_locator(
 
 
 @pytest.mark.trace("TC-111", "FR-003-AC-9")
-@semantic_core_engine_xfail()
 def test_an_underscore_id_validates_and_a_hyphenated_id_is_refused(quire_engine):
     text = (SKELETONS_DIR / "queue.md").read_text()
     assert "id: queue_001\n" in text
