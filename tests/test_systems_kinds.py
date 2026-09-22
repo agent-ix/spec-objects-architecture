@@ -26,7 +26,6 @@ from tests.conftest import (
     SKELETONS_DIR,
     SYSTEMS_KINDS,
     SYSTEMS_TYPES,
-    generalization_gate_xfail,
     load_manifest,
     locators,
     object_type,
@@ -444,16 +443,13 @@ def test_generalization_mapping_lets_specializes_extract(quire_engine):
     assert {"target": "Flow", "edge_type": "specializes"} in edges
 
 
-@generalization_gate_xfail()
 @pytest.mark.trace("TC-113", "FR-007-AC-12")
 def test_generalization_mapping_removal_is_refused(quire_engine, tmp_path):
     """agent-ix/spec-objects-architecture#14: dropping `generalization` from
     a manifest copy's `semantic.mappings` must reproduce
     `semantic.feature-not-extractable` for the same `specializes`
-    relationship the declared half extracts cleanly. quire 0.46.0 (pypi.ix)
-    predates the gate (PR #432, `6eec7e8`, on no tag), so this is a strict
-    expected failure until agent-ix/quire-rs#463 publishes a wheel that
-    carries it."""
+    relationship the declared half extracts cleanly. The gate (PR #432,
+    `6eec7e8`) is published in quire 0.47.1."""
     text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
     special = _with_relationship(text, "specializes", "Flow")
 

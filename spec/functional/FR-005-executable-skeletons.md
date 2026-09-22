@@ -36,9 +36,9 @@ refuse.
 - Negative fixtures `tests/fixtures/negative/<type>-<case>.md`, each with
   frontmatter `expect:` naming the diagnostic code or reason the fixture must
   produce.
-- The Quire wheel 0.46.0 or later, exposing `extract_semantic`,
-  `validate_document`, and `Registry`, installed into the module's Python
-  environment by `make dev-quire` (see Behavior).
+- The Quire wheel 0.47.1 or later, exposing `extract_semantic`,
+  `validate_document`, and `Registry`, declared as a dev dependency resolved
+  from `internal-pypi` (see Behavior).
 
 ## Outputs
 
@@ -65,9 +65,8 @@ refuse.
 - No skeleton SHALL carry an H2 heading the manifest does not assert.
 - Where a typed section and a kernel section describe the same declarations (the `data_schema` `## Schema` fence and its `## Properties` table; the `queue` `## Message Format` fence and its table; the `interface` `## Contract` YAML and its `## Operations`; the `ui_component` `## Props` prose and its table), the typed section SHALL be the authority and the kernel section a derived, human-facing view; [FR-006](./FR-006-architecture-lowerings.md) fixes the agreement each pair holds.
 - Each negative fixture SHALL fail `validate_document` with an error whose message carries the fixture's `expect:` code, covering at least: an api endpoint whose only operation declares no return (`semantic.record-invalid`), a data schema declaring operations (`semantic.record-invalid`), a queue without an identity row (`semantic.record-invalid`), an action declaring two operations (`semantic.record-invalid`), a ui component with an identity row (`semantic.record-invalid`), an external contract with no `## Invariants` (`semantic.record-invalid`), a rate limit with no `## Invariants` (`semantic.record-invalid`), a `## Properties` section carrying both a table and a fence (`semantic.properties-both-forms`), an operation whose `Post:` names an undeclared clause (`semantic.dangling-clause-ref`), and a `Type` token that is not an `Identifier` (`semantic.invalid-type-token`); the last three re-check the engine's published diagnostics under this module's schemas rather than re-specify them.
-- The repository SHALL provide a `make dev-quire` target that installs the Quire wheel this requirement names into the module's Python environment, so the semantic test dependency is provisioned by a documented command rather than by an undeclared side install.
-- If the installed Quire wheel is absent or lacks `extract_semantic`, then every semantic test SHALL fail — not skip — with a message naming the missing function, the `make dev-quire` target, and `agent-ix/quire-rs#392`, so that no matrix row can pass or be reported green without the engine under test.
-- While no committable index carries Quire 0.46.0, the module SHALL NOT declare `quire` in `pyproject.toml`. `internal-pypi` (the index this repo's CI uses) serves 0.33.0 at most and no `quire-rs` tag carries the semantic layer, so the wheel exists only on the dev-only `pypi.ix`; `agent-ix/quire-rs#392` is the blocking issue, and its resolution replaces the `make dev-quire` target with a committed dev dependency.
+- The module SHALL declare `quire` in `pyproject.toml` as a dev dependency pinned to the `internal-pypi` source, so `poetry install` provisions the engine and no lookup falls through to public PyPI, where `quire` names an unrelated package.
+- If the installed Quire wheel is absent or lacks `extract_semantic`, then every semantic test SHALL fail — not skip — with a message naming the missing function and `poetry install`, so that no matrix row can pass or be reported green without the engine under test.
 - Only a criterion this specification names as blocked SHALL be exempt from the previous rule, as an explicit expected failure naming the blocking issue. Today that is the record validation of a legacy-form artifact declaring `object:` (`agent-ix/quire-rs#391`, beside NFR-001-AC-2) and the naming half of FR-003-AC-6 (`agent-ix/quire-rs#221`, `agent-ix/quire-rs#394`).
 
 ## Constraints
@@ -97,5 +96,4 @@ refuse.
 
 - **Upstream**: [FR-003](./FR-003-semantic-manifest-contract.md), [FR-004](./FR-004-role-schemas.md); quoin FR-071/FR-072 (`ix://agent-ix/quoin/FR-071`, `ix://agent-ix/quoin/FR-072`); quire-rs FR-070/FR-071/FR-072
 - **Upstream (unpinned neighbour contract)**: the `semantic.record-invalid` diagnostic this requirement's Outputs and FR-005-AC-1 depend on exists in quire-rs source but in no quire-rs acceptance criterion; `agent-ix/quire-rs#391` is where that record-validation contract, and the code naming it, are being settled.
-- **Upstream (provisioning)**: `agent-ix/quire-rs#392` — publish the 0.46.0 wheel to `internal-pypi` so `quire` can become a committed dev dependency.
 - **Downstream**: [FR-006](./FR-006-architecture-lowerings.md); `agent-ix/quire-contract-ir#52` and `agent-ix/filament-core-data#36` consume the skeletons read-only

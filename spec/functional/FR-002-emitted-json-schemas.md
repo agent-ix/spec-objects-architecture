@@ -26,7 +26,7 @@ fails the build.
 - `typespec/main.tsp`: namespace `AgentIx.SpecObjects.Architecture`, decorated
   `@jsonSchema("https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<version>/")`
   where `<version>` is the manifest `version`.
-- `@agent-ix/semantic-core` 0.3.0 from npm.ix (`FieldDecl`, `TypeRef`,
+- `@agent-ix/semantic-core` 0.3.0 from GitHub Packages (`FieldDecl`, `TypeRef`,
   `Multiplicity`, `ConstraintDecl`, `RelationDecl`, `OperationDecl`,
   `ClauseRef`, `EnumValue`, `KernelScalar`, `Identifier`, `SemanticId`).
 - `@typespec/compiler` 1.15.0, `@typespec/json-schema` 1.15.0 and
@@ -87,7 +87,7 @@ fails the build.
 | FR-002-CON-1 | The build SHALL use the official `@typespec/json-schema` emitter only; no custom emitter and no hand-edited emitted file. | Architecture | Inspection |
 | FR-002-CON-2 | The repository SHALL carry no `.npmrc`, no `file:` or `link:` dependency, and no upper version bound on the TypeSpec toolchain beyond the exact pin. | Packaging | Inspection |
 | FR-002-CON-3 | Emission SHALL be deterministic: two runs over one source produce byte-identical files. | Integrity | Test |
-| FR-002-CON-4 | `package-lock.json` SHALL resolve every public package from `registry.npmjs.org`; `@agent-ix/semantic-core` resolves from npm.ix until `agent-ix/filament-core-data#11` publishes it, so `make schemas`/`make schemas-check` run on a machine whose user-level npm config routes `@agent-ix` to npm.ix, not in the GitHub workflow. | Packaging | Inspection |
+| FR-002-CON-4 | `package-lock.json` SHALL resolve every public package from `registry.npmjs.org` and `@agent-ix/semantic-core` from GitHub Packages, so `make schemas`/`make schemas-check` run unchanged in the GitHub workflow, authenticated by `NPM_CONFIG_USERCONFIG` pointing `@agent-ix` at `npm.pkg.github.com`. | Packaging | Inspection |
 | FR-002-CON-5 | The `$id` base SHALL embed the manifest `version`, bumped as one atomic regeneration (source base, manifest version, schemas, digests, `toolchain.json` in one commit). | Compatibility | Test |
 
 ## Acceptance Criteria
