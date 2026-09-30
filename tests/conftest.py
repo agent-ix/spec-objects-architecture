@@ -14,7 +14,6 @@ Two policies are enforced here and nowhere else:
 from __future__ import annotations
 
 import functools
-import hashlib
 import json
 import pathlib
 import re
@@ -269,10 +268,6 @@ def validation_gap(path: pathlib.Path) -> str | None:
     if path.stem == "external_contract" and not engine_reads_post_lines():
         return POST_LINES_REASON
     return None
-
-
-def sha256_of(path: pathlib.Path) -> str:
-    return f"sha256:{hashlib.sha256(path.read_bytes()).hexdigest()}"
 
 
 def require_quire():

@@ -15,7 +15,7 @@ help:
 	@echo "  make test           - Run tests"
 	@echo "  make lint           - Run linters (ruff + black + schema drift gate)"
 	@echo "  make schemas        - Emit schemas/ from typespec/main.tsp"
-	@echo "  make schemas-check  - Fail on schema or digest drift"
+	@echo "  make schemas-check  - Fail on schema drift"
 	@echo "  make semantic-install - npm ci for the pinned TypeSpec toolchain and semantic-core"
 	@echo "  make format         - Format code (black + ruff --fix)"
 	@echo "  make build          - Build distribution"

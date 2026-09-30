@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 import shutil
 import subprocess
 import tarfile
@@ -142,20 +141,6 @@ def test_schemas_check_is_green_on_the_committed_tree_and_names_a_mutation(tmp_p
     mutated = run_generator("--check", cwd=tree)
     assert mutated.returncode != 0
     assert "DataSchema.json" in mutated.stderr
-
-    tree = worktree_copy(tmp_path / "digest")
-    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
-    manifest.write_text(
-        re.sub(
-            r"digest: sha256:\w+",
-            "digest: sha256:deadbeef",
-            manifest.read_text(),
-            count=1,
-        )
-    )
-    digest_run = run_generator("--check", cwd=tree)
-    assert digest_run.returncode != 0
-    assert "manifest.yaml" in digest_run.stderr
 
 
 @pytest.mark.trace("TC-014", "FR-002-AC-5")
@@ -313,7 +298,7 @@ def test_the_npm_tarball_ships_the_schemas_beside_the_manifest(tmp_path):
 
 
 @pytest.mark.trace("TC-072", "FR-002-AC-8", "FR-002-CON-5")
-def test_a_coordinated_version_bump_reemits_every_id_and_digest(tmp_path):
+def test_a_coordinated_version_bump_reemits_every_id(tmp_path):
     tree = worktree_copy(tmp_path)
     old, new = manifest_version(), "9.9.9"
     source = tree / "typespec" / "main.tsp"
@@ -449,39 +434,6 @@ def test_a_source_that_emits_no_module_model_is_refused(tmp_path):
     result = run_generator(cwd=tree)
     assert result.returncode != 0
     assert "emitted no schema under" in result.stderr
-
-
-@pytest.mark.trace("TC-079", "FR-002-AC-4")
-def test_a_manifest_referencing_an_unemitted_schema_is_named(tmp_path):
-    """FR-002 Behavior: the generator edits `manifest.yaml` only at
-    `data_schema.digest`, and a `schema:` path with no emitted counterpart is
-    named rather than silently skipped."""
-    tree = worktree_copy(tmp_path)
-    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
-    manifest.write_text(
-        manifest.read_text().replace(
-            "schema: schemas/ApiEndpoint.json", "schema: schemas/Nowhere.json", 1
-        )
-    )
-    result = run_generator(cwd=tree)
-    assert result.returncode != 0
-    assert "Nowhere.json" in result.stderr
-
-
-@pytest.mark.trace("TC-079", "FR-002-AC-4")
-def test_a_schema_line_with_no_digest_line_is_named(tmp_path):
-    """The digest rewrite pairs each `digest:` with the `schema:` line directly
-    above it. A `schema:` line whose digest is missing is named, rather than
-    claiming the next unrelated `digest:` key in the file."""
-    tree = worktree_copy(tmp_path)
-    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
-    lines = manifest.read_text().split("\n")
-    index = next(i for i, line in enumerate(lines) if "schema: schemas/" in line)
-    del lines[index + 1]
-    manifest.write_text("\n".join(lines))
-    result = run_generator(cwd=tree)
-    assert result.returncode != 0
-    assert "with no digest line" in result.stderr
 
 
 @pytest.mark.trace("TC-087", "FR-002-AC-10")
