@@ -72,7 +72,7 @@ help = "Emit spec_objects_architecture/schemas/ from typespec/main.tsp (FR-002)"
 
 [tool.poe.tasks.schemas-check]
 cmd = "node scripts/generate-schemas.mjs --check"
-help = "Fail when the committed schemas or manifest digests differ from the source"
+help = "Fail when the committed schemas differ from the source"
 
 [tool.poe.tasks.ruff-check]
 cmd = "ruff check ."

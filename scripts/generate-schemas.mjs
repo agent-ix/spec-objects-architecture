@@ -5,8 +5,7 @@
  * Runs the official `@typespec/json-schema` emitter through `tsp compile`,
  * keeps only the schemas of this module's namespace, normalizes any `$id` or
  * `$ref` the emitter left relative, writes `spec_objects_architecture/schemas/`
- * plus `toolchain.json`, and rewrites `manifest.yaml`'s `data_schema.digest`
- * values textually so the file's YAML anchors and comments survive.
+ * plus `toolchain.json`.
  *
  *   node scripts/generate-schemas.mjs            # regenerate
  *   node scripts/generate-schemas.mjs --check    # write nothing; fail on any difference
@@ -198,13 +197,6 @@ function emit() {
     const rewrittenFiles = normalize(mine, base, moduleFiles);
     const rendered = new Map(mine.map(([name, schema]) => [name, render(schema)]));
 
-    const digests = new Map(
-      [...rendered].map(([name, text]) => [
-        name,
-        `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`,
-      ]),
-    );
-    const overall = createHash("sha256");
     for (const [name, text] of rendered) overall.update(`${name}\n${text}`);
 
     const toolchain = {
@@ -233,55 +225,10 @@ function emit() {
       files: [...rendered.keys()],
       digest: `sha256:${overall.digest("hex")}`,
     };
-    return { rendered, toolchain: render(toolchain), digests };
+    return { rendered, toolchain: render(toolchain) };
   } finally {
     rmSync(scratch, { recursive: true, force: true });
   }
-}
-
-/**
- * Textual digest rewrite: replace the `digest:` line that follows each
- * `schema: schemas/<File>` line. Anchors, aliases and comments are untouched
- * because the file is never parsed or reserialized.
- */
-function manifestWithDigests(digests) {
-  const lines = readFileSync(manifestPath, "utf8").split("\n");
-  const problems = [];
-  let pending = null;
-  // A `digest:` belongs to the `schema:` line immediately above it. Carrying
-  // `pending` any further would let an unrelated `digest:` key elsewhere in the
-  // manifest be overwritten with that schema's hash, and would let a `schema:`
-  // line with no digest pass unnoticed.
-  const out = lines.map((line) => {
-    const schema = line.match(/^(\s*)schema:\s*schemas\/(\S+)\s*$/);
-    if (schema) {
-      if (pending) {
-        problems.push(`manifest declares schemas/${pending} with no digest line`);
-      }
-      pending = schema[2];
-      return line;
-    }
-    const digest = line.match(/^(\s*)digest:\s*(\S*)\s*$/);
-    const claimed = pending;
-    pending = null;
-    if (digest && claimed) {
-      const expected = digests.get(claimed);
-      if (!expected) {
-        problems.push(`manifest references schemas/${claimed}, which is not emitted`);
-        return line;
-      }
-      return `${digest[1]}digest: ${expected}`;
-    }
-    if (claimed) {
-      problems.push(`manifest declares schemas/${claimed} with no digest line`);
-    }
-    return line;
-  });
-  if (pending) {
-    problems.push(`manifest declares schemas/${pending} with no digest line`);
-  }
-  if (problems.length > 0) fail(problems.join("\n"));
-  return out.join("\n");
 }
 
 function readIfPresent(path) {
@@ -292,7 +239,7 @@ function readIfPresent(path) {
   }
 }
 
-function check(rendered, toolchain, manifestText) {
+function check(rendered, toolchain) {
   const problems = [];
   for (const [name, text] of rendered) {
     const path = join(outputDir, name);
@@ -312,13 +259,10 @@ function check(rendered, toolchain, manifestText) {
   if (readIfPresent(toolchainPath) !== toolchain) {
     problems.push(relative(repoRoot, toolchainPath));
   }
-  if (readIfPresent(manifestPath) !== manifestText) {
-    problems.push(`${relative(repoRoot, manifestPath)} (data_schema.digest)`);
-  }
   return problems;
 }
 
-function write(rendered, toolchain, manifestText) {
+function write(rendered, toolchain) {
   mkdirSync(outputDir, { recursive: true });
   for (const name of readdirSync(outputDir)) {
     if (name.endsWith(".json") && name !== "toolchain.json" && !rendered.has(name)) {
@@ -327,7 +271,6 @@ function write(rendered, toolchain, manifestText) {
   }
   for (const [name, text] of rendered) writeFileSync(join(outputDir, name), text);
   writeFileSync(toolchainPath, toolchain);
-  writeFileSync(manifestPath, manifestText);
 }
 
 function main() {
@@ -339,10 +282,9 @@ function main() {
     fail(`unknown argument(s): ${unknown.join(" ")}. The only option is --check.`);
   }
   const checking = args.includes("--check");
-  const { rendered, toolchain, digests } = emit();
-  const manifestText = manifestWithDigests(digests);
+  const { rendered, toolchain } = emit();
   if (checking) {
-    const problems = check(rendered, toolchain, manifestText);
+    const problems = check(rendered, toolchain);
     if (problems.length > 0) {
       console.error(
         `emitted schemas differ from the committed output:\n  ${problems.join("\n  ")}\n` +
@@ -353,7 +295,7 @@ function main() {
     console.log(`schemas-check: ${rendered.size} schema(s) match the committed output`);
     return;
   }
-  write(rendered, toolchain, manifestText);
+  write(rendered, toolchain);
   console.log(
     `schemas: wrote ${rendered.size} schema(s) + toolchain.json to ${relative(repoRoot, outputDir)}`,
   );

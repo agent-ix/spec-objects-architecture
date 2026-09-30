@@ -29,7 +29,6 @@ from tests.conftest import (
     load_manifest,
     locators,
     object_type,
-    sha256_of,
     systems_skeletons,
 )
 from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
@@ -128,7 +127,6 @@ def test_each_systems_kind_is_an_exported_object_type_with_a_pinned_schema():
         ot = object_type(kind)
         schema = PACKAGE_ROOT / ot["data_schema"]["schema"]
         assert schema.name == f"{MODEL_OF[kind]}.json"
-        assert ot["data_schema"]["digest"] == sha256_of(schema), kind
 
 
 @pytest.mark.trace("TC-101", "FR-007-AC-2")

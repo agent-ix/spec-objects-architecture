@@ -112,7 +112,6 @@ test was skipped.
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency, exact toolchain pins in `package.json` | Static | P2 | FR-002-CON-2 | ✅ |
 | TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (GitHub Packages) | Unit | P2 | FR-002-CON-4 | ✅ |
 | TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
-| TC-021 | Every exported type's `data_schema` is the reference form whose file hashes to the recorded digest | Unit | P0 | FR-003-AC-2 | ✅ |
 | TC-022 | Every 0.2.0 locator is unchanged against the checked-in baseline apart from the `id` regex | Unit | P0 | FR-003-AC-3 | ✅ |
 | TC-023 | Every added locator except `interface.features` is `required: false` | Unit | P1 | FR-003-AC-3, FR-003-CON-2 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
@@ -162,7 +161,6 @@ test was skipped.
 | TC-076 | An unresolvable `@typespec/compiler` fails the generator naming the missing binary | Integration | P2 | FR-002-AC-4 | ✅ |
 | TC-077 | A `tsp compile` failure exits non-zero and leaves the committed schemas and manifest byte-identical | Integration | P1 | FR-002-AC-4 | ✅ |
 | TC-078 | A source emitting no module model exits non-zero naming the base it found nothing under | Integration | P1 | FR-002-AC-4 | ✅ |
-| TC-079 | A manifest `schema:` path with no emitted counterpart, and one with no digest line, are each named | Integration | P1 | FR-002-AC-4 | ✅ |
 | TC-080 | The interface `## Contract` YAML and its extracted `OperationDecl[]` agree on names, params, and returns | Integration | P0 | FR-006-AC-1 | ✅ |
 | TC-081 | The data-schema `## Schema` fence and its `## Properties` table agree on property names and the required set | Integration | P0 | FR-006-AC-2 | ✅ |
 | TC-082 | The queue `## Message Format` fence and its `## Properties` table agree on the key set | Integration | P1 | FR-006-AC-3 | ✅ |

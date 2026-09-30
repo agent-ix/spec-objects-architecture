@@ -46,8 +46,6 @@ fails the build.
   names and versions, the `$id` base, the emitted file list, the normalization
   record (name, version, applied, rewritten files), and `sha256:<hex>` over the
   emitted files.
-- The `data_schema.digest` of every exported object type in `manifest.yaml`,
-  rewritten to the SHA-256 of the shipped file bytes.
 
 ## Behavior
 
@@ -70,7 +68,6 @@ fails the build.
 - If any emitted file differs from the committed output, a committed file under `spec_objects_architecture/schemas/` is stale (it has no emitted counterpart in this run), `toolchain.json` differs, or a manifest digest differs from the shipped bytes, then the check SHALL exit non-zero naming each such file.
 - If nothing differs, then the check SHALL exit zero.
 - The generator SHALL write files under `spec_objects_architecture/schemas/` only.
-- The generator SHALL edit `manifest.yaml` only at `data_schema.digest` values.
 - The Python package SHALL include `spec_objects_architecture/schemas/*.json` in the wheel and sdist.
 - The repository SHALL mark `*.json` and `*.tsp` as `eol=lf` in `.gitattributes`, so a checkout with `autocrlf` cannot change the digested bytes.
 - `scripts/stage-npm.mjs` SHALL copy `schemas/` beside `manifest.yaml` at pack time, so the npm tarball ships the schemas the manifest references.
