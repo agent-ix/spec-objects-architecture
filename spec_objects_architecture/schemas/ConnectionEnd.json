@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionEnd.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ConnectionEnd.json",
   "type": "object",
   "properties": {
     "type": {

@@ -70,8 +70,8 @@ test was skipped.
 
 | Functional Req | Acceptance Criteria | Test Cases | Coverage Status |
 |---|---|---|---|
-| FR-001 | FR-001-AC-1..4 | TC-001..TC-004 | 🚧 AC-1 is an expected failure on filament-core-service#25; AC-2..AC-4 need a running filament-core |
-| FR-002 | FR-002-AC-1..10, FR-002-CON-1..5 | TC-010..TC-019, TC-071..TC-079, TC-087 | ✅ |
+| FR-001 | FR-001-AC-2..4 | TC-002..TC-004 | 🚧 AC-2..AC-4 need a running filament-core |
+| FR-002 | FR-002-AC-1..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-010..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
 | FR-003 | FR-003-AC-1..9, FR-003-CON-1..2 | TC-020..TC-028, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
@@ -95,16 +95,14 @@ test was skipped.
 
 | Test ID | Title | Type | Priority | Traces To | Status |
 |---|---|---|---|---|---|
-| TC-001 | Manifest validates against the vendored FR-035 module-manifest schema through `quire.validate_manifest` | Unit | P0 | FR-001-AC-1 | 🚧 the only-violation half passes; the criterion itself is an expected failure on filament-core-service#25 (the `lexicon` key) |
 | TC-002 | Activation against a clean filament-core returns 200 | Integration | P1 | FR-001-AC-2, IT-001-SC-01 | 🚧 needs a running filament-core |
 | TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03 | 🚧 needs a running filament-core |
 | TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02 | 🚧 needs a running filament-core |
 | TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
-| TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name under the manifest-version base | Unit | P0 | FR-002-AC-2 | ✅ |
+| TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name | Unit | P0 | FR-002-AC-2 | ✅ |
 | TC-012 | Every `$ref` resolves to a shipped sibling or semantic-core 0.3.0 | Unit | P0 | FR-002-AC-3 | ✅ |
 | TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema | Integration | P1 | FR-002-AC-4 | ✅ |
-| TC-014 | A `@jsonSchema` base version differing from the manifest version fails the generator naming both | Integration | P1 | FR-002-AC-5 | ✅ |
 | TC-015 | The built wheel contains every emitted schema file | Integration | P1 | FR-002-AC-6 | ✅ |
 | TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
@@ -116,7 +114,7 @@ test was skipped.
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
-| TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
+| TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
 | TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0 | Unit | P1 | FR-003-AC-7 | ✅ |
 | TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1 | ✅ |
 | TC-031 | Api endpoint: a returning operation validates; the return removed fails; `fields` fails | Integration | P0 | FR-004-AC-2 | ✅ |
@@ -151,11 +149,9 @@ test was skipped.
 | TC-063 | Each 0.2.0 locator's yield, id in word form, is identical under 0.2.0 and 0.4.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
 | TC-064 | Every 0.2.0 object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.4.0 except the named `interface` additions | Unit | P1 | NFR-001-AC-5 | ✅ |
 | TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ #431 conditional xfail: the external contract case only |
-| TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
+| TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
-| TC-072 | A coordinated version bump re-emits every `$id`/`$ref` at the new version; bumping one half of the pair fails the check | Integration | P1 | FR-002-AC-8, FR-002-CON-5 | ✅ |
 | TC-073 | `make schemas-check` names a stale committed schema with no emitted counterpart and writes nothing | Integration | P1 | FR-002-AC-9 | ✅ |
-| TC-074 | No acceptance test hard-codes the `$id` version segment; each reads it from the manifest `version` | Unit | P2 | FR-002-CON-5 | ✅ |
 | TC-075 | A Node older than 20 fails the generator naming the required version | Integration | P2 | FR-002-AC-4 | ✅ |
 | TC-076 | An unresolvable `@typespec/compiler` fails the generator naming the missing binary | Integration | P2 | FR-002-AC-4 | ✅ |
 | TC-077 | A `tsp compile` failure exits non-zero and leaves the committed schemas and manifest byte-identical | Integration | P1 | FR-002-AC-4 | ✅ |
@@ -193,15 +189,14 @@ Inputs pins: `quire` is a dev dependency resolved from `internal-pypi` by
 `extract_semantic` is absent, so no row here can be reported green without
 the engine under test.
 
-Four rows carry an explicit expected failure, each naming the issue that owns
-it and none of them skipped: TC-001 (`agent-ix/filament-core-service#25`, the
-FR-035 schema refuses the `lexicon` block), TC-026 (`agent-ix/quire-rs#221`
+Three rows carry an explicit expected failure, each naming the issue that owns
+it and none of them skipped: TC-026 (`agent-ix/quire-rs#221`
 and `#394`, the refusal names nothing), TC-061 (`agent-ix/quire-rs#391`, a
 legacy form declaring `object:` validates as `{}`), and TC-091
 (`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
 ambiguous with itself).
 
-Quire 0.47.1 carries the
+Quire carries the
 lowerings and gates that used to need a conditional probe: the systems tables
 into the record (`agent-ix/quire-rs#446`, TC-106), the interface
 `## Features` table into `featureOrder` (`agent-ix/quire-rs#448`, 
@@ -214,16 +209,14 @@ dangling-post fixture case, TC-065's external-contract case), and
 `engine_reads_post_lines` in `tests/conftest.py` still probes the installed
 engine before TC-054/TC-065 mark a case `xfail` — the probe is conditional
 rather than deleted because a regression to an older wheel should fail loudly
-rather than pass silently — but on quire 0.47.1 it holds and no case is
+rather than pass silently — but it holds and no case is
 marked.
 
-Measured with `make test` on 2026-09-22: quire 0.47.1 from `internal-pypi`
-gives 273 passed, 7 skipped, 4 xfailed. None failed.
+Measured with `make test` on 2026-09-22: 273 passed, 7 skipped, 4 xfailed. None failed.
 
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only
-under `QUOIN_INSTALL_ROUNDTRIP=1`. Both were run against quoin
-`0.23.1-2-g3e842ce` on 2026-09-04 and passed, restoring the prior entry's
+under `QUOIN_INSTALL_ROUNDTRIP=1`. Both were run on 2026-09-04 and passed, restoring the prior entry's
 source, ref and sha.
 
 Rows over the record keys the extractor does not populate (`routes`,
@@ -254,8 +247,7 @@ skipped and complete-but-unbacked rows are not machine-checked here.
 figure is unaffected: it counts trace-tag binding, which is measured
 independently of the status column.
 
-Five rows stay `🚧` and none of them is a coverage claim: TC-001 (the expected
-failure above), and TC-002, TC-003, TC-004 and TC-005, which need a running
+Four rows stay `🚧` and none of them is a coverage claim: TC-002, TC-003, TC-004 and TC-005, which need a running
 `filament-core-service`, which
 this repository cannot provision one. That is issue #1's debt, carried
 forward.

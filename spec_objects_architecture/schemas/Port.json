@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/Port.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/Port.json",
   "type": "object",
   "properties": {
     "owner": {
       "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
     },
     "direction": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/PortDirection.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/PortDirection.json"
     },
     "interfaceType": {
       "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/TypeRef.json"

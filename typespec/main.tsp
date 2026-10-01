@@ -13,14 +13,8 @@ using AgentIx.Semantic.Core;
  * forbidden keys, and item rules (FR-004). Every grammar item is a `$ref` to
  * `@agent-ix/semantic-core` 0.3.0 and is never redeclared here (FR-004-CON-1);
  * this namespace contributes archetype shapes only.
- *
- * The `$id` base embeds the manifest `version` by intent (FR-002-CON-5): one
- * schema URL names exactly one immutable byte sequence, so a downstream fixture
- * reader that pinned a version can never silently read later bytes. A bump edits
- * this base and `manifest.yaml`'s `version` in one commit and re-runs
- * `make schemas`.
  */
-@jsonSchema("https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/")
+@jsonSchema("https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/")
 namespace AgentIx.SpecObjects.Architecture;
 
 // ---------------------------------------------------------------------------

@@ -154,7 +154,7 @@ def test_validate_document_reports_no_semantic_load_failure_for_any_skeleton(
 
 @pytest.mark.trace("TC-026", "FR-003-AC-6")
 def test_an_unknown_semantic_key_is_refused(quire_engine, tmp_path):
-    """Measured against quire 0.47.1 on this module: an unknown `semantic` key
+    """An unknown `semantic` key
     drops every object type (the manifest is refused whole)."""
 
     def add_unknown_key(data):
@@ -182,7 +182,7 @@ def test_an_unknown_semantic_key_is_refused(quire_engine, tmp_path):
     strict=True,
     reason=(
         "FR-003-AC-6 requires the refusal to NAME the offending key and schema "
-        "path. quire 0.47.1 empties the registry silently instead: no "
+        "path. quire empties the registry silently instead: no "
         "ArchetypeLoadFailure, no semantic.* code, nothing naming `foo` or the "
         "path. Blocked on agent-ix/quire-rs#221 (unknown key). "
         "The criterion stands; the schema is "

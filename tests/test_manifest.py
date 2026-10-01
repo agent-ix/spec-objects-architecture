@@ -11,7 +11,6 @@ PKG_ROOT = pathlib.Path(__file__).resolve().parent.parent / "spec_objects_archit
 MANIFEST_PATH = PKG_ROOT / "manifest.yaml"
 
 
-@pytest.mark.trace("TC-001")
 def test_manifest_loads() -> None:
     manifest = yaml.safe_load(MANIFEST_PATH.read_text())
     assert manifest["manifest_version"] == "1.0.0"

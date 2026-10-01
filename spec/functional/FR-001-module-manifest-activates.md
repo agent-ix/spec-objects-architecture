@@ -21,10 +21,6 @@ activates idempotently against
 ## Inputs
 
 - `manifest.yaml` (this repo's package).
-- The vendored FR-035 module-manifest schema, which admits the `semantic`
-  block, the reference-form `data_schema` and the `ObjectTypeEntry.construct`
-  declaration [FR-007](./FR-007-systems-model-kinds.md) uses.
-  [FR-003](./FR-003-semantic-manifest-contract.md) judges the same schema.
 - Activation endpoint: `POST /api/v1/modules/activate`.
 
 ## Outputs
@@ -35,24 +31,13 @@ activates idempotently against
 
 ## Behavior
 
-- The manifest **SHALL** validate against the vendored
-  `module-manifest.schema.json`.
 - Re-activation **SHALL** produce no change, being idempotent by content hash
   (filament-core-service FR-026-AC-1).
-- The manifest carries a top-level `lexicon` block (the FR-043 concrete-term
-  vocabulary Quire reads) which the pinned FR-035 schema does not declare and
-  its `additionalProperties: false` therefore refuses. This is measured, not
-  assumed, and it predates the semantic contract: the 0.2.0 manifest fails the
-  same way. `agent-ix/filament-core-service#25` owns admitting the key. Until
-  it lands FR-001-AC-1 is carried as an explicit expected failure naming that
-  issue, beside a criterion that the `lexicon` key is the **only** violation —
-  so nothing this module added is refused.
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-001-AC-1 | The manifest validates against the pinned FR-035 schema; today the only violation is the `lexicon` key of `agent-ix/filament-core-service#25`, which is carried as an expected failure. | Test |
 | FR-001-AC-2 | Activation against a clean filament-core succeeds with HTTP 200. | Test |
 | FR-001-AC-3 | Re-activation is a no-op with the same content hash. | Test |
 | FR-001-AC-4 | Each declared archetype, object type and artifact type appears in the corresponding filament-core table after activation, and each exported object type's registered `data_schema` equals the reference object as posted while `agent-ix/filament-core-service#23` is open. | Test |

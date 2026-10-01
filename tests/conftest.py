@@ -154,17 +154,9 @@ def load_manifest() -> dict[str, Any]:
     return yaml.safe_load(MANIFEST_PATH.read_text())
 
 
-def manifest_version() -> str:
-    return load_manifest()["version"]
-
-
 def module_base() -> str:
-    """The `$id` base, read from the manifest version — never hard-coded
-    (FR-002-CON-5)."""
-    return (
-        "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/"
-        f"{manifest_version()}/"
-    )
+    """The version-less `$id` base."""
+    return "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/"
 
 
 def object_types() -> list[dict[str, Any]]:
@@ -263,7 +255,7 @@ def validation_gap(path: pathlib.Path) -> str | None:
     skeleton to validate with zero errors. An engine that carries the fix
     (probed, not assumed) has no gap, so the row runs as a plain pass. The
     systems-table (agent-ix/quire-rs#446) and interface `featureOrder`
-    (agent-ix/quire-rs#448) lowerings landed in quire 0.47.1, so those two
+    (agent-ix/quire-rs#448) lowerings are in the engine, so those two
     gaps are gone."""
     if path.stem == "external_contract" and not engine_reads_post_lines():
         return POST_LINES_REASON
