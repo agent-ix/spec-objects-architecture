@@ -6,7 +6,7 @@
     "post": {
       "type": "array",
       "items": {
-        "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/ClauseRef.json"
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/ClauseRef.json"
       },
       "minItems": 1
     }

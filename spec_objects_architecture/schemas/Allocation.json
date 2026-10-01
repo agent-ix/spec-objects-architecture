@@ -4,10 +4,10 @@
   "type": "object",
   "properties": {
     "sourceElement": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/SemanticId.json"
     },
     "targetElement": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/SemanticId.json"
     }
   },
   "required": [
