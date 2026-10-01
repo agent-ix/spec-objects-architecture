@@ -263,8 +263,8 @@ def validation_gap(path: pathlib.Path) -> str | None:
     skeleton to validate with zero errors. An engine that carries the fix
     (probed, not assumed) has no gap, so the row runs as a plain pass. The
     systems-table (agent-ix/quire-rs#446) and interface `featureOrder`
-    (agent-ix/quire-rs#448) lowerings landed on quire-rs main at or after
-    `6eec7e8`, published in quire 0.47.1, so those two gaps are gone."""
+    (agent-ix/quire-rs#448) lowerings landed in quire 0.47.1, so those two
+    gaps are gone."""
     if path.stem == "external_contract" and not engine_reads_post_lines():
         return POST_LINES_REASON
     return None

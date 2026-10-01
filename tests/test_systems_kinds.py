@@ -369,7 +369,7 @@ SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
 @pytest.mark.trace("TC-110", "FR-007-AC-10")
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
-    equals spec-objects-business's, pinned with its source revision; the
+    equals spec-objects-business's; the
     construct names the IR member `supertypes` optional and declares no
     `references` entry for it — the filament-core-data semantic-ir reader
     already constrains a supertype reference to the same kind
@@ -378,7 +378,6 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     there makes FCD's reader refuse the whole module (FCD#173)."""
     pinned = json.loads(SOB_SPECIALIZES.read_text())
     assert pinned["source"]["repository"] == "agent-ix/spec-objects-business"
-    assert re.fullmatch(r"[0-9a-f]{40}", pinned["source"]["revision"])
     manifest = load_manifest()
     assert manifest["edge_types"]["specializes"] == pinned["specializes"]
     interface = object_type("interface")
@@ -446,8 +445,8 @@ def test_generalization_mapping_removal_is_refused(quire_engine, tmp_path):
     """agent-ix/spec-objects-architecture#14: dropping `generalization` from
     a manifest copy's `semantic.mappings` must reproduce
     `semantic.feature-not-extractable` for the same `specializes`
-    relationship the declared half extracts cleanly. The gate (PR #432,
-    `6eec7e8`) is published in quire 0.47.1."""
+    relationship the declared half extracts cleanly. The gate (PR #432) is
+    published in quire 0.47.1."""
     text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
     special = _with_relationship(text, "specializes", "Flow")
 

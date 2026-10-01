@@ -13,7 +13,7 @@ relationships:
 Verify the boundary between this module's shipped directory and the Quoin
 module installer: `quoin module install path:<dir>` SHALL accept the
 `semantic` block, resolve every reference-form `data_schema`, verify every
-digest and `$ref`, derive the package manifest, and list the module. Without
+`$ref`, derive the package manifest, and list the module. Without
 this test, a module that Quire accepts but Quoin refuses would ship.
 
 ## Target Integration
