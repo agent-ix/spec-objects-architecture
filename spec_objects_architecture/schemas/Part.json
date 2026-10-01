@@ -4,13 +4,13 @@
   "type": "object",
   "properties": {
     "owner": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/SemanticId.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/SemanticId.json"
     },
     "declaredType": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/TypeRef.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/TypeRef.json"
     },
     "multiplicity": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.0/Multiplicity.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.2/Multiplicity.json"
     }
   },
   "required": [

@@ -4,7 +4,7 @@ version: 0.4.0
 description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
 semantic:
   contract_version: 1.0.0
-  semantic_core: 0.3.0
+  semantic_core: 0.3.2
   package: agent-ix/spec-objects-architecture
   exports:
   - api_endpoint
