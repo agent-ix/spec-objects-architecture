@@ -28,7 +28,14 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const MIN_NODE_MAJOR = 20;
-const SEMANTIC_CORE_BASE = "https://schemas.agent-ix.org/semantic-core/0.3.0/";
+// The base is derived from the manifest's `semantic.semantic_core` declaration
+// (the one declared pin), never typed here.
+function semanticCoreBase() {
+  const manifest = readFileSync(resolve(packageDir, "manifest.yaml"), "utf8");
+  return `https://schemas.agent-ix.org/semantic-core/${
+    manifest.match(/^\s+semantic_core:\s*(\S+)\s*$/m)[1]
+  }/`;
+}
 
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceDir = resolve(repoRoot, "typespec");
@@ -45,7 +52,7 @@ function requireNode() {
   const major = Number(process.versions.node.split(".")[0]);
   if (!Number.isFinite(major) || major < MIN_NODE_MAJOR) {
     fail(
-      `Node ${MIN_NODE_MAJOR} or later is required by @typespec/compiler 1.15.0; this is Node ${process.versions.node}.`,
+      `Node ${MIN_NODE_MAJOR} or later is required; this is Node ${process.versions.node}.`,
     );
   }
 }
@@ -115,7 +122,7 @@ function normalize(schemas, base, moduleFiles) {
           `(${value}); the committed output was not touched.`,
       );
     }
-    return moduleFiles.has(value) ? `${base}${value}` : `${SEMANTIC_CORE_BASE}${value}`;
+    return moduleFiles.has(value) ? `${base}${value}` : `${semanticCoreBase()}${value}`;
   };
   const walk = (name, node) => {
     if (Array.isArray(node)) {

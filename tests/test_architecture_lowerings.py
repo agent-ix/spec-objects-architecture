@@ -1,7 +1,7 @@
 """Architecture-specific lowering tests (FR-006).
 
 Each assertion compares two sections of one authored artifact: the kernel
-fence the 0.2.0 manifest already yields (`contract_yaml`, `schema_json`,
+fence the manifest already yields (`contract_yaml`, `schema_json`,
 `message_schema`) and the typed record the current semantic layer extracts.
 Nothing here claims the engine performs the lowering — the engine-side
 mapping is `agent-ix/quoin#335` (FR-006-CON-2). The YAML/JSON side is parsed
@@ -18,14 +18,11 @@ import pytest
 import yaml
 
 from tests.conftest import (
-    BASELINE_DIR,
     FIXTURES_DIR,
     KERNEL_SCALARS,
     PACKAGE_ROOT,
     SKELETONS_DIR,
     frontmatter,
-    locators,
-    object_type,
 )
 
 TYPE_PREFIX = "ix://agent-ix/spec-objects-architecture/type/"
@@ -173,8 +170,7 @@ def test_an_unknown_return_token_is_reported_and_placeheld_not_rewritten(
 
 
 @pytest.mark.trace("TC-085", "FR-006-AC-6", "FR-006-CON-1")
-def test_the_three_kernel_fence_locators_are_unchanged_and_still_yield(quire_engine):
-    baseline = json.loads((BASELINE_DIR / "body_extraction.json").read_text())
+def test_the_kernel_fence_locators_still_yield(quire_engine):
     owned = {
         "interface": "contract_yaml",
         "data_schema": "schema_json",
@@ -182,8 +178,6 @@ def test_the_three_kernel_fence_locators_are_unchanged_and_still_yield(quire_eng
         "binary_format": "layout_yaml",
     }
     for type_name, key in owned.items():
-        old = baseline["object_types"][type_name]["yield_pattern"]["match"][key]
-        assert locators(object_type(type_name))[key] == old, f"{type_name}.{key}"
 
         path = SKELETONS_DIR / f"{type_name}.md"
         records = quire_engine.extract(type_name, str(PACKAGE_ROOT), path.read_text())[

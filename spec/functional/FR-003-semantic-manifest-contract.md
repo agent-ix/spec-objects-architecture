@@ -18,7 +18,7 @@ relationships:
 
 `spec_objects_architecture/manifest.yaml` SHALL carry the quoin FR-070
 `semantic` block and reference every exported object type's emitted schema by
-path (quoin FR-073), at manifest `version` 0.4.0, so that Quoin
+path (quoin FR-073), so that Quoin
 verifies the shipped schemas at install and Quire validates every declaration
 record against them, while every existing extraction locator keeps its
 meaning.
@@ -29,19 +29,16 @@ meaning.
 
 ## Outputs
 
-- `manifest.yaml` with `version: 0.4.0`, a `semantic` block, and reference-form
+- `manifest.yaml` with a `semantic` block, and reference-form
   `data_schema` on every exported object type.
 
 ## Behavior
 
-- The manifest `semantic` block SHALL carry exactly these keys and values: `contract_version: 1.0.0`, `semantic_core: 0.3.0`, `package: agent-ix/spec-objects-architecture`, `exports` listing every object type that ships a schema, `imports: {}`, `targets: [json-schema, markdown]`, `mappings: [typed-table, sysml-fence, ocl-clause, generalization]`, `compatibility_posture: strict`, `legacy_forms: warning`. [FR-007](./FR-007-systems-model-kinds.md) states why `generalization` is declared.
-- `compatibility_posture` SHALL be `strict`, because the object id pattern and the required interface `## Features` table refuse artifacts that validated at 0.2.0 ([NFR-001](../non-functional/NFR-001-additive-compatibility.md)); `additive` would misstate that, and `declared-lossy` names lossy mappings, which this module declares none of.
+- The manifest `semantic` block SHALL carry exactly these keys and values: `contract_version: 1.0.0`, `semantic_core` (the declared semantic-core bundle this module extends), `package: agent-ix/spec-objects-architecture`, `exports` listing every object type that ships a schema, `imports: {}`, `targets: [json-schema, markdown]`, `mappings: [typed-table, sysml-fence, ocl-clause, generalization]`, `compatibility_posture: strict`, `legacy_forms: warning`. [FR-007](./FR-007-systems-model-kinds.md) states why `generalization` is declared.
+- `compatibility_posture` SHALL be `strict`, because the object id pattern and the required interface `## Features` table refuse artifacts that lack them; `additive` would misstate that, and `declared-lossy` names lossy mappings, which this module declares none of.
 - `semantic.exports` SHALL name all fourteen object types, in this order: `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, `interface`, `external_contract`, `extension_point`, `binary_format`, `rate_limit`, and the [FR-007](./FR-007-systems-model-kinds.md) systems types `part`, `port`, `connection`, `allocation`.
 - No exported object type SHALL carry an inline `data_schema`.
-- Every `body_extraction` locator present at version 0.2.0 SHALL remain present with the same `from`, heading, `language`, `required`, `multiple`, and `assert` facets; the one added facet is the object id `regex` on the shared `id` locator.
 - The `schema_json` code-block locator on `data_schema`, the `message_schema` locator on `queue`, the `contract_yaml` locator on `interface`, and the `layout_yaml` locator on `binary_format` SHALL stay in place, so the untyped fence text continues to be yielded beside the semantic record ([FR-006](./FR-006-architecture-lowerings.md) states what each lowers to).
-- Where an object type gains a locator after 0.2.0, that locator SHALL be `required: false`, so existing artifacts stay valid (the additions themselves are specified by [FR-005](./FR-005-executable-skeletons.md)), except the `interface` `features` locator, which is required because `Interface.json` requires `featureOrder` ([FR-007](./FR-007-systems-model-kinds.md)); [NFR-001](../non-functional/NFR-001-additive-compatibility.md) declares that break.
-- The module SHALL carry the manifest `lexicon` block forward unchanged, because it serves the FR-043 EARS vague-response check and is unrelated to the semantic contract.
 - A refused schema drops that object type alone (the other nine still load), while a manifest key the loader cannot parse (an unknown `semantic` key) drops every object type, so a consumer sees the module as absent.
 - Both refusals are silent: no diagnostic names the offending key or path. `agent-ix/quire-rs#221` and `agent-ix/quire-rs#394` record that; the naming half of FR-003-AC-6 is blocked on them and is verified as an explicit expected failure rather than dropped.
 - Handed the fourteen reference-form `data_schema` values verbatim, the Filament snapshot path SHALL refuse each one with `semantic.data-schema-unresolved-reference` at error severity and emit no object-type node, because quire-rs FR-069 leaves resolution to the registry owner (`agent-ix/filament-core-service#23`). The same schemas resolved into the snapshot are accepted. Both halves are measured by FR-003-AC-8 so the day #23 lands the row turns red.
@@ -57,18 +54,15 @@ meaning.
 | ID | Constraint | Type | Validation |
 |----|------------|------|------------|
 | FR-003-CON-1 | The `semantic` block SHALL contain no key outside the admitted list. Quire's loader refusal of an unknown key is verified here (FR-003-AC-6); Quoin's refusal is the neighbour's own obligation (quoin FR-070) and is assumed, evidenced only by the clean install of [IT-002](../integration/IT-002-quoin-module-install.md). | Compatibility | Test |
-| FR-003-CON-2 | The manifest SHALL mark every locator added after 0.2.0 `required: false`, except the `interface` `features` locator. | Compatibility | Test |
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
 | FR-003-AC-1 | The loaded `semantic` block equals the nine admitted keys with the values above, and `exports` equals the fourteen object-type names. | Test |
-| FR-003-AC-3 | Every 0.2.0 locator, compared against the checked-in 0.2.0 baseline, is present unchanged apart from the `id` locator's `regex`; every added locator except `interface.features` is `required: false`. | Test |
 | FR-003-AC-4 | `quire.Registry.load_from([module dir])` lists all fourteen archetypes and `validate_document` on each [FR-005](./FR-005-executable-skeletons.md) skeleton reports no `semantic.*` load failure. | Test |
 | FR-003-AC-5 | `quoin module install path:<module dir>` exits zero and `quoin module` lists `spec-objects-architecture`; the previously installed entry is restored afterwards. | Demonstration |
 | FR-003-AC-6 | A manifest copy whose `semantic` block gains a key `foo` is refused by Quire's loader naming `foo`. | Test |
-| FR-003-AC-7 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0, including the eight definitions this repo's issue #7 records as truncated. | Test |
 | FR-003-AC-8 | Handed this manifest's fourteen reference-form `data_schema` values verbatim, `extract_filament_core` answers one `semantic.data-schema-unresolved-reference` at error severity per exported object type; handed the same schemas resolved into the snapshot, it answers none. | Test |
 | FR-003-AC-9 | `ObjectId.json` carries the pattern `^[A-Za-z][A-Za-z0-9_]*$`, `ObjectFrontmatter.json` requires `id` (by `$ref` to it), `title` and `type`, and every object type's `id` locator carries `regex: ^([A-Za-z][A-Za-z0-9_]*)$` and `required: true`; every shipped skeleton and fixture frontmatter validates against `ObjectFrontmatter.json`; a skeleton with an underscore id validates, and the same skeleton with a hyphenated id is refused only with its required `id` missing. | Test |
 

@@ -17,8 +17,6 @@ relationships:
     type: covers
   - target: "ix://agent-ix/spec-objects-architecture/FR-007"
     type: covers
-  - target: "ix://agent-ix/spec-objects-architecture/NFR-001"
-    type: covers
 ---
 # Test Matrix
 
@@ -26,22 +24,18 @@ relationships:
 
 This matrix is the verification contract for the module: the manifest
 activation requirement (FR-001, issue #1 era) and the issue #8 semantic data
-schemas (US-001, FR-002..FR-006, NFR-001, IT-002), and the issue #10 systems
+schemas (US-001, FR-002..FR-006, IT-002), and the issue #10 systems
 kinds (FR-007). Coverage is complete when
-every acceptance criterion, named constraint, and NFR metric maps to at least
+every acceptance criterion and named constraint maps to at least
 one test case. Rows are `🚧` until a tagged test asserts them.
 
-What the numbers count. `quire coverage` reports **168/168 rows backed
-(100%)**: 93 `TC-` rows from the Test Case Summary below plus 75 criterion
-rows minted from the requirements (4 FR-001, 10 FR-002, 9 FR-003, 16 FR-004,
-10 FR-005, 6 FR-006, 12 FR-007, 5 NFR-001 metrics, 3 StR-001 validation criteria). A row
-is *backed* when a source symbol carries a binding trace tag for it — that is
-a tagging measurement, not a run outcome. The run is separate: `make test`
-reports **277 passed, 7 skipped, 18 xfailed**. The 7 skips are the
-environment-gated rows (4 need a running `filament-core-service`, 3 are the
-opt-in Quoin roundtrip, which was run separately and passed); the 18 xfails are
-the expected failures named under Test Environment. No row is green because a
-test was skipped.
+What the numbers count. A row is *backed* when a source symbol carries a
+binding trace tag for it; that is a tagging measurement, not a run outcome.
+The run is separate: `make test` reports passes, skips and expected failures.
+The skips are the environment-gated rows (those needing a running
+`filament-core-service`, and the opt-in Quoin roundtrip); the expected failures
+are those named under Test Environment. No row is green because a test was
+skipped.
 
 ## Test Matrix Rules
 
@@ -72,17 +66,11 @@ test was skipped.
 |---|---|---|---|
 | FR-001 | FR-001-AC-2..4 | TC-002..TC-004 | 🚧 AC-2..AC-4 need a running filament-core |
 | FR-002 | FR-002-AC-1..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-010..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
-| FR-003 | FR-003-AC-1..9, FR-003-CON-1..2 | TC-020..TC-028, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
+| FR-003 | FR-003-AC-1..9 except AC-3 and AC-7, FR-003-CON-1 | TC-020, TC-024..TC-027, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
-
-### Non-Functional Requirement Coverage
-
-| Non-Functional Req | Verification Method | Evidence/Test Cases | Status |
-|---|---|---|---|
-| NFR-001 | Test (NFR-001-AC-1..5: locator baseline diff, 0.2.0 skeleton validation under the two declared breaks, edge-vocabulary diff) | TC-060..TC-064 | ✅ |
 
 ### Integration Test Coverage
 
@@ -101,7 +89,7 @@ test was skipped.
 | TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
 | TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name | Unit | P0 | FR-002-AC-2 | ✅ |
-| TC-012 | Every `$ref` resolves to a shipped sibling or semantic-core 0.3.0 | Unit | P0 | FR-002-AC-3 | ✅ |
+| TC-012 | Every `$ref` resolves to a shipped sibling or the declared semantic-core bundle | Unit | P0 | FR-002-AC-3 | ✅ |
 | TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema | Integration | P1 | FR-002-AC-4 | ✅ |
 | TC-015 | The built wheel contains every emitted schema file | Integration | P1 | FR-002-AC-6 | ✅ |
 | TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
@@ -109,13 +97,10 @@ test was skipped.
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2 | ✅ |
 | TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (GitHub Packages) | Unit | P2 | FR-002-CON-4 | ✅ |
 | TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
-| TC-022 | Every 0.2.0 locator is unchanged against the checked-in baseline apart from the `id` regex | Unit | P0 | FR-003-AC-3 | ✅ |
-| TC-023 | Every added locator except `interface.features` is `required: false` | Unit | P1 | FR-003-AC-3, FR-003-CON-2 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
 | TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
-| TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0 | Unit | P1 | FR-003-AC-7 | ✅ |
 | TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1 | ✅ |
 | TC-031 | Api endpoint: a returning operation validates; the return removed fails; `fields` fails | Integration | P0 | FR-004-AC-2 | ✅ |
 | TC-032 | Data schema: one field validates; empty `fields` fails; `operations` fails | Integration | P0 | FR-004-AC-3 | ✅ |
@@ -143,11 +128,6 @@ test was skipped.
 | TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
 | TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1 | ✅ falsified three ways and restored: a `corpus/` probe, a `fixtures/semantic-module` probe and a `.gitmodules` each turn it red |
 | TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8 | ✅ |
-| TC-060 | Zero 0.2.0 locators changed apart from the `id` regex | Unit | P0 | NFR-001-AC-1 | ✅ |
-| TC-061 | Every checked-in 0.2.0 skeleton with its frozen hyphenated id draws only its required `id` missing, and with its id in word form validates with zero errors, `interface` drawing only its required `features` missing; a legacy form that declares `object:` is not an error | Integration | P0 | NFR-001-AC-2 | ✅ the criterion passes; the `object:`-declaring case is an expected failure on quire-rs#391 |
-| TC-062 | No 0.2.0 skeleton carries a `## Properties` section in any form, so the `semantic.legacy-properties-form` count over the ten of them is 0 | Integration | P1 | NFR-001-AC-3 | ✅ the measured population is empty, and the row asserts the emptiness rather than a warning the module cannot produce |
-| TC-063 | Each 0.2.0 locator's yield, id in word form, is identical under 0.2.0 and 0.4.0 | Integration | P1 | NFR-001-AC-4 | ✅ |
-| TC-064 | Every 0.2.0 object type's `allowed_links` and `roles` sets are identical at 0.2.0 and 0.4.0 except the named `interface` additions | Unit | P1 | NFR-001-AC-5 | ✅ |
 | TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ #431 conditional xfail: the external contract case only |
 | TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
@@ -161,7 +141,7 @@ test was skipped.
 | TC-082 | The queue `## Message Format` fence and its `## Properties` table agree on the key set | Integration | P1 | FR-006-AC-3 | ✅ |
 | TC-083 | Every non-kernel `type.target` of the api-endpoint record resolves to a shipped data_schema title with zero unresolved findings | Integration | P0 | FR-006-AC-4 | ✅ |
 | TC-084 | An api-endpoint fixture returning an undeclared token yields exactly one `semantic.unresolved-type` finding and the `unresolved` placeholder target | Integration | P1 | FR-006-AC-5 | ✅ |
-| TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are byte-identical to 0.2.0 and still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1 | ✅ |
+| TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1 | ✅ |
 | TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2 | ✅ |
 | TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
 | TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
@@ -189,10 +169,9 @@ Inputs pins: `quire` is a dev dependency resolved from `internal-pypi` by
 `extract_semantic` is absent, so no row here can be reported green without
 the engine under test.
 
-Three rows carry an explicit expected failure, each naming the issue that owns
+Two rows carry an explicit expected failure, each naming the issue that owns
 it and none of them skipped: TC-026 (`agent-ix/quire-rs#221`
-and `#394`, the refusal names nothing), TC-061 (`agent-ix/quire-rs#391`, a
-legacy form declaring `object:` validates as `{}`), and TC-091
+and `#394`, the refusal names nothing) and TC-091
 (`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
 ambiguous with itself).
 

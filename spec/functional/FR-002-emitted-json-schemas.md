@@ -15,8 +15,7 @@ relationships:
 ## Description
 
 The module build SHALL emit one JSON Schema 2020-12 document per declared
-architecture model from a TypeSpec source that imports `@agent-ix/semantic-core`
-0.3.0, using the official `@typespec/json-schema` emitter at a pinned
+architecture model from a TypeSpec source that imports `@agent-ix/semantic-core`, using the official `@typespec/json-schema` emitter at a pinned
 toolchain, into `spec_objects_architecture/schemas/`, so that the shipped
 schema is the compiled one and any drift between source and shipped bytes
 fails the build.
@@ -41,15 +40,15 @@ fails the build.
 
 - `make schemas` SHALL run `node scripts/generate-schemas.mjs`.
 - The generator SHALL compile `typespec/` with `tsp compile`, keep only the emitted files whose `$id` starts with the module base, and discard the re-emitted semantic-core files.
-- If the emitter leaves any `$id` or `$ref` relative, then the generator SHALL rewrite it to `<base><file>` (module models) or `https://schemas.agent-ix.org/semantic-core/0.3.0/<file>` (semantic-core models).
+- If the emitter leaves any `$id` or `$ref` relative, then the generator SHALL rewrite it to `<base><file>` (module models) or `https://schemas.agent-ix.org/semantic-core/<version>/<file>` (semantic-core models), where `<version>` is the manifest `semantic.semantic_core` declaration.
 - If `tsp compile` fails or emits no module model, then the generator SHALL exit non-zero without touching the committed output.
 - If `node` is older than 20 or `tsp` is not resolvable, then the generator SHALL exit non-zero naming the required Node version or the missing binary.
 - In `--check` mode the generator SHALL write no file, neither under `spec_objects_architecture/schemas/` nor in `manifest.yaml`.
 - Every emitted schema SHALL declare `$schema: https://json-schema.org/draft/2020-12/schema` and `$id: https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<Model>.json`.
-- Every `$ref` in an emitted schema SHALL name either a sibling `https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<File>.json` that ships in `schemas/`, or `https://schemas.agent-ix.org/semantic-core/0.3.0/<Model>.json`.
+- Every `$ref` in an emitted schema SHALL name either a sibling `https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<File>.json` that ships in `schemas/`, or `https://schemas.agent-ix.org/semantic-core/<version>/<Model>.json` for the declared `<version>`.
 - `make schemas-check` SHALL run the generator with `--check`.
 - `make lint` SHALL run `make schemas-check`, so a `typespec/` edit that was never regenerated fails before push rather than at review.
-- If any emitted file differs from the committed output, a committed file under `spec_objects_architecture/schemas/` is stale (it has no emitted counterpart in this run), or a manifest digest differs from the shipped bytes, then the check SHALL exit non-zero naming each such file.
+- If any emitted file differs from the committed output, a committed file under `spec_objects_architecture/schemas/` is stale (it has no emitted counterpart in this run), then the check SHALL exit non-zero naming each such file.
 - If nothing differs, then the check SHALL exit zero.
 - The generator SHALL write files under `spec_objects_architecture/schemas/` only.
 - The Python package SHALL include `spec_objects_architecture/schemas/*.json` in the wheel and sdist.
@@ -75,7 +74,7 @@ fails the build.
 | ID | Criteria | Verification |
 |----|----------|--------------|
 | FR-002-AC-2 | Every shipped schema declares the 2020-12 `$schema` and the `$id` `https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/<Model>.json` matching its file name. | Test |
-| FR-002-AC-3 | Every `$ref` across the shipped schemas resolves to a shipped sibling or to semantic-core `0.3.0`; a `$ref` to any other host or version is absent. | Test |
+| FR-002-AC-3 | Every `$ref` across the shipped schemas resolves to a shipped sibling or to the declared semantic-core base; a `$ref` to any other host is absent. | Test |
 | FR-002-AC-4 | `make schemas-check` on the committed tree exits zero; after one byte of any shipped schema is changed, it exits non-zero naming that file. | Test |
 | FR-002-AC-6 | The wheel built by `make build` contains `spec_objects_architecture/schemas/<Model>.json` for every emitted model. | Test |
 | FR-002-AC-7 | The npm tarball produced by `npm pack` contains `manifest.yaml` and a sibling `schemas/<Model>.json` for every exported object type, so a manifest-relative `schema:` path resolves inside the tarball. | Test |

@@ -50,7 +50,7 @@ share one authoritative definition of what the module activates against
 - The functional requirement that the manifest activates idempotently against
   `filament-core-service`, and the integration test that verifies it.
 - The semantic-module contract (issue #8): a TypeSpec source importing
-  `@agent-ix/semantic-core` 0.3.0, the emitted JSON Schema per declared type
+  `@agent-ix/semantic-core`, the emitted JSON Schema per declared type
   shipped under `spec_objects_architecture/schemas/`, the manifest `semantic`
   block with reference-form `data_schema`, and the skeletons rewritten as
   executable typed fixtures with negative counterparts.
@@ -107,12 +107,6 @@ share one authoritative definition of what the module activates against
   manifest key empties the model silently) and `agent-ix/quire-rs#394`.
   FR-003-AC-6's "naming the key or the path" half is blocked on them and is
   carried as an explicit expected failure.
-- Record validation of a legacy-form artifact that declares `object:`:
-  `agent-ix/quire-rs#391` (the engine validates an `unavailable` record as
-  `{}`, so a legacy form errors even under `legacy_forms: warning`).
-  NFR-001-AC-2 itself holds — no 0.2.0 artifact carries `object:` — and the
-  defect is carried as an explicit expected failure beside it rather than
-  worked around by relaxing a schema.
 - Resolving a reference-form `data_schema` into a stored snapshot at
   activation: `agent-ix/filament-core-service#23`. Until it lands the service
   stores the reference verbatim, which is what FR-001-AC-4 asserts. The
@@ -129,8 +123,7 @@ share one authoritative definition of what the module activates against
   and corpus promotion are `agent-ix/quoin#291`.
 - Repairing the eight `lexicon` definitions this module's own manifest
   truncates at an unquoted comma in a YAML flow mapping: that is this repo's
-  issue #7, a separately reviewed data fix. FR-003-AC-7 freezes the block
-  byte-identical precisely so this change cannot be confused with that one.
+  issue #7, a separately reviewed data fix.
 - Replacing the measured cross-language resource-extraction contracts of
   Project 17: this module aligns resource vocabulary with them and does not
   restate or supersede them. The alignment is a naming discipline stated in
@@ -164,8 +157,7 @@ the manifest against `filament-core`; FR-002 emits the schemas; FR-003
 declares the semantic contract in the manifest; FR-004 fixes each type's
 role-distinct schema; FR-005 makes the skeletons executable fixtures; FR-006
 fixes the three architecture-specific lowerings; FR-007 declares the systems-model
-kinds. NFR-001 bounds compatibility: additive apart from two declared breaks,
-the object id pattern and the interface `## Features` table. Integration tests in `integration/` verify the
+kinds. Integration tests in `integration/` verify the
 activation and Quoin-install boundaries; the third external boundary, the
 Quire engine (loader, extraction, record surface), has no IT artifact of its
 own — the FR-003, FR-005 and FR-006 test harness is this module's Quire

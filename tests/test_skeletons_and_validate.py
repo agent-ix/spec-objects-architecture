@@ -309,7 +309,7 @@ def test_skeleton_validates_via_quire(name: str) -> None:
     """Each filled skeleton passes ``validate_document``.
 
     Skips when the installed quire wheel predates the markdown-default
-    validator (FR-032); install a quire wheel >=0.3.6 to exercise it."""
+    validator (FR-032); install a current quire wheel to exercise it."""
     quire = _quire_doc_validator()
     if quire is None:
         pytest.skip("quire wheel lacks validate_document (FR-032)")
