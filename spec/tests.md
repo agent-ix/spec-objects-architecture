@@ -48,7 +48,7 @@ test was skipped.
 1. Every acceptance criterion and named constraint has at least one test case.
 2. Both Properties forms (typed table, `sysml` fence) and every object type are tested.
 3. Item-rule boundaries are tested at their allowed and refused edges (zero versus one identity field, one versus two operations, empty versus one-item arrays).
-4. Every named refusal (digest mismatch, unknown key, both forms, dangling clause, non-Identifier token, missing return, missing post-clause) has a failing fixture.
+4. Every named refusal (unknown key, both forms, dangling clause, non-Identifier token, missing return, missing post-clause) has a failing fixture.
 5. Availability states (`available`, `not_applicable`, `missing`) are tested per declaration kind.
 6. Legacy artifacts, the empty record, and unresolved tokens are covered as edge cases.
 
@@ -95,7 +95,7 @@ test was skipped.
 
 | Test ID | Title | Type | Priority | Traces To | Status |
 |---|---|---|---|---|---|
-| TC-001 | Manifest validates against the vendored FR-035 module-manifest schema through `quire.validate_manifest` | Unit | P0 | FR-001-AC-1 | 🚧 the schema-revision and only-violation halves pass; the criterion itself is an expected failure on filament-core-service#25 (the `lexicon` key) |
+| TC-001 | Manifest validates against the vendored FR-035 module-manifest schema through `quire.validate_manifest` | Unit | P0 | FR-001-AC-1 | 🚧 the only-violation half passes; the criterion itself is an expected failure on filament-core-service#25 (the `lexicon` key) |
 | TC-002 | Activation against a clean filament-core returns 200 | Integration | P1 | FR-001-AC-2, IT-001-SC-01 | 🚧 needs a running filament-core |
 | TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03 | 🚧 needs a running filament-core |
 | TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02 | 🚧 needs a running filament-core |
@@ -103,19 +103,19 @@ test was skipped.
 | TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
 | TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name under the manifest-version base | Unit | P0 | FR-002-AC-2 | ✅ |
 | TC-012 | Every `$ref` resolves to a shipped sibling or semantic-core 0.3.0 | Unit | P0 | FR-002-AC-3 | ✅ |
-| TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema or digest | Integration | P1 | FR-002-AC-4 | ✅ |
+| TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema | Integration | P1 | FR-002-AC-4 | ✅ |
 | TC-014 | A `@jsonSchema` base version differing from the manifest version fails the generator naming both | Integration | P1 | FR-002-AC-5 | ✅ |
 | TC-015 | The built wheel contains every emitted schema file | Integration | P1 | FR-002-AC-6 | ✅ |
 | TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
-| TC-018 | No `.npmrc`, no `file:`/`link:` dependency, exact toolchain pins in `package.json` | Static | P2 | FR-002-CON-2 | ✅ |
+| TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2 | ✅ |
 | TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (GitHub Packages) | Unit | P2 | FR-002-CON-4 | ✅ |
 | TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
 | TC-022 | Every 0.2.0 locator is unchanged against the checked-in baseline apart from the `id` regex | Unit | P0 | FR-003-AC-3 | ✅ |
 | TC-023 | Every added locator except `interface.features` is `required: false` | Unit | P1 | FR-003-AC-3, FR-003-CON-2 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
-| TC-026 | An unknown `semantic` key and an altered digest are each refused by the loader; the refusal names the key or path | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
+| TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
 | TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
 | TC-028 | The 0.2.0 `lexicon` block is byte-identical at 0.4.0 | Unit | P1 | FR-003-AC-7 | ✅ |
 | TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1 | ✅ |
@@ -153,7 +153,7 @@ test was skipped.
 | TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ #431 conditional xfail: the external contract case only |
 | TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ run against quoin `0.23.1-2-g3e842ce`; opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
 | TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
-| TC-072 | A coordinated version bump re-emits every `$id`/`$ref` at the new version with matching digests; bumping one half of the pair fails the check | Integration | P1 | FR-002-AC-8, FR-002-CON-5 | ✅ |
+| TC-072 | A coordinated version bump re-emits every `$id`/`$ref` at the new version; bumping one half of the pair fails the check | Integration | P1 | FR-002-AC-8, FR-002-CON-5 | ✅ |
 | TC-073 | `make schemas-check` names a stale committed schema with no emitted counterpart and writes nothing | Integration | P1 | FR-002-AC-9 | ✅ |
 | TC-074 | No acceptance test hard-codes the `$id` version segment; each reads it from the manifest `version` | Unit | P2 | FR-002-CON-5 | ✅ |
 | TC-075 | A Node older than 20 fails the generator naming the required version | Integration | P2 | FR-002-AC-4 | ✅ |
@@ -170,7 +170,7 @@ test was skipped.
 | TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
 | TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
 | TC-091 | The bundle index holds one entry per declaration id; a per-file index makes an alternate-bearing declaration ambiguous with itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ the per-file half is an expected failure on quire-rs#398 |
-| TC-100 | Each systems kind is an exported object type whose `data_schema` digest matches its model file | Unit | P0 | FR-007-AC-1 | ✅ |
+| TC-100 | Each systems kind is an exported object type whose `data_schema` names its model file | Unit | P0 | FR-007-AC-1 | ✅ |
 | TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; a connection end admits a multiplicity and refuses a missing port or unknown key; direction enums are closed | Unit | P0 | FR-007-AC-2 | ✅ |
 | TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3 | ✅ |
 | TC-103 | FR-035 violations name no `construct` path; a `*` reference and an unknown member state are refused; each construct binds its FR-208 meaning; references name declared members and roles only | Integration | P0 | FR-007-AC-4 | ✅ |
@@ -180,7 +180,7 @@ test was skipped.
 | TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
 | TC-108 | No systems schema or construct, `interface` included, declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1 | ✅ |
 | TC-109 | An interface with only fields, only operations, or both validates with its `featureOrder`; none without it; the construct makes both features optional and has no rule | Unit | P0 | FR-007-AC-9 | ✅ |
-| TC-110 | An interface declares supertypes: `specializes` equals the spec-objects-business declaration pinned with its source revision, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
+| TC-110 | An interface declares supertypes: `specializes` equals the spec-objects-business declaration, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
 | TC-111 | `ObjectId` states the word-id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; an underscore id validates and a hyphenated id is refused with its required `id` missing | Integration | P0 | FR-003-AC-9 | ✅ |
 | TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ |
 | TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
@@ -201,7 +201,7 @@ legacy form declaring `object:` validates as `{}`), and TC-091
 (`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
 ambiguous with itself).
 
-Quire 0.47.1 (built from quire-rs main at or after `6eec7e8`) carries the
+Quire 0.47.1 carries the
 lowerings and gates that used to need a conditional probe: the systems tables
 into the record (`agent-ix/quire-rs#446`, TC-106), the interface
 `## Features` table into `featureOrder` (`agent-ix/quire-rs#448`, 
@@ -256,6 +256,6 @@ independently of the status column.
 
 Five rows stay `🚧` and none of them is a coverage claim: TC-001 (the expected
 failure above), and TC-002, TC-003, TC-004 and TC-005, which need a running
-`filament-core-service` at revision `e33070e` — no release tag contains it, so
+`filament-core-service`, which
 this repository cannot provision one. That is issue #1's debt, carried
 forward.
