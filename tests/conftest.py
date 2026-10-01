@@ -355,8 +355,6 @@ def schema_registry():
         )
     resources = []
     for path in sorted(SCHEMAS_DIR.glob("*.json")):
-        if path.name == "toolchain.json":
-            continue
         schema = json.loads(path.read_text())
         resources.append((schema["$id"], Resource.from_contents(schema)))
     for path in sorted(SEMANTIC_CORE_DIR.glob("*.json")):
