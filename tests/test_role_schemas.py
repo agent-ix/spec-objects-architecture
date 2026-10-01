@@ -438,8 +438,6 @@ def test_no_shipped_schema_declares_an_observation_key():
     extraction vocabulary for itself."""
     offenders = []
     for path in sorted(SCHEMAS_DIR.glob("*.json")):
-        if path.name == "toolchain.json":
-            continue
         doc = json.loads(path.read_text())
         for key in doc.get("properties", {}):
             lowered = key.lower()
