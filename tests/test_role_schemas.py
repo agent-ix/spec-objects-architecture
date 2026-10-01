@@ -27,7 +27,7 @@ from tests.conftest import (
 MODELS = [MODEL_OF[name] for name in OBJECT_TYPES]
 
 CLAUSE = {"language": "ocl", "clauseId": "SomeInvariant"}
-# Multiplicity.json (semantic-core 0.3.0) requires `ordered`/`unique`; a
+# Multiplicity.json requires `ordered`/`unique`; a
 # producer clamps both `false` on a singular multiplicity (`upper` at most
 # one). Every kernel field below is a singular `String`, so both are `false`.
 KERNEL = {

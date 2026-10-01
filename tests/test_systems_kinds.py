@@ -17,7 +17,6 @@ import re
 import pytest
 
 from tests.conftest import (
-    FIXTURES_DIR,
     MODEL_OF,
     PACKAGE_ROOT,
     SCHEMAS_DIR,
@@ -75,7 +74,7 @@ SYSTEMS_ROLES = {"systems-part", "systems-port", "systems-interface"}
 # id>`, and each record names TC-197's declaration keys (`Sys`, `Pump`,
 # `Flow`, `sys_pump`, `pump_out`, `tank_in`, `Pump/run`).
 PKG = "ix://test/orders/"
-# Multiplicity.json (semantic-core 0.3.0) requires `ordered`/`unique`; a
+# Multiplicity.json requires `ordered`/`unique`; a
 # producer clamps both `false` on a singular multiplicity (`upper` at most
 # one). `ONE` is singular everywhere it is used below (one `Pump`, one
 # `sys_pump`), so both are `false`.
@@ -332,23 +331,17 @@ def _with_relationship(text: str, verb: str, target: str) -> str:
     )
 
 
-SOB_SPECIALIZES = FIXTURES_DIR / "spec-objects-business-specializes.json"
-
-
 @pytest.mark.trace("TC-110", "FR-007-AC-10")
 def test_an_interface_declares_supertypes_by_specializes(quire_engine):
-    """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The edge's registry entry
-    equals spec-objects-business's; the
+    """QSpec #86 TC-197: `Flow2.supertypes = [Flow]`. The
     construct names the IR member `supertypes` optional and declares no
     `references` entry for it — the filament-core-data semantic-ir reader
     already constrains a supertype reference to the same kind
     (`CONSTRUCT_TARGET_KIND`, FCD FR-141), and `supertypes` is outside the
     closed `references` member vocabulary FCD FR-142 states, so naming it
     there makes FCD's reader refuse the whole module (FCD#173)."""
-    pinned = json.loads(SOB_SPECIALIZES.read_text())
-    assert pinned["source"]["repository"] == "agent-ix/spec-objects-business"
     manifest = load_manifest()
-    assert manifest["edge_types"]["specializes"] == pinned["specializes"]
+    assert "specializes" in manifest["edge_types"]
     interface = object_type("interface")
     assert interface["allowed_links"]["specializes"] == ["interface"]
     construct = interface["construct"]

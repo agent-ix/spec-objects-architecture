@@ -328,19 +328,12 @@ def test_a_properties_section_with_both_forms_is_refused(quire_engine):
 def test_the_repository_carries_no_corpus_or_vendored_fixture():
     """FR-005-CON-1, as a **tree** assertion over `git ls-files`.
 
-    Deliberately not a diff. A `git diff origin/main...HEAD` guard is
-    merge-degrading: a merged change's path set is a fixed historical fact, but
-    the range is computed against a moving ref, so the day the branch merges
-    `origin/main...HEAD` empties and an `assert changed` turns main red for a
-    branch that is no longer a branch. `spec-objects-business` main has been red
-    on exactly that shape since `567e5c4`.
-
-    The tree form is equivalent in intent here and strictly stronger: none of
-    `corpus/`, `fixtures/semantic-module` or `/vendor/` exists anywhere in this
-    repository, so asserting their **absence from the tree** says more than
-    asserting one branch left them alone — and it means the same thing before
-    and after a merge. The liveness assertion is on the tracked file set, never
-    on a diff, so the row cannot pass because it looked at nothing.
+    Deliberately not a diff: a diff against a moving ref changes meaning once
+    the branch merges. None of `corpus/`, `fixtures/semantic-module` or
+    `/vendor/` exists anywhere in this repository, so asserting their
+    **absence from the tree** says more than asserting one branch left them
+    alone. The liveness assertion is on the tracked file set, never on a
+    diff, so the row cannot pass because it looked at nothing.
     """
     listing = subprocess.run(
         ["git", "-C", str(REPO_ROOT), "ls-files"],

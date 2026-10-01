@@ -19,16 +19,15 @@ this test, a module that Quire accepts but Quoin refuses would ship.
 ## Target Integration
 
 The system under test is `spec_objects_architecture/` as consumed by a Quoin
-built from `agent-ix/quoin` main (FR-070,
+that supports the semantic installer (FR-070,
 FR-073, FR-075). The integration type is a local CLI invocation over the
 filesystem; no network read is involved.
 
 ## Preconditions
 
-A Quoin built from `agent-ix/quoin` main is on `PATH`
-(from a checkout: `make build && npm i -g .`; no release tag carries the
-semantic module yet). The current `quoin module` listing is recorded so the
-prior `spec-objects-architecture` entry (source, ref, sha) can be restored.
+A Quoin that supports the semantic installer is on `PATH`. The current
+`quoin module` listing is recorded so the prior `spec-objects-architecture`
+entry can be restored.
 
 ## Inputs
 

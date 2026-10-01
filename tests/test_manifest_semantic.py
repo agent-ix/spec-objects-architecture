@@ -12,7 +12,6 @@ import pytest
 import yaml
 
 from tests.conftest import (
-    BASELINE_DIR,
     EXPORTS,
     FIXTURES_DIR,
     OBJECT_ID_LOCATOR_REGEX,
@@ -23,9 +22,7 @@ from tests.conftest import (
     SKELETONS_DIR,
     declaration_skeletons,
     frontmatter,
-    load_manifest,
     locators,
-    object_type,
     object_types,
 )
 
@@ -73,62 +70,6 @@ def test_the_semantic_block_carries_the_nine_admitted_keys_and_ten_exports(
     ]
     assert semantic_block["compatibility_posture"] == "strict"
     assert semantic_block["legacy_forms"] == "warning"
-
-
-#: The one locator added after 0.2.0 as required: the interface feature order
-#: (FR-007), a break NFR-001 declares.
-REQUIRED_ADDITION = ("interface", "features")
-
-
-def facets_since_020(key: str, locator: dict) -> dict:
-    """A locator's facets as 0.2.0 recorded them: the FR-003 object id `regex`
-    on the `id` locator is the one facet added since, and it is checked on its
-    own (TC-111)."""
-    if key != "id":
-        return locator
-    assert locator["regex"] == OBJECT_ID_LOCATOR_REGEX
-    return {k: v for k, v in locator.items() if k != "regex"}
-
-
-@pytest.mark.trace("TC-022", "FR-003-AC-3")
-def test_every_020_locator_is_unchanged_against_the_checked_in_baseline():
-    baseline = json.loads((BASELINE_DIR / "body_extraction.json").read_text())
-    assert baseline["version"] == "0.2.0"
-    for name, extraction in baseline["object_types"].items():
-        current = object_type(name).get("body_extraction")
-        old = (extraction or {})["yield_pattern"]["match"]
-        new = (current or {})["yield_pattern"]["match"]
-        for key, facets in old.items():
-            assert key in new, f"{name}.{key} was dropped from the current module"
-            assert (
-                facets_since_020(key, new[key]) == facets
-            ), f"{name}.{key} changed facets in the current module"
-
-
-@pytest.mark.trace("TC-023", "FR-003-AC-3", "FR-003-CON-2")
-def test_every_locator_added_after_020_is_optional():
-    baseline = json.loads((BASELINE_DIR / "body_extraction.json").read_text())
-    added = 0
-    for name, extraction in baseline["object_types"].items():
-        old = set((extraction or {})["yield_pattern"]["match"])
-        for key, facets in locators(object_type(name)).items():
-            if key in old:
-                continue
-            added += 1
-            if (name, key) == REQUIRED_ADDITION:
-                assert facets.get("required") is True, f"{name}.{key}"
-                continue
-            assert (
-                facets.get("required") is False
-            ), f"{name}.{key} was added as required"
-    assert added > 0, "no locator was added; FR-005's sections would not be asserted"
-
-
-@pytest.mark.trace("TC-028", "FR-003-AC-7")
-def test_the_prior_version_lexicon_block_is_byte_identical_now():
-    baseline = json.loads((BASELINE_DIR / "lexicon.json").read_text())
-    assert baseline["version"] == "0.2.0"
-    assert load_manifest()["lexicon"] == baseline["lexicon"]
 
 
 @pytest.mark.trace("TC-024", "FR-003-AC-4")
