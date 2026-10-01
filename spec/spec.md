@@ -125,12 +125,6 @@ share one authoritative definition of what the module activates against
   object type until #23 lands, which is one of the reasons the module is
   advisory-only until promotion. FR-003-AC-8 carries that measurement and its
   resolved-form counterpart, so the row turns red the day #23 changes it.
-- Admitting the top-level `lexicon` block in the FR-035 module-manifest
-  schema: `agent-ix/filament-core-service#25`. The schema is
-  `additionalProperties: false` and declares no `lexicon`, so this module's
-  manifest is refused by it — a condition that predates this issue, since the
-  0.2.0 manifest fails the same way. FR-001 carries it as an explicit expected
-  failure; the `lexicon` is not dropped and the schema is not relaxed.
 - Editing any corpus repository or vendored fixture; the legacy-form sweep
   and corpus promotion are `agent-ix/quoin#291`.
 - Repairing the eight `lexicon` definitions this module's own manifest

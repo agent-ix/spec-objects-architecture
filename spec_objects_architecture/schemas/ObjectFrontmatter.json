@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ObjectFrontmatter.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ObjectFrontmatter.json",
   "type": "object",
   "properties": {
     "id": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ObjectId.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ObjectId.json"
     },
     "title": {
       "type": "string",

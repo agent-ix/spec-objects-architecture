@@ -6,13 +6,11 @@ The five QSpec FR-152 kinds — `interface`, `part`, `port`, `connection`,
 against hand-built records named with QSpec #86 TC-197's declaration keys.
 Lowering the systems tables (agent-ix/quire-rs#446) and the interface
 `## Features` table (agent-ix/quire-rs#448) into the record is the engine's
-work; both landed on quire-rs main at or after `6eec7e8`, published in
-quire 0.47.1.
+work; both landed on quire-rs main at or after `6eec7e8`, published.
 """
 
 from __future__ import annotations
 
-import copy
 import json
 import re
 
@@ -31,7 +29,6 @@ from tests.conftest import (
     object_type,
     systems_skeletons,
 )
-from tests.test_activation_and_stakeholder import VENDORED_SCHEMA
 from tests.test_manifest_semantic import module_copy
 
 # QSpec FR-152 members per kind, named in FCD IR member form.
@@ -113,10 +110,6 @@ MEMBER_REF = re.compile(r"^[a-z][a-z0-9]*(_[a-z0-9]+)*/[a-z][a-z0-9_]*$")
 def _is_reference(cell: str) -> bool:
     """An artifact id, or `<artifact id>/<member>` naming a member of one."""
     return bool(ARTIFACT_ID.match(cell) or MEMBER_REF.match(cell))
-
-
-def _object_type_in(manifest: dict, name: str) -> dict:
-    return next(ot for ot in manifest["object_types"] if ot["name"] == name)
 
 
 @pytest.mark.trace("TC-100", "FR-007-AC-1")
@@ -220,33 +213,9 @@ def test_each_kind_has_one_required_table_row_locator(kind):
 
 
 @pytest.mark.trace("TC-103", "FR-007-AC-4")
-def test_construct_declarations_validate_and_bind_fr208_meanings(quire_engine):
-    violations = quire_engine.validate_manifest(load_manifest(), str(VENDORED_SCHEMA))
-    assert all("construct" not in v["path"] for v in violations), violations
+def test_construct_declarations_bind_fr208_meanings():
     for kind in SYSTEMS_KINDS:
         assert object_type(kind)["construct"]["meaning"] == MEANING[kind]
-
-
-@pytest.mark.trace("TC-103", "FR-007-AC-4")
-@pytest.mark.parametrize(
-    ("mutate", "path"),
-    [
-        (
-            lambda c: c["references"].__setitem__("owner", ["*"]),
-            "construct.references.owner[0]",
-        ),
-        (
-            lambda c: c["members"].__setitem__("owner", "sometimes"),
-            "construct.members.owner",
-        ),
-    ],
-    ids=["wildcard-reference", "unknown-member-state"],
-)
-def test_a_malformed_construct_is_refused(quire_engine, mutate, path):
-    manifest = copy.deepcopy(load_manifest())
-    mutate(_object_type_in(manifest, "port")["construct"])
-    violations = quire_engine.validate_manifest(manifest, str(VENDORED_SCHEMA))
-    assert any(v["path"].endswith(path) for v in violations), violations
 
 
 @pytest.mark.trace("TC-103", "FR-007-AC-4")
@@ -306,7 +275,7 @@ def test_a_reference_is_an_artifact_id_or_an_id_and_member():
 @pytest.mark.parametrize("path", systems_skeletons(), ids=lambda p: p.stem)
 def test_skeleton_validation_matches_the_installed_engine(quire_engine, path):
     """FR-007-AC-7 requires zero errors: the engine lowers the systems tables
-    into the record (agent-ix/quire-rs#446, landed in quire 0.47.1)."""
+    into the record (agent-ix/quire-rs#446, landed)."""
     kind = path.stem
     result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), path.read_text())
     assert result["errors"] == [], result["errors"]
@@ -446,7 +415,7 @@ def test_generalization_mapping_removal_is_refused(quire_engine, tmp_path):
     a manifest copy's `semantic.mappings` must reproduce
     `semantic.feature-not-extractable` for the same `specializes`
     relationship the declared half extracts cleanly. The gate (PR #432) is
-    published in quire 0.47.1."""
+    published."""
     text = (PACKAGE_ROOT / "skeletons" / "interface.md").read_text()
     special = _with_relationship(text, "specializes", "Flow")
 

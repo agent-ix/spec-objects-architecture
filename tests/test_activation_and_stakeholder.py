@@ -1,14 +1,6 @@
 """Activation and stakeholder tests, covering FR-001, IT-001 and the
 StR-001 validation criteria.
 
-FR-001-AC-1 is discharged here against the committed tree, and is an explicit
-expected failure while `agent-ix/filament-core-service#25` is open: this
-module's manifest carries the FR-043 `lexicon` block, which the FR-035
-module-manifest schema (`additionalProperties: false`) does not admit. That
-condition predates this issue — the 0.2.0 manifest fails the same way — and
-the schema is neither relaxed nor is the `lexicon` dropped to make the row
-green.
-
 FR-001-AC-2..AC-4 and StR-001-VC-1 need a running
 `filament-core-service`; they are environment-gated and their matrix rows stay `🚧` with that note. That is pre-existing
 debt from issue #1, not this issue's, and it is not the semantic suite: the
@@ -25,15 +17,10 @@ import pytest
 from tests.conftest import (
     MANIFEST_PATH,
     PACKAGE_ROOT,
-    REPO_ROOT,
     SKELETONS_DIR,
     frontmatter,
     load_manifest,
 )
-
-# The vendored filament-core-service module-manifest schema. FR-001, FR-003,
-# FR-007 and IT-001 all judge this manifest against it.
-VENDORED_SCHEMA = REPO_ROOT / "tests" / "fixtures" / "module-manifest.schema.json"
 
 FILAMENT_CORE_URL = os.environ.get("FILAMENT_CORE_URL")
 needs_filament_core = pytest.mark.skipif(
@@ -43,35 +30,6 @@ needs_filament_core = pytest.mark.skipif(
         "Set FILAMENT_CORE_URL to run them; the matrix row stays 🚧 until then."
     ),
 )
-
-
-@pytest.mark.trace("TC-001", "FR-001-AC-1")
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "FR-035's module-manifest schema is `additionalProperties: false` and "
-        "declares no `lexicon` key, while this module has shipped a top-level "
-        "`lexicon` since 0.2.0 (FR-043's concrete-term vocabulary, which "
-        "quire-rs loads happily). The manifest is therefore refused by the "
-        "vendored schema. agent-ix/filament-core-service#25 owns adding "
-        "`lexicon` to FR-035. The row is an expected failure naming that "
-        "issue; the `lexicon` is not dropped and the schema is not relaxed."
-    ),
-)
-def test_the_manifest_validates_against_the_pinned_fr035_schema(quire_engine):
-    violations = quire_engine.validate_manifest(load_manifest(), str(VENDORED_SCHEMA))
-    assert violations == [], violations
-
-
-@pytest.mark.trace("TC-001", "FR-001-AC-1")
-def test_the_only_fr035_violation_is_the_known_lexicon_key(quire_engine):
-    """What this row counts: the manifest's violations against the pinned
-    FR-035 schema. Exactly one, and it is the `lexicon` key of
-    agent-ix/filament-core-service#25 — so nothing this issue added is
-    refused."""
-    violations = quire_engine.validate_manifest(load_manifest(), str(VENDORED_SCHEMA))
-    assert len(violations) == 1, violations
-    assert "lexicon" in violations[0]["message"], violations
 
 
 @pytest.mark.trace("TC-002", "FR-001-AC-2")

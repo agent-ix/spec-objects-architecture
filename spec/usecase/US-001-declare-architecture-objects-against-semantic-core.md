@@ -74,7 +74,7 @@ and non-functional requirements.
 ## Dependencies (Contextual)
 
 Upstream: semantic-core 0.3.0 on GitHub Packages, the module-manifest schema
-with the `semantic` block, Quire 0.47.1 with `extract_semantic`. Downstream:
+with the `semantic` block, Quire with `extract_semantic`. Downstream:
 the frontends that read this module's skeletons as fixtures.
 
 ## Priority and Risk (Informative)

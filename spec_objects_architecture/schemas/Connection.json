@@ -1,16 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/Connection.json",
+  "$id": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/Connection.json",
   "type": "object",
   "properties": {
     "sourceEnd": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionEnd.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ConnectionEnd.json"
     },
     "targetEnd": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionEnd.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ConnectionEnd.json"
     },
     "flowDirection": {
-      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/0.4.0/ConnectionDirection.json"
+      "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ConnectionDirection.json"
     }
   },
   "required": [

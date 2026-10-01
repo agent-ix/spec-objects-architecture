@@ -3,7 +3,7 @@ Quoin with the semantic
 contract, and the operator's prior module state is restored unconditionally.
 
 This row is a **Demonstration**: no released Quoin carries the semantic
-installer (`agent-ix/quoin` main `3e842ce`, no tag contains it), and the
+installer, and the
 install mutates the operator's global `quoin module` store. It therefore runs
 only when both are true:
 
@@ -31,7 +31,7 @@ needs_quoin = pytest.mark.skipif(
     not (OPT_IN and QUOIN),
     reason=(
         "IT-002 is a Demonstration against a Quoin built from agent-ix/quoin "
-        "main at or after 3e842ce (no release carries the semantic installer), "
+        "main (no release carries the semantic installer), "
         "and it mutates the operator's global module store. Set "
         "QUOIN_INSTALL_ROUNDTRIP=1 with such a Quoin on PATH to run it; the "
         "matrix row stays 🚧 until then."

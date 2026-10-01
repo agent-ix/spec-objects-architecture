@@ -36,7 +36,7 @@ refuse.
 - Negative fixtures `tests/fixtures/negative/<type>-<case>.md`, each with
   frontmatter `expect:` naming the diagnostic code or reason the fixture must
   produce.
-- The Quire wheel 0.47.1 or later, exposing `extract_semantic`,
+- The Quire wheel, exposing `extract_semantic`,
   `validate_document`, and `Registry`, declared as a dev dependency resolved
   from `internal-pypi` (see Behavior).
 

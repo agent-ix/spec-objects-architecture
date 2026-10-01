@@ -1,8 +1,5 @@
 """Emission tests for the schema set (FR-002), its `$id`/`$ref` shape, the drift gate,
-determinism, packaging, and the version-bump procedure.
-
-Every assertion reads the `$id` version segment from `manifest.yaml`
-(FR-002-CON-5); no test hard-codes it.
+determinism, and packaging.
 """
 
 from __future__ import annotations
@@ -25,7 +22,6 @@ from tests.conftest import (
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
     SUPPORT_MODELS,
-    manifest_version,
     module_base,
 )
 
@@ -121,17 +117,6 @@ def test_schemas_check_is_green_on_the_committed_tree_and_names_a_mutation(tmp_p
     mutated = run_generator("--check", cwd=tree)
     assert mutated.returncode != 0
     assert "DataSchema.json" in mutated.stderr
-
-
-@pytest.mark.trace("TC-014", "FR-002-AC-5")
-def test_a_base_version_differing_from_the_manifest_version_fails_naming_both(tmp_path):
-    tree = worktree_copy(tmp_path)
-    source = tree / "typespec" / "main.tsp"
-    source.write_text(source.read_text().replace(f"/{manifest_version()}/", "/9.9.9/"))
-    result = run_generator(cwd=tree)
-    assert result.returncode != 0
-    assert "9.9.9" in result.stderr
-    assert manifest_version() in result.stderr
 
 
 @pytest.mark.trace("TC-015", "FR-002-AC-6")
@@ -272,34 +257,6 @@ def test_the_npm_tarball_ships_the_schemas_beside_the_manifest(tmp_path):
         assert f"package/schemas/{MODEL_OF[name]}.json" in names
 
 
-@pytest.mark.trace("TC-072", "FR-002-AC-8", "FR-002-CON-5")
-def test_a_coordinated_version_bump_reemits_every_id(tmp_path):
-    tree = worktree_copy(tmp_path)
-    old, new = manifest_version(), "9.9.9"
-    source = tree / "typespec" / "main.tsp"
-    manifest = tree / "spec_objects_architecture" / "manifest.yaml"
-    source.write_text(source.read_text().replace(f"/{old}/", f"/{new}/"))
-
-    # Half a bump: the source moved, the manifest did not.
-    half = run_generator("--check", cwd=tree)
-    assert half.returncode != 0
-    assert new in half.stderr and old in half.stderr
-
-    manifest.write_text(
-        manifest.read_text().replace(f"\nversion: {old}\n", f"\nversion: {new}\n", 1)
-    )
-    assert run_generator(cwd=tree).returncode == 0
-    bumped_base = (
-        f"https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/{new}/"
-    )
-    out = tree / "spec_objects_architecture" / "schemas"
-    for path in out.glob("*.json"):
-        schema = json.loads(path.read_text())
-        assert schema["$id"] == f"{bumped_base}{path.name}"
-        assert old not in json.dumps(schema)
-    assert run_generator("--check", cwd=tree).returncode == 0
-
-
 @pytest.mark.trace("TC-073", "FR-002-AC-9")
 def test_schemas_check_names_a_stale_committed_schema_and_writes_nothing(tmp_path):
     tree = worktree_copy(tmp_path)
@@ -318,17 +275,6 @@ def test_schemas_check_names_a_stale_committed_schema_and_writes_nothing(tmp_pat
     assert (
         tree / "spec_objects_architecture" / "manifest.yaml"
     ).read_bytes() == manifest_before
-
-
-@pytest.mark.trace("TC-074", "FR-002-CON-5")
-def test_no_test_hard_codes_the_id_version_segment():
-    """FR-002-CON-5: a criterion that hard-codes the version churns per release."""
-    version = manifest_version()
-    literal = f"spec-objects-architecture/{version}/"
-    for path in sorted((REPO_ROOT / "tests").rglob("*.py")):
-        assert (
-            literal not in path.read_text()
-        ), f"{path} hard-codes the $id version segment"
 
 
 # ---------------------------------------------------------------------------
