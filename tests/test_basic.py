@@ -1,5 +1,3 @@
-import pytest
-
 from spec_objects_architecture import MANIFEST_PATH, PACK_ROOT
 
 

@@ -2,7 +2,8 @@
 StR-001 validation criteria.
 
 FR-001-AC-2..AC-4 and StR-001-VC-1 need a running
-`filament-core-service`; they are environment-gated and their matrix rows stay `🚧` with that note. That is pre-existing
+`filament-core-service`; they are environment-gated and their matrix rows stay
+`🚧` with that note. That is pre-existing
 debt from issue #1, not this issue's, and it is not the semantic suite: the
 Quire rows fail rather than skip (see `conftest.py`).
 """

@@ -21,7 +21,6 @@ from tests.conftest import (
     REPO_ROOT,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
-    SUPPORT_MODELS,
     module_base,
 )
 
@@ -192,7 +191,7 @@ def test_the_build_uses_the_official_emitter_only_and_no_file_is_hand_edited():
 def test_no_npmrc_and_no_local_dependency():
     assert not (REPO_ROOT / ".npmrc").exists()
     package = json.loads((REPO_ROOT / "package.json").read_text())
-    dev = package["devDependencies"]
+    assert "devDependencies" in package
     assert "dependencies" not in package or not package["dependencies"]
     for section in ("dependencies", "devDependencies"):
         for name, spec in (package.get(section) or {}).items():
