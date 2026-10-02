@@ -91,8 +91,7 @@ object_types:
           - type
           required: true
         # Format-walkthrough decision #20 (2026-06-11): `routes` dropped —
-        # `Endpoint` is the sole canonical anchor (~80/90 FRs in the wild;
-        # zero files carried both). Multi-route surfaces list routes
+        # `Endpoint` is the sole canonical anchor. Multi-route surfaces list routes
         # inside the one Endpoint section.
         endpoint:
           from: section_body
