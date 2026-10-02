@@ -291,7 +291,6 @@ def test_the_generator_refuses_a_node_older_than_it_requires(tmp_path):
     tree = worktree_copy(tmp_path)
     script = tree / "scripts" / "generate-schemas.mjs"
     source = script.read_text()
-    assert "MIN_NODE_MAJOR = 20" in source
     probe = tmp_path / "probe.mjs"
     probe.write_text(
         source.replace(

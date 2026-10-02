@@ -6,7 +6,7 @@ The five QSpec FR-152 kinds — `interface`, `part`, `port`, `connection`,
 against hand-built records named with QSpec #86 TC-197's declaration keys.
 Lowering the systems tables (agent-ix/quire-rs#446) and the interface
 `## Features` table (agent-ix/quire-rs#448) into the record is the engine's
-work; both landed on quire-rs main at or after `6eec7e8`, published.
+work; both are published.
 """
 
 from __future__ import annotations

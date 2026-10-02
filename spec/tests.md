@@ -191,12 +191,10 @@ rather than deleted because a regression to an older wheel should fail loudly
 rather than pass silently — but it holds and no case is
 marked.
 
-Measured with `make test` on 2026-09-22: 273 passed, 7 skipped, 4 xfailed. None failed.
-
 Two rows are opt-in rather than gated on an absent environment. TC-027 and
 TC-070 write the operator's global `quoin module` store, so they run only
-under `QUOIN_INSTALL_ROUNDTRIP=1`. Both were run on 2026-09-04 and passed, restoring the prior entry's
-source, ref and sha.
+under `QUOIN_INSTALL_ROUNDTRIP=1`; each restores the prior entry's source, ref and
+sha.
 
 Rows over the record keys the extractor does not populate (`routes`,
 `requires`, `carries`, `delivery`, `renders`, `triggers`, `associated_types`,
