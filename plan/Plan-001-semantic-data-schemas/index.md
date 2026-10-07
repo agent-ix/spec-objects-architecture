@@ -22,4 +22,3 @@ okf_version: "0.1"
 * [Task-011](./tasks/Task-011-quoin-install-roundtrip.md) - IT-002 Quoin install roundtrip with a restore that restores.
 * [Task-012](./tasks/Task-012-activation-reverification-and-tags.md) - FR-001/StR-001 re-verification and the expected failures.
 * [Task-013](./tasks/Task-013-gate-three-types-end-to-end.md) - Gate: three types end to end.
-* [Update Log](./log.md) - Chronological log of changes to this bundle.
