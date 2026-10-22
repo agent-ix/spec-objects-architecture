@@ -35,7 +35,7 @@ meaning.
 ## Behavior
 
 - The manifest `semantic` block SHALL carry exactly these keys and values: `contract_version: 1.0.0`, `semantic_core` (the declared semantic-core bundle this module extends), `package: agent-ix/spec-objects-architecture`, `exports` listing every object type that ships a schema, `imports: {}`, `targets: [json-schema, markdown]`, `mappings: [typed-table, sysml-fence, ocl-clause, generalization]`, `compatibility_posture: strict`, `legacy_forms: warning`. [FR-007](./FR-007-systems-model-kinds.md) states why `generalization` is declared.
-- `compatibility_posture` SHALL be `strict`, because the object id pattern and the required interface `## Features` table refuse artifacts that lack them; `additive` would misstate that, and `declared-lossy` names lossy mappings, which this module declares none of.
+- `compatibility_posture` SHALL be `strict`, because the frontmatter id pattern and the required interface `## Features` table refuse artifacts that lack them; `additive` would misstate that, and `declared-lossy` names lossy mappings, which this module declares none of.
 - `semantic.exports` SHALL name all fourteen object types, in this order: `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, `interface`, `external_contract`, `extension_point`, `binary_format`, `rate_limit`, and the [FR-007](./FR-007-systems-model-kinds.md) systems types `part`, `port`, `connection`, `allocation`.
 - No exported object type SHALL carry an inline `data_schema`.
 - The `schema_json` code-block locator on `data_schema`, the `message_schema` locator on `queue`, the `contract_yaml` locator on `interface`, and the `layout_yaml` locator on `binary_format` SHALL stay in place, so the untyped fence text continues to be yielded beside the semantic record ([FR-006](./FR-006-architecture-lowerings.md) states what each lowers to).
@@ -45,9 +45,9 @@ meaning.
 - The manifest SHALL install through `quoin module install path:<module dir>` with no `semantic.*` error diagnostic.
 - When the install has completed, `quoin module` SHALL list `spec-objects-architecture`.
 - If Quoin or Quire rejects the manifest, then this module SHALL correct its own manifest or schemas rather than relax the contract keys or the `$id` rules to make a consumer accept them.
-- An object id SHALL match `^[A-Za-z][A-Za-z0-9_]*$`: letters, digits and underscores, starting with a letter, never a hyphen. Artifact-type ids such as `FR-100` are outside this rule.
+- An object artifact's frontmatter `id` SHALL match `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`: it starts with a letter and may contain nonempty hyphen-separated segments. This admits established artifact ids such as `IF-001` without renaming cross-repository references. Semantic type and member names remain governed by the core `Identifier` grammar.
 - `typespec/main.tsp` SHALL state the pattern once, as the scalar `ObjectId`; the emitted `ObjectFrontmatter.json` is the frontmatter record every object type shares, requiring `id` (an `ObjectId`), `title` and `type`.
-- Every object type's `id` locator SHALL be the shared `frontmatter_field` locator carrying `regex: ^([A-Za-z][A-Za-z0-9_]*)$` and `required: true`, so a hyphenated id yields no value and Quire refuses the artifact with its required `id` missing.
+- Every object type's `id` locator SHALL be the shared `frontmatter_field` locator carrying `regex: ^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$` and `required: true`, so an empty, leading, trailing or doubled hyphen segment yields no value and Quire refuses the artifact with its required `id` missing.
 
 ## Constraints
 
@@ -64,7 +64,7 @@ meaning.
 | FR-003-AC-5 | `quoin module install path:<module dir>` exits zero and `quoin module` lists `spec-objects-architecture`; the previously installed entry is restored afterwards. | Demonstration |
 | FR-003-AC-6 | A manifest copy whose `semantic` block gains a key `foo` is refused by Quire's loader naming `foo`. | Test |
 | FR-003-AC-8 | Handed this manifest's fourteen reference-form `data_schema` values verbatim, `extract_filament_core` answers one `semantic.data-schema-unresolved-reference` at error severity per exported object type; handed the same schemas resolved into the snapshot, it answers none. | Test |
-| FR-003-AC-9 | `ObjectId.json` carries the pattern `^[A-Za-z][A-Za-z0-9_]*$`, `ObjectFrontmatter.json` requires `id` (by `$ref` to it), `title` and `type`, and every object type's `id` locator carries `regex: ^([A-Za-z][A-Za-z0-9_]*)$` and `required: true`; every shipped skeleton and fixture frontmatter validates against `ObjectFrontmatter.json`; a skeleton with an underscore id validates, and the same skeleton with a hyphenated id is refused only with its required `id` missing. | Test |
+| FR-003-AC-9 | `ObjectId.json` carries the pattern `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`, `ObjectFrontmatter.json` requires `id` (by `$ref` to it), `title` and `type`, and every object type's `id` locator carries the equivalent capturing regex and `required: true`; every shipped skeleton and fixture frontmatter validates against `ObjectFrontmatter.json`; the same skeleton validates with underscore and hyphenated ids, while a doubled hyphen is refused with its required `id` missing. | Test |
 
 ## Dependencies
 
