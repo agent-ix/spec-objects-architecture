@@ -22,13 +22,12 @@ namespace AgentIx.SpecObjects.Architecture;
 // ---------------------------------------------------------------------------
 
 /**
- * The id of an artifact whose type is one of this module's object types: a
- * letter, then letters, digits and underscores. A hyphen is refused.
- * Artifact-type ids such as `FR-100` are not object ids and are not governed
- * by this pattern. The manifest's shared `id` locator carries the same
- * pattern, so Quire refuses a hyphenated object id at validation.
+ * The frontmatter id of an artifact whose type is one of this module's object
+ * types. It may contain hyphen-separated segments, as in `IF-001`; semantic
+ * type and member names remain governed by the core Identifier grammar.
+ * The manifest's shared `id` locator carries the same pattern.
  */
-@pattern("^[A-Za-z][A-Za-z0-9_]*$")
+@pattern("^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$")
 scalar ObjectId extends string;
 
 /**

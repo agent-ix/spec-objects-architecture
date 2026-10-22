@@ -172,19 +172,23 @@ def test_the_id_pattern_is_stated_once_and_carried_by_every_id_locator(
         front = frontmatter(path.read_text())
         assert list(validator.iter_errors(front)) == [], path
     base_front = {"title": "Flow", "type": "interface"}
-    for good in ("Flow", "sys_pump", "queue_001", "a1"):
+    for good in ("Flow", "sys_pump", "queue_001", "queue-001", "IF-001", "a1"):
         assert validator.is_valid({**base_front, "id": good}), good
-    for bad in ("queue-001", "sys-pump_1", "_flow", "1flow", ""):
+    for bad in ("queue--001", "queue-", "-queue", "_flow", "1flow", ""):
         assert not validator.is_valid({**base_front, "id": bad}), bad
 
 
 @pytest.mark.trace("TC-111", "FR-003-AC-9")
-def test_an_underscore_id_validates_and_a_hyphenated_id_is_refused(quire_engine):
+def test_underscore_and_hyphenated_frontmatter_ids_validate(quire_engine):
     text = (SKELETONS_DIR / "queue.md").read_text()
     assert "id: queue_001\n" in text
     assert quire_engine.validate_document("queue", str(PACKAGE_ROOT), text)["is_valid"]
     hyphenated = text.replace("id: queue_001\n", "id: queue-001\n", 1)
     result = quire_engine.validate_document("queue", str(PACKAGE_ROOT), hyphenated)
+    assert result["is_valid"], result["errors"]
+
+    malformed = text.replace("id: queue_001\n", "id: queue--001\n", 1)
+    result = quire_engine.validate_document("queue", str(PACKAGE_ROOT), malformed)
     assert not result["is_valid"]
     messages = [e["message"] for e in result["errors"]]
     assert messages and set(messages) == {_missing_id("queue")}, messages

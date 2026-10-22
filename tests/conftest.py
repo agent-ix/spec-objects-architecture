@@ -84,11 +84,12 @@ POST_LINES_REASON = (
     f"{POST_LINES_ISSUE}"
 )
 
-#: FR-003: an object id is a letter, then letters, digits and underscores.
+#: FR-003: an artifact frontmatter id starts with a letter and may contain
+#: hyphen-separated segments. Semantic names use the core Identifier grammar.
 #: `typespec/main.tsp` states it once as `ObjectId`; the manifest's shared `id`
 #: locator carries it as a capturing `regex`.
-OBJECT_ID_PATTERN = "^[A-Za-z][A-Za-z0-9_]*$"
-OBJECT_ID_LOCATOR_REGEX = "^([A-Za-z][A-Za-z0-9_]*)$"
+OBJECT_ID_PATTERN = "^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$"
+OBJECT_ID_LOCATOR_REGEX = "^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$"
 
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",

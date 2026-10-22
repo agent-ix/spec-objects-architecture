@@ -1,6 +1,6 @@
 manifest_version: 1.0.0
 name: spec-objects-architecture
-version: 0.4.0
+version: 0.5.0
 description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
 semantic:
   contract_version: 1.0.0
@@ -70,15 +70,14 @@ object_types:
   body_extraction:
     yield_pattern:
       match:
-        # FR-003: an object id uses underscores, never hyphens. The pattern
-        # equals `ObjectId` in typespec/main.tsp; a hyphenated id yields no
-        # value, so the required locator refuses it. Every object type shares
-        # this locator.
+        # FR-003: frontmatter ids may use hyphen-separated segments. Semantic
+        # type and member names retain the core Identifier grammar. Every
+        # object type shares this locator and the ObjectId schema pattern.
         id: &id001
           from: frontmatter_field
           path:
           - id
-          regex: ^([A-Za-z][A-Za-z0-9_]*)$
+          regex: ^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$
           required: true
         title: &id002
           from: frontmatter_field
