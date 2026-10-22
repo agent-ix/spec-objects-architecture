@@ -45,7 +45,7 @@ meaning.
 - The manifest SHALL install through `quoin module install path:<module dir>` with no `semantic.*` error diagnostic.
 - When the install has completed, `quoin module` SHALL list `spec-objects-architecture`.
 - If Quoin or Quire rejects the manifest, then this module SHALL correct its own manifest or schemas rather than relax the contract keys or the `$id` rules to make a consumer accept them.
-- An object artifact's frontmatter `id` SHALL match `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`: it starts with a letter and may contain nonempty hyphen-separated segments. This admits established artifact ids such as `IF-001` without renaming cross-repository references. Semantic type and member names remain governed by the core `Identifier` grammar.
+- An object artifact's frontmatter `id` SHALL match `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`: it starts with a letter and permits nonempty hyphen-separated segments. This admits established artifact ids such as `IF-001` without renaming cross-repository references. Semantic type and member names remain governed by the core `Identifier` grammar.
 - `typespec/main.tsp` SHALL state the pattern once, as the scalar `ObjectId`; the emitted `ObjectFrontmatter.json` is the frontmatter record every object type shares, requiring `id` (an `ObjectId`), `title` and `type`.
 - Every object type's `id` locator SHALL be the shared `frontmatter_field` locator carrying `regex: ^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$` and `required: true`, so an empty, leading, trailing or doubled hyphen segment yields no value and Quire refuses the artifact with its required `id` missing.
 
