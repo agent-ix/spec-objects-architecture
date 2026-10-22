@@ -103,3 +103,5 @@ Common Makefile targets:
 | `use-local p=<name>` | Switch a dep to local `pypi.ix` |
 | `use-upstream p=<name>` | Switch a dep back to upstream |
 | `local-publish` | Build and publish to local PyPI (`pypi.ix`) |
+
+<!-- STD-30 language-boundary canary: inert README change. -->
