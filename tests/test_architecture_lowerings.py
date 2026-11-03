@@ -23,6 +23,7 @@ from tests.conftest import (
     PACKAGE_ROOT,
     SKELETONS_DIR,
     frontmatter,
+    semantic_target_value,
 )
 
 TYPE_PREFIX = "ix://agent-ix/spec-objects-architecture/type/"
@@ -81,7 +82,7 @@ def test_the_interface_contract_yaml_and_its_typed_operations_agree(
             # The two forms agree on the return *type token*, not merely on
             # whether a return exists: a derived view that named a different
             # type would be a second, contradicting declaration.
-            target = typed_return["target"]
+            target = semantic_target_value(typed_return["target"])
             token = target.rsplit("/", 1)[-1] if target.startswith("ix://") else target
             assert declared_output.split("(")[0] == token, (
                 yaml_op["name"],
@@ -140,9 +141,12 @@ def test_every_api_endpoint_reference_resolves_to_a_shipped_data_schema(
 
     targets = []
     for operation in record["operations"]:
-        targets += [param["type"]["target"] for param in operation["params"]]
+        targets += [
+            semantic_target_value(param["type"]["target"])
+            for param in operation["params"]
+        ]
         if operation.get("returns"):
-            targets.append(operation["returns"]["target"])
+            targets.append(semantic_target_value(operation["returns"]["target"]))
     referenced = [t for t in targets if t not in KERNEL_SCALARS]
     assert referenced, "the endpoint references no declared record at all"
     for target in referenced:
@@ -162,7 +166,7 @@ def test_an_unknown_return_token_is_reported_and_placeheld_not_rewritten(
     ]
     assert len(findings) == 1, record.get("diagnostics")
     assert "MysteryRecord" in findings[0]["message"]
-    target = record["operations"][0]["returns"]["target"]
+    target = semantic_target_value(record["operations"][0]["returns"]["target"])
     assert target == (
         "ix://agent-ix/spec-objects-architecture/unresolved/MysteryRecord"
     )
