@@ -26,6 +26,7 @@ from tests.conftest import (
     frontmatter,
     locators,
     object_type,
+    semantic_target_value,
     object_types,
     post_lines_xfail,
 )
@@ -124,11 +125,19 @@ def test_under_the_bundle_index_every_skeleton_extracts_clean(
         assert not [
             d for d in diagnostics if d.get("code") == "semantic.unresolved-type"
         ], (path.name, diagnostics)
-        targets = [decl["type"]["target"] for decl in record.get("fields") or []]
+        targets = [
+            semantic_target_value(decl["type"]["target"])
+            for decl in record.get("fields") or []
+        ]
         for operation in record.get("operations") or []:
-            targets += [param["type"]["target"] for param in operation["params"]]
+            targets += [
+                semantic_target_value(param["type"]["target"])
+                for param in operation["params"]
+            ]
             if operation.get("returns"):
-                targets.append(operation["returns"]["target"])
+                targets.append(
+                    semantic_target_value(operation["returns"]["target"])
+                )
         for target in targets:
             if target in KERNEL_SCALARS:
                 continue

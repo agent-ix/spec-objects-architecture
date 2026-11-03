@@ -21,6 +21,7 @@ from tests.conftest import (
     OBJECT_TYPES,
     PROFILE_KEYS,
     SCHEMAS_DIR,
+    semantic_target_value,
     SEMANTIC_CORE_BASE,
 )
 
@@ -311,7 +312,8 @@ def test_the_extractor_reports_an_unresolvable_token_as_unresolved_type(
     ]
     assert len(findings) == 1, record.get("diagnostics")
     assert "MysteryRecord" in findings[0]["message"]
-    assert record["operations"][0]["returns"]["target"].startswith(
+    target = semantic_target_value(record["operations"][0]["returns"]["target"])
+    assert target.startswith(
         "ix://agent-ix/spec-objects-architecture/unresolved/"
     )
 

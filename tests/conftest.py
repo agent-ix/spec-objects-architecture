@@ -181,6 +181,11 @@ def frontmatter(markdown: str) -> dict[str, Any]:
     return yaml.safe_load(match.group(1))
 
 
+def semantic_target_value(target: str | dict[str, Any]) -> str:
+    """Return the URI from either the legacy string or typed SemanticId shape."""
+    return target.get("value", "") if isinstance(target, dict) else target
+
+
 def is_systems_skeleton(path: pathlib.Path) -> bool:
     """A skeleton of an FR-007 systems type (FR-005 governs the others)."""
     return path.stem in SYSTEMS_TYPES
