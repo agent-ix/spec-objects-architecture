@@ -43,7 +43,7 @@ verdicts beyond a single request.
 
 ## Provider
 
-`api_endpoint_001`
+`identity_service`
 
 ## Versioning
 

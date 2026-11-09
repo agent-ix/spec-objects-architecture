@@ -4,8 +4,8 @@ Each assertion compares two sections of one authored artifact: the kernel
 fence the manifest already yields (`contract_yaml`, `schema_json`,
 `message_schema`) and the typed record the current semantic layer extracts.
 Nothing here claims the engine performs the lowering — the engine-side
-mapping is `agent-ix/quoin#335` (FR-006-CON-2). The YAML/JSON side is parsed
-here; the typed side comes from `extract_semantic`.
+mapping is quoin FR-122 (quire-rs FR-081) (FR-006-CON-2). The YAML/JSON side is
+parsed here; the typed side comes from `extract_semantic`.
 """
 
 from __future__ import annotations

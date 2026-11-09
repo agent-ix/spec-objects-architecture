@@ -53,7 +53,7 @@ one declaration rather than two.
 - Every `api_endpoint` operation param and return whose type is not a `KernelScalar` SHALL name a `data_schema` skeleton `title`, so that under the bundle index it resolves to `ix://agent-ix/spec-objects-architecture/type/<Title>`.
 - A `TypeRef` target this module cannot resolve SHALL surface as the engine's `semantic.unresolved-type` finding.
 - The module SHALL NOT drop such a target silently or rewrite it to a kernel scalar.
-- The module SHALL NOT implement the `contract_yaml` lowering inside the extraction engine: the engine-side mapping is `agent-ix/quoin#335` and its quire-rs successor. This requirement fixes the mapping and asserts the agreement of the two authored forms; a test that claimed the engine performed the lowering would claim evidence this module does not have.
+- The module SHALL NOT implement the `contract_yaml` lowering inside the extraction engine: the engine-side mapping is quoin FR-122, implemented by quire-rs FR-081. This requirement fixes the mapping and asserts the agreement of the two authored forms; a test that claimed the engine performed the lowering would claim evidence this module does not have.
 
 ## Constraints
 

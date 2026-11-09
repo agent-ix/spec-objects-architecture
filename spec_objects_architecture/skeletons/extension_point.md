@@ -35,19 +35,19 @@ object: extension_point
 ## Contract
 
 Modules contribute object renderers through the `RendererRegistry` interface
-(`quant_codec` in this skeleton set): per `object_type_name`, a module registers the React
+(interface_002): per `object_type_name`, a module registers the React
 component and configuration this library needs to render that type — with no
 modification to the host library's source.
 
 ## Exposes
 
-`quant_codec`
+`renderer_registry`
 
 ## Registration
 
 | Mechanism | Conflict | Discovery |
 |---|---|---|
-| module_init | last_wins | unregistered types fall back to the generic payload renderer |
+| module_init | last_wins | registry.register(typeName, entry) at module init; duplicate registrations log a warning with both module names |
 
 ## Stability
 

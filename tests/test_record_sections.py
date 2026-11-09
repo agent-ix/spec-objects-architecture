@@ -134,12 +134,13 @@ def test_the_authored_skeleton_values_are_the_ones_the_skeletons_state(
             "record"
         ]
 
-    assert record("external_contract")["provider"] == f"{ID_PREFIX}api_endpoint_001"
-    assert record("extension_point")["exposes"] == f"{ID_PREFIX}quant_codec"
+    assert record("external_contract")["provider"] == f"{ID_PREFIX}identity_service"
+    assert record("extension_point")["exposes"] == f"{ID_PREFIX}renderer_registry"
     assert record("extension_point")["registration"] == {
         "mechanism": "module_init",
         "conflict": "last_wins",
-        "discovery": "unregistered types fall back to the generic payload renderer",
+        "discovery": "registry.register(typeName, entry) at module init; "
+        "duplicate registrations log a warning with both module names",
     }
     assert [r["operation"] for r in record("api_endpoint")["routes"]] == [
         "upload_artifact",
@@ -301,15 +302,20 @@ def test_a_threshold_without_a_status_is_refused_and_a_bullet_list_is_not_a_tabl
     )
     assert [d["reason"] for d in errors(missing)] == ["status-required"]
 
-    bullets = extract(
-        quire_engine,
-        schema_documents,
-        doc("extension_point", "## Registration\n\n- Mechanism: entry_point\n"),
-        "extension_point",
-    )
-    assert [(d["code"], d["reason"]) for d in errors(bullets)] == [
-        ("semantic.feature-not-extractable", "registration")
-    ]
+    for kind, heading in (
+        ("extension_point", "Registration"),
+        ("extension_point", "Stability"),
+        ("rate_limit", "Thresholds"),
+    ):
+        bullets = extract(
+            quire_engine,
+            schema_documents,
+            doc(kind, f"## {heading}\n\n- Mechanism: entry_point\n"),
+            kind,
+        )
+        assert [(d["code"], d["reason"]) for d in errors(bullets)] == [
+            ("semantic.feature-not-extractable", heading.lower())
+        ], heading
 
 
 @pytest.mark.trace("TC-126", "FR-008-AC-7")
