@@ -126,19 +126,6 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
 
 
 @pytest.mark.trace("TC-091", "FR-005-AC-10", "FR-005-CON-3")
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "A bundle index built one entry per document — which is what "
-        "`BundleIndex::from_documents` does — lists `data_schema_001` twice "
-        "and then reports every reference to it as "
-        '`semantic.ambiguous-type: type "ArtifactRecord" names '
-        "data_schema_001 and data_schema_001`, naming the same id on both "
-        "sides. agent-ix/quire-rs#398 owns collapsing entries that share an "
-        "id. The module keys its index by id, which is the correct "
-        "construction; this row records that the engine does not yet."
-    ),
-)
 def test_a_per_file_bundle_index_does_not_make_a_declaration_ambiguous_with_itself(
     quire_engine, semantic_module
 ):

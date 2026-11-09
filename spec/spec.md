@@ -88,13 +88,6 @@ share one authoritative definition of what the module activates against
   for the unslashed spelling, which names neither the true cause nor the form
   it wants, and then drops the whole `fields` key. The wording is the
   neighbour's to fix; nothing here is authored around it.
-- Collapsing bundle-index entries that share a declaration id:
-  `agent-ix/quire-rs#398`. An index built one entry per document lists the
-  three `*.sysml.md` alternates beside their table skeletons and then reports
-  every reference to them as `semantic.ambiguous-type` naming the same id on
-  both sides. FR-005-CON-3 keys this module's index by id, which is the
-  correct construction, and carries the engine's behaviour as an expected
-  failure.
 - Enabling impact propagation or extraction behaviour for the architecture
   resource graph: the ticket's safety gate holds the change advisory-only
   until promotion, and resource-identity changes need controlled-corpus

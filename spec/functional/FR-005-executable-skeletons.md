@@ -90,7 +90,7 @@ refuse.
 | FR-005-AC-7 | The skeleton for each of the ten types has no placeholder token and every asserted section body is non-empty. | Test |
 | FR-005-AC-8 | Every skeleton `title` matches the `Identifier` pattern, is unique across the skeletons, and is not a `KernelScalar` name; every skeleton frontmatter carries `object` equal to `type`. | Test |
 | FR-005-AC-9 | The `action` skeleton extracts exactly one operation, the `api_endpoint` skeleton at least one operation carrying `returns`, and the `external_contract` skeleton at least one operation carrying a non-empty `post`. | Test |
-| FR-005-AC-10 | The bundle index the module builds holds ten entries, one per declaration id; an index built one entry per file makes every reference to an alternate-bearing declaration `semantic.ambiguous-type`, which is carried as an expected failure naming `agent-ix/quire-rs#398`. | Test |
+| FR-005-AC-10 | The bundle index the module builds holds ten entries, one per declaration id; an index built one entry per file raises no `semantic.ambiguous-type` for a declaration against itself (the engine collapses entries that share an id, `agent-ix/quire-rs#398`). | Test |
 
 ## Dependencies
 

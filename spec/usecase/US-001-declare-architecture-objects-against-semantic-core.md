@@ -73,7 +73,7 @@ and non-functional requirements.
 
 ## Dependencies (Contextual)
 
-Upstream: semantic-core on GitHub Packages, the module-manifest schema
+Upstream: semantic-core on npmjs, the module-manifest schema
 with the `semantic` block, Quire with `extract_semantic`. Downstream:
 the frontends that read this module's skeletons as fixtures.
 

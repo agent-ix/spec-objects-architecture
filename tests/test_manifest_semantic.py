@@ -142,8 +142,12 @@ def test_the_refusal_names_the_offending_key_and_path(quire_engine, tmp_path):
     assert "foo" in str(error.value)
 
 
-def _missing_id(kind: str) -> str:
-    return f"[{kind}] required 'id' (frontmatter_field(id)) is missing"
+def _bad_id(kind: str, value: str) -> str:
+    """The engine names the pattern the malformed id fails."""
+    return (
+        f"[{kind}] required 'id' (frontmatter_field(id)) value \"{value}\" "
+        f"does not match pattern /{OBJECT_ID_LOCATOR_REGEX}/"
+    )
 
 
 @pytest.mark.trace("TC-111", "FR-003-AC-9")
@@ -193,4 +197,4 @@ def test_underscore_and_hyphenated_frontmatter_ids_validate(quire_engine):
     result = quire_engine.validate_document("queue", str(PACKAGE_ROOT), malformed)
     assert not result["is_valid"]
     messages = [e["message"] for e in result["errors"]]
-    assert messages and set(messages) == {_missing_id("queue")}, messages
+    assert messages and set(messages) == {_bad_id("queue", "queue--001")}, messages

@@ -70,11 +70,11 @@ skipped.
 | FR-002 | FR-002-AC-1..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-010..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
 | FR-003 | FR-003-AC-1..9 except AC-3 and AC-7, FR-003-CON-1 | TC-020, TC-024..TC-027, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1, FR-004-CON-3 | TC-030..TC-046 | ✅ |
-| FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
+| FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
-| FR-008 | FR-008-AC-1..7 | TC-120..TC-126 |  |
+| FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | 🚧 AC-2..AC-7 need the quire 0.55.0 wheel |
 
 ### Integration Test Coverage
 
@@ -99,7 +99,7 @@ skipped.
 | TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2 | ✅ |
-| TC-019 | `package-lock.json` resolves every package from npmjs except `@agent-ix/semantic-core` (GitHub Packages) | Unit | P2 | FR-002-CON-4 | ✅ |
+| TC-019 | `package-lock.json` resolves every package from npmjs, `@agent-ix/semantic-core` included | Unit | P2 | FR-002-CON-4 | ✅ |
 | TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
@@ -149,7 +149,7 @@ skipped.
 | TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2 | ✅ |
 | TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
 | TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
-| TC-091 | The bundle index holds one entry per declaration id; a per-file index makes an alternate-bearing declaration ambiguous with itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ the per-file half is an expected failure on quire-rs#398 |
+| TC-091 | The bundle index holds one entry per declaration id; a per-file index makes an alternate-bearing declaration ambiguous with itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ |
 | TC-100 | Each systems kind is an exported object type whose `data_schema` names its model file | Unit | P0 | FR-007-AC-1 | ✅ |
 | TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; a connection end admits a multiplicity and refuses a missing port or unknown key; direction enums are closed | Unit | P0 | FR-007-AC-2 | ✅ |
 | TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3 | ✅ |
@@ -166,13 +166,13 @@ skipped.
 | TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
 | TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
 | TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
-| TC-120 | `semantic.mappings` names `relationships` and `record-sections` | Unit | P0 | FR-008-AC-1 |  |
-| TC-121 | Each skeleton that authors a record key extracts exactly that key under the manifest's mappings, `available`, valid against its model, with zero errors; the values are the ones the skeleton states | Integration | P0 | FR-008-AC-2 |  |
-| TC-122 | A route naming an undeclared operation is refused as `route-operation-unknown` | Integration | P1 | FR-008-AC-3 |  |
-| TC-123 | `associated_types` comes from the `## Associated Types` table and never from the `## Contract` fence | Integration | P1 | FR-008-AC-4 |  |
-| TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5 |  |
-| TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6 |  |
-| TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 |  |
+| TC-120 | `semantic.mappings` names `relationships` and `record-sections` | Unit | P0 | FR-008-AC-1 | ✅ |
+| TC-121 | Each skeleton that authors a record key extracts exactly that key under the manifest's mappings, `available`, valid against its model, with zero errors; the values are the ones the skeleton states | Integration | P0 | FR-008-AC-2 | 🚧 needs the quire 0.55.0 wheel |
+| TC-122 | A route naming an undeclared operation is refused as `route-operation-unknown` | Integration | P1 | FR-008-AC-3 | 🚧 needs the quire 0.55.0 wheel |
+| TC-123 | `associated_types` comes from the `## Associated Types` table and never from the `## Contract` fence | Integration | P1 | FR-008-AC-4 | 🚧 needs the quire 0.55.0 wheel |
+| TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5 | 🚧 needs the quire 0.55.0 wheel |
+| TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6 | 🚧 needs the quire 0.55.0 wheel |
+| TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 | 🚧 needs the quire 0.55.0 wheel |
 
 ## Test Environment
 
@@ -182,11 +182,10 @@ Inputs pins: `quire` is a dev dependency resolved from `internal-pypi` by
 `extract_semantic` is absent, so no row here can be reported green without
 the engine under test.
 
-Two rows carry an explicit expected failure, each naming the issue that owns
-it and none of them skipped: TC-026 (`agent-ix/quire-rs#221`
-and `#394`, the refusal names nothing) and TC-091
-(`agent-ix/quire-rs#398`, a per-file bundle index makes a declaration
-ambiguous with itself).
+One row carries an explicit expected failure, naming the issue that owns it
+and not skipped: TC-026 (`agent-ix/quire-rs#221` and `#394`, the refusal
+names nothing). TC-091 passes: the engine collapses bundle-index entries that
+share a declaration id (`agent-ix/quire-rs#398`).
 
 Quire carries the
 lowerings and gates that used to need a conditional probe: the systems tables

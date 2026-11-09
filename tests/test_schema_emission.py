@@ -206,12 +206,9 @@ def test_the_lockfile_resolves_public_packages_from_npmjs():
         resolved = entry.get("resolved")
         if not resolved:
             continue
-        if path.endswith("@agent-ix/semantic-core"):
-            assert "npm.pkg.github.com" in resolved, resolved
-        else:
-            assert resolved.startswith(
-                "https://registry.npmjs.org/"
-            ), f"{path} -> {resolved}"
+        assert resolved.startswith(
+            "https://registry.npmjs.org/"
+        ), f"{path} -> {resolved}"
 
 
 @pytest.mark.trace("TC-071", "FR-002-AC-7")

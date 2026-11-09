@@ -351,7 +351,7 @@ def schema_registry():
         pytest.fail(
             "@agent-ix/semantic-core is not installed, so `$ref`s to the grammar "
             "cannot resolve. Run `make semantic-install` (FR-002-CON-4: `@agent-ix` "
-            "resolves from GitHub Packages)."
+            "resolves from npmjs)."
         )
     resources = []
     for path in sorted(SCHEMAS_DIR.glob("*.json")):
