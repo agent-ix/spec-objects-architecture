@@ -28,7 +28,7 @@ Turn two prose claims into runs, so each turns red the day its blocking issue is
 ## Subtasks
 
 - [x] **The Filament snapshot boundary.** Handed the ten reference-form values verbatim, `extract_filament_core` refuses each with `semantic.data-schema-unresolved-reference` and emits no node; handed the same schemas resolved, it refuses none. `agent-ix/filament-core-service#23` owns the resolution.
-- [x] **The bundle index keyed by declaration id.** Ten entries for thirteen files; a per-file index makes `ArtifactRecord` ambiguous with itself, which is the expected failure of `agent-ix/quire-rs#398`.
+- [x] **The bundle index keyed by declaration id.** Ten entries for thirteen files; a per-file index no longer makes `ArtifactRecord` ambiguous with itself (`agent-ix/quire-rs#398`, fixed in the engine).
 - [x] **Upstream issues filed** with the house shape: `agent-ix/quire-rs#397`, `#398`, `agent-ix/filament-core-service#25`, `agent-ix/spec-objects-business#6`.
 
 ## Deliverables

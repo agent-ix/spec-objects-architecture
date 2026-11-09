@@ -4,7 +4,7 @@
   "type": "object",
   "properties": {
     "mechanism": {
-      "$ref": "https://schemas.agent-ix.org/semantic-core/0.3.3/Identifier.json"
+      "$ref": "https://schemas.agent-ix.org/semantic-core/0.4.1/Identifier.json"
     },
     "conflict": {
       "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ConflictPolicy.json"

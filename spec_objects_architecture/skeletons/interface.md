@@ -23,6 +23,9 @@ object: interface
      - An interface's features are fields and operations (QSpec FR-152,
        FR-208), ordered as one sequence across both; Interface.json admits
        `fields` and `operations` and requires `featureOrder`.
+     - "## Associated Types" (H2, optional): one table `Type | Multiplicity`,
+       one row per associated type. It is the only source of the record key
+       `associated_types`; the `## Contract` fence is not (FR-008).
      - "## Features" (H2, required): one table with the header
        `Feature | Kind`, one row per declared field (`field`) and operation
        (`operation`). Row order is the feature order.
@@ -33,7 +36,6 @@ object: interface
 
 ```yaml
 name: QuantCodec
-associated_types: [Bytes]
 operations:
   - name: prepare_ip_query
     inputs: [query_vector, dimension]
@@ -52,6 +54,12 @@ invariants:
   - batch and single-candidate scores agree within quantization error
 dispatch: by codec_kind label recorded at index build
 ```
+
+## Associated Types
+
+| Type | Multiplicity |
+|---|---|
+| Bytes | 1..1 |
 
 ## Operations
 

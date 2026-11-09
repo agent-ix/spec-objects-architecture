@@ -17,6 +17,10 @@ object: external_contract
        one clause: this kind exists to pin guarantees.
      - "## Contract" (H2, required): the contract with the EXTERNAL system —
        what it provides/expects, invariants, versioning expectations.
+     - "## Provider" (H2, optional): one inline id naming the declaration
+       that provides the contract (FR-008).
+     - "## Versioning" (H2, optional): the change-signalling policy as a
+       one-row table `Scheme | Breaking Change Signal` (FR-008).
      - "## Endpoints" (H2, optional): concrete surface consumed/exposed.
      - "## Behavior" (H2, optional): interaction semantics, failure modes.
      - Boundary: contracts WITHIN the system are `interface` objects;
@@ -36,6 +40,16 @@ canonical isolation boundary; user status transitions follow the published
 lifecycle; breaking response-shape changes bump the internal API version
 header. The auth-service guarantees it never caches credential-validation
 verdicts beyond a single request.
+
+## Provider
+
+`identity_service`
+
+## Versioning
+
+| Scheme | Breaking Change Signal |
+|---|---|
+| header | internal API version header |
 
 ## Endpoints
 

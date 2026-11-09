@@ -351,7 +351,7 @@ def schema_registry():
         pytest.fail(
             "@agent-ix/semantic-core is not installed, so `$ref`s to the grammar "
             "cannot resolve. Run `make semantic-install` (FR-002-CON-4: `@agent-ix` "
-            "resolves from GitHub Packages)."
+            "resolves from npmjs)."
         )
     resources = []
     for path in sorted(SCHEMAS_DIR.glob("*.json")):
@@ -363,10 +363,30 @@ def schema_registry():
         resources.append((uri, Resource.from_contents(schema)))
     registry = Registry().with_resources(resources)
 
-    def validator_for(model: str):
+    def validator_for(model: str, core: bool = False):
+        """A validator for a module model, or for a semantic-core model when
+        `core` is set."""
         from jsonschema import Draft202012Validator
 
-        schema = json.loads((SCHEMAS_DIR / f"{model}.json").read_text())
+        if core:
+            schema = {"$ref": f"{SEMANTIC_CORE_BASE}{model}.json"}
+        else:
+            schema = json.loads((SCHEMAS_DIR / f"{model}.json").read_text())
         return Draft202012Validator(schema, registry=registry)
 
     return validator_for
+
+
+@pytest.fixture(scope="session")
+def schema_documents(schema_registry) -> dict[str, Any]:
+    """Every module and semantic-core schema keyed by `$id`: the
+    `schemaDocuments` an `extract_semantic` request carries so the engine can
+    read a record key's shape (quoin FR-121)."""
+    documents: dict[str, Any] = {}
+    for path in sorted(SCHEMAS_DIR.glob("*.json")):
+        schema = json.loads(path.read_text())
+        documents[schema["$id"]] = schema
+    for path in sorted(SEMANTIC_CORE_DIR.glob("*.json")):
+        schema = json.loads(path.read_text())
+        documents[schema.get("$id") or f"{SEMANTIC_CORE_BASE}{path.name}"] = schema
+    return documents

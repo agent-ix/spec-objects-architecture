@@ -82,13 +82,13 @@ ONE = {"lower": 1, "upper": 1, "ordered": False, "unique": False}
 RECORDS = {
     "part": {
         "owner": f"{PKG}Sys",
-        "declaredType": {"target": f"{PKG}Pump"},
+        "declaredType": {"target": {"kind": "SemanticId", "value": f"{PKG}Pump"}},
         "multiplicity": ONE,
     },
     "port": {
         "owner": f"{PKG}sys_pump",
         "direction": "out",
-        "interfaceType": {"target": f"{PKG}Flow"},
+        "interfaceType": {"target": {"kind": "SemanticId", "value": f"{PKG}Flow"}},
         "multiplicity": ONE,
     },
     "connection": {
@@ -180,7 +180,10 @@ def test_direction_enums_are_closed(schema_registry):
 def test_an_interface_may_declare_fields_only_or_operations_only(schema_registry):
     """QSpec #86 TC-197: interface `Flow` declares the field `Flow/rate`."""
     interface = schema_registry("Interface")
-    rate = {"name": "rate", "type": {"target": "Decimal"}}
+    rate = {
+        "name": "rate",
+        "type": {"target": {"kind": "KernelScalar", "value": "Decimal"}},
+    }
     call = {"name": "start", "params": []}
     assert (
         list(interface.iter_errors({"fields": [rate], "featureOrder": ["rate"]})) == []

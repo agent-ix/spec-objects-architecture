@@ -1,12 +1,11 @@
 """Role-distinctness tests for the ten architecture schemas (FR-004).
 
-Every record below is **hand-built**, not extracted. The extractor populates
-`fields`, `clauses`, and `operations` only (quire-rs FR-070/FR-071); the
-architecture keys these criteria exercise — `routes`, `delivery`, `carries`,
-`versioning`, `registration`, `stability`, `records`, `thresholds`,
-`associated_types`, `relations` — have no published Markdown mapping yet
-(`agent-ix/quoin#335`). These rows are therefore **schema evidence, not
-extraction evidence**, and say so.
+Every record below is **hand-built**, not extracted. These rows are therefore
+**schema evidence, not extraction evidence**, and say so. The extraction
+evidence for the record keys that Markdown can author (`routes`, `delivery`,
+`versioning`, `provider`, `exposes`, `registration`, `stability`, `records`,
+`endianness`, `thresholds`, `associated_types`, and the typed relation keys) is
+`test_record_sections.py` (FR-008).
 """
 
 from __future__ import annotations
@@ -37,7 +36,7 @@ CLAUSE = {"language": "ocl", "clauseId": "SomeInvariant"}
 # producer clamps both `false` on a singular multiplicity (`upper` at most
 # one). Every kernel field below is a singular `String`, so both are `false`.
 KERNEL = {
-    "target": "String",
+    "target": {"kind": "KernelScalar", "value": "String"},
     "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
 }
 FIELD = {"name": "a", "type": KERNEL}
@@ -169,8 +168,7 @@ def test_ui_component_admits_no_identity_prop(schema_registry):
 
 @pytest.mark.trace("TC-036", "FR-004-AC-7")
 def test_interface_requires_feature_order_and_forbids_routes(schema_registry):
-    """Hand-built: `associated_types` and `featureOrder` have no Markdown
-    mapping yet."""
+    """Hand-built schema evidence; the extracted `associated_types` is FR-008."""
     order = {"featureOrder": ["do_it"]}
     assert valid(schema_registry, "Interface", {"operations": [OP], **order})
     assert valid(
@@ -331,7 +329,10 @@ def test_an_unresolved_placeholder_target_is_a_semantic_id_and_a_bare_token_is_n
     placeholder = {
         "name": "a",
         "type": {
-            "target": "ix://agent-ix/spec-objects-architecture/unresolved/Mystery",
+            "target": {
+                "kind": "SemanticId",
+                "value": "ix://agent-ix/spec-objects-architecture/unresolved/Mystery",
+            },
             "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
         },
     }
@@ -339,7 +340,7 @@ def test_an_unresolved_placeholder_target_is_a_semantic_id_and_a_bare_token_is_n
     bare = {
         "name": "a",
         "type": {
-            "target": "Mystery",
+            "target": {"kind": "SemanticId", "value": "Mystery"},
             "multiplicity": {"lower": 1, "upper": 1, "ordered": False, "unique": False},
         },
     }
@@ -553,22 +554,30 @@ def test_a_schema_requires_a_key_only_where_a_required_locator_feeds_it():
 
 @pytest.mark.trace("TC-130", "FR-009-AC-1")
 @pytest.mark.parametrize(
-    ("kind", "heading"),
+    ("kind", "headings"),
     [
-        ("rate_limit", "Invariants"),
-        ("api_endpoint", "Operations"),
-        ("action", "Operations"),
-        ("extension_point", "Invariants"),
-        ("binary_format", "Invariants"),
+        ("rate_limit", ["Invariants"]),
+        ("api_endpoint", ["Operations", "Routes"]),
+        ("action", ["Operations"]),
+        ("extension_point", ["Invariants"]),
+        ("binary_format", ["Invariants"]),
+        ("external_contract", ["Invariants", "Operations"]),
     ],
 )
-def test_a_document_without_the_optional_section_validates(quire_engine, kind, heading):
+def test_a_document_without_the_optional_section_validates(
+    quire_engine, kind, headings
+):
     """The fix depends on the extractor omitting the key for an absent section
-    rather than emitting an empty array. `external_contract` is absent: its
-    guaranteed operation needs a `Post:` clause, so no document can both lack
-    `## Invariants` and satisfy it; its schema half is TC-037."""
+    rather than emitting an empty array. `external_contract` is cut of both
+    `## Invariants` and `## Operations`, the prose-`## Contract` shape: its
+    guaranteed operation needs a `Post:` clause declared under `## Invariants`,
+    so a document with only `## Invariants` cut cannot validate; its schema
+    half is TC-037. `api_endpoint` drops `## Routes` with `## Operations`,
+    since a route names an operation declared there."""
     text = (SKELETONS_DIR / f"{kind}.md").read_text()
-    cut = re.sub(rf"(?ms)^## {heading}\n.*?(?=^## |\Z)", "", text)
+    cut = text
+    for heading in headings:
+        cut = re.sub(rf"(?ms)^## {heading}\n.*?(?=^## |\Z)", "", cut)
     assert cut != text
     # Pre:/Post: lines name clauses of the cut section; drop them with it.
     cut = re.sub(r"(?m)^(Pre|Post):.*\n", "", cut)

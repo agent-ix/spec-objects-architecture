@@ -40,8 +40,9 @@ one declaration rather than two.
 
 ## Behavior
 
-- The `interface` `contract_yaml` fence SHALL lower to `OperationDecl[]` by the mapping: `operations[].name` to `OperationDecl.name`; `operations[].inputs[]` to `OperationDecl.params[]` (one `FieldDecl` per input, its `type` a `TypeRef`); `operations[].output` to `OperationDecl.returns`; `operations[].pre[]` and `operations[].post[]` to `OperationDecl.pre[]` and `OperationDecl.post[]` as `ClauseRef`s; `associated_types[]` to the record's `associated_types` key.
-- A `contract_yaml` key with no counterpart in `OperationDecl` (`semantics`, `dispatch`, `invariants` prose) SHALL remain documentation of the derived view.
+- The `interface` `contract_yaml` fence SHALL lower to `OperationDecl[]` by the mapping: `operations[].name` to `OperationDecl.name`; `operations[].inputs[]` to `OperationDecl.params[]` (one `FieldDecl` per input, its `type` a `TypeRef`); `operations[].output` to `OperationDecl.returns`; `operations[].pre[]` and `operations[].post[]` to `OperationDecl.pre[]` and `OperationDecl.post[]` as `ClauseRef`s.
+- The `contract_yaml` fence SHALL NOT be a source of the record's `associated_types` key: that key has one authored source, the `## Associated Types` table of [FR-008](./FR-008-record-key-sections.md).
+- A `contract_yaml` key with no counterpart in `OperationDecl` (`semantics`, `dispatch`, `associated_types`, `invariants` prose) SHALL remain documentation of the derived view.
 - The lowering SHALL NOT invent a record target for such a key, because that would put an unmodelled key in the record.
 - The `interface` skeleton SHALL author `## Operations` as the authority and `## Contract` as the derived view.
 - The `interface` skeleton's two sections SHALL declare the same operation names, the same param names per operation, and the same return type token where a return is declared.
@@ -52,7 +53,7 @@ one declaration rather than two.
 - Every `api_endpoint` operation param and return whose type is not a `KernelScalar` SHALL name a `data_schema` skeleton `title`, so that under the bundle index it resolves to `ix://agent-ix/spec-objects-architecture/type/<Title>`.
 - A `TypeRef` target this module cannot resolve SHALL surface as the engine's `semantic.unresolved-type` finding.
 - The module SHALL NOT drop such a target silently or rewrite it to a kernel scalar.
-- The module SHALL NOT implement the `contract_yaml` lowering inside the extraction engine: the engine-side mapping is `agent-ix/quoin#335` and its quire-rs successor. This requirement fixes the mapping and asserts the agreement of the two authored forms; a test that claimed the engine performed the lowering would claim evidence this module does not have.
+- The module SHALL NOT implement the `contract_yaml` lowering inside the extraction engine: the engine-side mapping is quoin FR-122, implemented by quire-rs FR-081. This requirement fixes the mapping and asserts the agreement of the two authored forms; a test that claimed the engine performed the lowering would claim evidence this module does not have.
 
 ## Constraints
 
@@ -75,5 +76,5 @@ one declaration rather than two.
 ## Dependencies
 
 - **Upstream**: [FR-004](./FR-004-role-schemas.md), [FR-005](./FR-005-executable-skeletons.md); quoin FR-072 (`ix://agent-ix/quoin/FR-072`)
-- **Upstream (mapping owner)**: `agent-ix/quoin#335` publishes the engine-side mapping for the keys beyond `Properties`, `Invariants`, and `Operations`
+- **Upstream (mapping owner)**: quoin FR-122 (`agent-ix/quoin#344`) publishes the mapping for the architecture record keys beyond `Properties`, `Invariants`, and `Operations`; [FR-008](./FR-008-record-key-sections.md) adopts it
 - **Downstream**: `agent-ix/quire-contract-ir#52` reads these mappings as the architecture frontend's fixture contract
