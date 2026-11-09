@@ -18,7 +18,10 @@ object: binary_format
        each with per-field name/offset/size/type (and endianness where it
        matters). This kind exists because JSON Schema has no offsets/
        strides/endianness vocabulary; use `data_schema` for genuinely
-       JSON-shaped data.
+       JSON-shaped data. The fence is the only source of the record keys
+       `records` and `endianness` (FR-008): a string `size` names one field
+       of exactly one record in the fence, and `format` and `magic` stay
+       documentation.
      - A binary layout declares bytes, not typed fields or calls:
        BinaryFormat.json forbids `fields` and `operations`, so there is
        neither a "## Properties" nor an "## Operations" section.

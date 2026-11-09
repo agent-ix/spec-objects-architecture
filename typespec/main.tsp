@@ -219,8 +219,9 @@ model StabilityPolicy {
 /**
  * One physical field of a binary record.
  *
- * A `size` naming an `Identifier` names a sibling field of the same record
- * whose value carries the length; that cross-reference is a reader rule.
+ * A `size` naming an `Identifier` names the one field of the same layout,
+ * in this record or another, whose value carries the length; that
+ * cross-reference is a reader rule.
  */
 model LayoutField {
   name: Identifier;

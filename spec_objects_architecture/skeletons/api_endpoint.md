@@ -13,10 +13,10 @@ object: api_endpoint
        line where the operation answers with a value, and optional
        `Pre:`/`Post:` lines naming clause ids declared in this artifact.
        ApiEndpoint.json requires at least one operation that returns.
-     - "## Endpoint" (H2, required): what the endpoint does and why, plus
-       the concrete method + path routes (multi-route surfaces list every
-       route here — there is no separate Routes section; format-walkthrough
-       decision #20).
+     - "## Endpoint" (H2, required): what the endpoint does and why.
+     - "## Routes" (H2, optional): the concrete routes as one table
+       `Method | Path | Operation`, one row per route. Each `Operation` cell
+       names an operation declared under "## Operations" (FR-008).
      - "## 2. API Contract" (H2, optional): request/response detail; the
        numbered heading text "2. API Contract" is matched verbatim.
      - An endpoint declares operations, not data: ApiEndpoint.json forbids
@@ -31,11 +31,13 @@ SHA-256 digest and persists the artifact to the store once the computed
 digest matches the declared digest. Mismatches are rejected before anything
 is written.
 
-Routes:
+## Routes
 
-- `POST /artifacts` — upload a new artifact (multipart body + digest field)
-- `GET /artifacts/{artifact_id}` — fetch artifact metadata by id
-- `GET /artifacts/{artifact_id}/content` — stream the stored artifact bytes
+| Method | Path | Operation |
+|---|---|---|
+| POST | /artifacts | upload_artifact |
+| GET | /artifacts/{artifact_id} | get_artifact |
+| GET | /artifacts/{artifact_id}/content | stream_artifact_content |
 
 ## 2. API Contract
 

@@ -23,7 +23,7 @@ semantic:
   - allocation
   imports: {}
   targets: [json-schema, markdown]
-  mappings: [typed-table, sysml-fence, ocl-clause, generalization]
+  mappings: [typed-table, sysml-fence, ocl-clause, generalization, relationships, record-sections]
   compatibility_posture: strict
   legacy_forms: warning
 nav:
@@ -89,13 +89,17 @@ object_types:
           path:
           - type
           required: true
-        # Format-walkthrough decision #20 (2026-06-11): `routes` dropped —
-        # `Endpoint` is the sole canonical anchor. Multi-route surfaces list routes
-        # inside the one Endpoint section.
+        # `Endpoint` stays the required prose anchor; the concrete routes are the
+        # optional `Routes` table below, which the `record-sections` mapping reads
+        # into the record key `routes` (FR-008).
         endpoint:
           from: section_body
           after_heading: Endpoint
           required: true
+        routes:
+          from: section_body
+          after_heading: Routes
+          required: false
         api_contract:
           from: section_body
           after_heading: 2. API Contract
@@ -147,6 +151,10 @@ object_types:
         properties:
           from: section_body
           after_heading: Properties
+          required: false
+        delivery:
+          from: section_body
+          after_heading: Delivery
           required: false
 - name: action
   roles: [externally-exposed]
@@ -244,6 +252,10 @@ object_types:
           from: section_body
           after_heading: Operations
           required: false
+        associated_types:
+          from: section_body
+          after_heading: Associated Types
+          required: false
         features:
           from: table_row
           under_section: Features
@@ -273,6 +285,14 @@ object_types:
           from: section_body
           after_heading: Contract
           required: true
+        provider:
+          from: section_body
+          after_heading: Provider
+          required: false
+        versioning:
+          from: section_body
+          after_heading: Versioning
+          required: false
         endpoints:
           from: section_body
           after_heading: Endpoints
@@ -307,6 +327,10 @@ object_types:
           from: section_body
           after_heading: Contract
           required: true
+        exposes:
+          from: section_body
+          after_heading: Exposes
+          required: false
         registration:
           from: section_body
           after_heading: Registration

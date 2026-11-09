@@ -54,6 +54,9 @@ share one authoritative definition of what the module activates against
   shipped under `spec_objects_architecture/schemas/`, the manifest `semantic`
   block with reference-form `data_schema`, and the skeletons rewritten as
   executable typed fixtures with negative counterparts.
+- The authored Markdown form of every optional record key, adopted from quoin
+  FR-122 (FR-008): the manifest names the `relationships` and `record-sections`
+  mapping tokens and the skeletons carry the sections.
 - The architecture-specific lowerings this module owns: `interface`
   `contract_yaml` to `OperationDecl[]`, the `data_schema` `schema_json` fence
   registering its record as a `TypeRef` target, and `api_endpoint` operation
@@ -72,20 +75,13 @@ share one authoritative definition of what the module activates against
   (Rust), `#22` (TypeScript) and `#23` (Python), and published only behind the
   promotion gate (`agent-ix/quoin#290`); the semantic-core language packages
   are `agent-ix/filament-core-data#11`. None is produced or faked here.
-- Extraction from Markdown of the eighteen keys this module declares but the
-  current extractor does not populate — `routes`, `requires`, `carries`,
-  `delivery`, `renders`, `triggers`, `associated_types`, `provider`,
-  `versioning`, `exposes`, `registration`, `stability`, `records`,
-  `endianness`, `serializes`, `thresholds`, `throttles`, and `relations`.
-  quoin FR-071/FR-072 define `Properties`, `Invariants` and `Operations`
-  only. `agent-ix/quoin#335` is the ticket that owns publishing the mapping
-  for keys beyond those three, but its body enumerates the
-  `spec-objects-business` keys and names that module as its downstream: the
-  architecture keys are named by no ticket today, and adding them to #335 is
-  the action this specification asks for rather than a claim that it already
-  covers them. The schemas declare all eighteen optional, so a record from
-  today's extractor validates and a future extractor can fill them without a
-  schema change.
+- The Markdown mapping and the extractor for the eighteen optional record keys
+  `routes`, `requires`, `carries`, `delivery`, `renders`, `triggers`,
+  `associated_types`, `provider`, `versioning`, `exposes`, `registration`,
+  `stability`, `records`, `endianness`, `serializes`, `thresholds`, `throttles`
+  and `relations`. quoin FR-121 and FR-122 (`agent-ix/quoin#344`, PLAT-196 and
+  PLAT-201) publish the mapping and `agent-ix/quire-rs` FR-081 implements it;
+  this module adopts the authored forms in FR-008.
 - Improving the diagnostic a bare `pattern: <regex>` earns:
   `agent-ix/quire-rs#397`. The reader accepts `pattern: /<regex>/` — the
   skeletons use that form — but answers `semantic.unknown-constraint-keyword`
@@ -157,7 +153,8 @@ the manifest against `filament-core`; FR-002 emits the schemas; FR-003
 declares the semantic contract in the manifest; FR-004 fixes each type's
 role-distinct schema; FR-005 makes the skeletons executable fixtures; FR-006
 fixes the three architecture-specific lowerings; FR-007 declares the systems-model
-kinds; FR-009 keeps a declaration key optional where its source section is. Integration tests in `integration/` verify the
+kinds; FR-008 authors the optional record keys as Markdown sections; FR-009 keeps a
+declaration key optional where its source section is. Integration tests in `integration/` verify the
 activation and Quoin-install boundaries; the third external boundary, the
 Quire engine (loader, extraction, record surface), has no IT artifact of its
 own — the FR-003, FR-005 and FR-006 test harness is this module's Quire
@@ -174,7 +171,10 @@ Matrix in `tests.md` records every criterion's test case.
   scalars, JSON Schema projection, lowering) and ADR-0005 (TypeSpec source).
 - `agent-ix/quoin` FR-070..FR-075 (semantic-module contract, mappings,
   `data_schema` references, legacy forms, package manifests).
+- `agent-ix/quoin` FR-121 and FR-122 (record-key sections and the architecture
+  keys).
 - `agent-ix/quire-rs` FR-069..FR-072 (contract at load, typed Properties,
-  clauses and operations, extraction surface).
+  clauses and operations, extraction surface) and FR-081 (record-sections
+  extraction).
 - `agent-ix/spec-objects-business` issue #4, the first module to adopt this
   contract and the shape this module follows.

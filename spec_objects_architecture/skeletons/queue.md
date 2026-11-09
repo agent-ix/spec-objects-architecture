@@ -13,6 +13,8 @@ object: queue
      - "## Message Format" (H2, required): MUST contain a fenced ```json code
        block holding an example message payload. It is a derived, human-facing
        view of the same declarations (FR-006): the same key set as the table.
+     - "## Delivery" (H2, optional): the delivery policy as a one-row table
+       `Semantics | Ordering | Retention` (FR-008).
      - A queue carries messages, it does not expose calls: Queue.json forbids
        `operations`, so there is no "## Operations" section.
      - Keep headings unique per level. -->
@@ -27,6 +29,12 @@ object: queue
 | digest | String | 1..1 | pattern: /^[a-f0-9]{64}$/ |
 | size_bytes | Integer | 1..1 | min: 0 |
 | uploaded_at | Timestamp | 1..1 | |
+
+## Delivery
+
+| Semantics | Ordering | Retention |
+|---|---|---|
+| at_least_once | partition | 7d |
 
 ## Message Format
 

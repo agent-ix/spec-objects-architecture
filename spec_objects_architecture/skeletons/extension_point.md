@@ -16,10 +16,13 @@ object: extension_point
        clause — the stability guarantee implementers rely on.
      - "## Contract" (H2, required): the interface the extension point
        exposes to plug-ins (name the `interface` object it publishes).
-     - "## Registration" (H2, optional): how implementations register and
-       are discovered/selected.
-     - "## Stability" (H2, optional): compatibility window, versioning and
-       deprecation guarantees offered to third-party implementers.
+     - "## Exposes" (H2, optional): one inline id naming the `interface`
+       the extension point publishes (FR-008).
+     - "## Registration" (H2, optional): how implementations register, as a
+       one-row table `Mechanism | Conflict | Discovery` (FR-008).
+     - "## Stability" (H2, optional): the compatibility guarantee offered to
+       third-party implementers, as a one-row table
+       `Compatibility | Deprecation Window` (FR-008).
      - Use this kind only when pluggability itself needs to be a node
        (external authors, compatibility guarantees); an internal contract
        with known implementations is just an `interface` plus
@@ -32,23 +35,25 @@ object: extension_point
 ## Contract
 
 Modules contribute object renderers through the `RendererRegistry` interface
-(interface_002): per `object_type_name`, a module registers the React
+(`quant_codec` in this skeleton set): per `object_type_name`, a module registers the React
 component and configuration this library needs to render that type — with no
 modification to the host library's source.
 
+## Exposes
+
+`quant_codec`
+
 ## Registration
 
-- Registration happens at module init via `registry.register(typeName, entry)`.
-- Last registration per `object_type_name` wins; duplicate registrations log a
-  warning with both module names.
-- Unregistered types fall back to the generic payload renderer.
+| Mechanism | Conflict | Discovery |
+|---|---|---|
+| module_init | last_wins | unregistered types fall back to the generic payload renderer |
 
 ## Stability
 
-- The registry entry shape is semver-stable within a major version; new
-  optional fields may be added in minors.
-- Deprecated fields keep working for one major version and log a deprecation
-  warning naming the replacement.
+| Compatibility | Deprecation Window |
+|---|---|
+| major | one major version |
 
 ## Invariants
 

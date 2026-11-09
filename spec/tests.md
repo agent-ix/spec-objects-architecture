@@ -17,6 +17,8 @@ relationships:
     type: covers
   - target: "ix://agent-ix/spec-objects-architecture/FR-007"
     type: covers
+  - target: "ix://agent-ix/spec-objects-architecture/FR-008"
+    type: covers
 ---
 # Test Matrix
 
@@ -72,6 +74,7 @@ skipped.
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
+| FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | ✅ |
 
 ### Integration Test Coverage
 
@@ -163,6 +166,13 @@ skipped.
 | TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
 | TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
 | TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
+| TC-120 | `semantic.mappings` names `relationships` and `record-sections` | Unit | P0 | FR-008-AC-1 | ✅ |
+| TC-121 | Each skeleton that authors a record key extracts exactly that key under the manifest's mappings, `available`, valid against its model, with zero errors; the values are the ones the skeleton states | Integration | P0 | FR-008-AC-2 | ✅ |
+| TC-122 | A route naming an undeclared operation is refused as `route-operation-unknown` | Integration | P1 | FR-008-AC-3 | ✅ |
+| TC-123 | `associated_types` comes from the `## Associated Types` table and never from the `## Contract` fence | Integration | P1 | FR-008-AC-4 | ✅ |
+| TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5 | ✅ |
+| TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6 | ✅ |
+| TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 | ✅ |
 
 ## Test Environment
 
@@ -199,13 +209,12 @@ TC-070 write the operator's global `quoin module` store, so they run only
 under `QUOIN_INSTALL_ROUNDTRIP=1`; each restores the prior entry's source, ref and
 sha.
 
-Rows over the record keys the extractor does not populate (`routes`,
-`requires`, `carries`, `delivery`, `renders`, `triggers`, `associated_types`,
-`provider`, `versioning`, `exposes`, `registration`, `stability`, `records`,
-`endianness`, `serializes`, `thresholds`, `throttles`, `relations`) are
-verified against hand-built records, not extracted ones — TC-033, TC-036,
-TC-038, TC-039, TC-040, TC-043 in particular — and their tests say so; they are
-schema evidence, not extraction evidence.
+Rows over the record keys that Markdown authors (TC-120..TC-126) run the
+engine's `record-sections` mapping, which quoin FR-121 and FR-122 specify and
+`agent-ix/quire-rs` FR-081 implements, so the `quire` dev dependency must carry
+that extractor. TC-033, TC-036, TC-038, TC-039, TC-040 and TC-043 stay
+verified against hand-built records and say so: they are schema evidence, not
+extraction evidence.
 
 ## Coverage Gaps
 

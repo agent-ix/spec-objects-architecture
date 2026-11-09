@@ -1,12 +1,11 @@
 """Role-distinctness tests for the ten architecture schemas (FR-004).
 
-Every record below is **hand-built**, not extracted. The extractor populates
-`fields`, `clauses`, and `operations` only (quire-rs FR-070/FR-071); the
-architecture keys these criteria exercise — `routes`, `delivery`, `carries`,
-`versioning`, `registration`, `stability`, `records`, `thresholds`,
-`associated_types`, `relations` — have no published Markdown mapping yet
-(`agent-ix/quoin#335`). These rows are therefore **schema evidence, not
-extraction evidence**, and say so.
+Every record below is **hand-built**, not extracted. These rows are therefore
+**schema evidence, not extraction evidence**, and say so. The extraction
+evidence for the record keys that Markdown can author (`routes`, `delivery`,
+`versioning`, `provider`, `exposes`, `registration`, `stability`, `records`,
+`endianness`, `thresholds`, `associated_types`, and the typed relation keys) is
+`test_record_sections.py` (FR-008).
 """
 
 from __future__ import annotations
@@ -169,8 +168,7 @@ def test_ui_component_admits_no_identity_prop(schema_registry):
 
 @pytest.mark.trace("TC-036", "FR-004-AC-7")
 def test_interface_requires_feature_order_and_forbids_routes(schema_registry):
-    """Hand-built: `associated_types` and `featureOrder` have no Markdown
-    mapping yet."""
+    """Hand-built schema evidence; the extracted `associated_types` is FR-008."""
     order = {"featureOrder": ["do_it"]}
     assert valid(schema_registry, "Interface", {"operations": [OP], **order})
     assert valid(
