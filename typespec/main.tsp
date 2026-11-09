@@ -280,7 +280,7 @@ model Threshold {
 model ApiEndpoint {
   @minItems(1)
   @contains(ReturningOperation)
-  operations: OperationDecl[];
+  operations?: OperationDecl[];
 
   routes?: RouteDecl[];
   clauses?: ClauseRef[];
@@ -295,7 +295,7 @@ model ApiEndpoint {
  */
 model DataSchema {
   @minItems(1)
-  fields: FieldDecl[];
+  fields?: FieldDecl[];
 
   clauses?: ClauseRef[];
   relations?: RelationDecl[];
@@ -311,7 +311,7 @@ model DataSchema {
 model Queue {
   @minItems(1)
   @contains(IdentityField)
-  fields: FieldDecl[];
+  fields?: FieldDecl[];
 
   delivery?: DeliveryPolicy;
   carries?: SemanticId[];
@@ -326,7 +326,7 @@ model Queue {
 model Action {
   @minItems(1)
   @maxItems(1)
-  operations: OperationDecl[];
+  operations?: OperationDecl[];
 
   clauses?: ClauseRef[];
   relations?: RelationDecl[];
@@ -343,7 +343,7 @@ model UiComponent {
   @contains(IdentityField)
   @minContains(0)
   @maxContains(0)
-  fields: FieldDecl[];
+  fields?: FieldDecl[];
 
   operations?: OperationDecl[];
   clauses?: ClauseRef[];
@@ -376,10 +376,10 @@ model Interface {
 model ExternalContract {
   @minItems(1)
   @contains(GuaranteedOperation)
-  operations: OperationDecl[];
+  operations?: OperationDecl[];
 
   @minItems(1)
-  clauses: ClauseRef[];
+  clauses?: ClauseRef[];
 
   provider?: SemanticId;
   versioning?: VersioningPolicy;
@@ -394,10 +394,10 @@ model ExternalContract {
  */
 model ExtensionPoint {
   @minItems(1)
-  operations: OperationDecl[];
+  operations?: OperationDecl[];
 
   @minItems(1)
-  clauses: ClauseRef[];
+  clauses?: ClauseRef[];
 
   exposes?: SemanticId;
   registration?: RegistrationPolicy;
@@ -412,7 +412,7 @@ model ExtensionPoint {
  */
 model BinaryFormat {
   @minItems(1)
-  clauses: ClauseRef[];
+  clauses?: ClauseRef[];
 
   records?: RecordLayout[];
   endianness?: Endianness;
@@ -427,7 +427,7 @@ model BinaryFormat {
  */
 model RateLimit {
   @minItems(1)
-  clauses: ClauseRef[];
+  clauses?: ClauseRef[];
 
   thresholds?: Threshold[];
   throttles?: SemanticId[];

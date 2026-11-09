@@ -33,10 +33,6 @@
       }
     }
   },
-  "required": [
-    "operations",
-    "clauses"
-  ],
   "unevaluatedProperties": {
     "not": {}
   },

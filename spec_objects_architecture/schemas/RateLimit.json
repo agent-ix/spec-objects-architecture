@@ -23,9 +23,6 @@
       }
     }
   },
-  "required": [
-    "clauses"
-  ],
   "unevaluatedProperties": {
     "not": {}
   },
