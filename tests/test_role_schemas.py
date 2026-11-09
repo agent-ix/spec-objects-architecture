@@ -571,10 +571,9 @@ def test_a_document_without_the_optional_section_validates(
     rather than emitting an empty array. `external_contract` is cut of both
     `## Invariants` and `## Operations`, the prose-`## Contract` shape: its
     guaranteed operation needs a `Post:` clause declared under `## Invariants`,
-    so a document with only `## Invariants` cut cannot validate. `api_endpoint`
-    drops `## Routes` with `## Operations`, since a route names an operation
-    declared there; its schema
-    half is TC-037."""
+    so a document with only `## Invariants` cut cannot validate; its schema
+    half is TC-037. `api_endpoint` drops `## Routes` with `## Operations`,
+    since a route names an operation declared there."""
     text = (SKELETONS_DIR / f"{kind}.md").read_text()
     cut = text
     for heading in headings:

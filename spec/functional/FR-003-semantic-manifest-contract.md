@@ -47,7 +47,7 @@ meaning.
 - If Quoin or Quire rejects the manifest, then this module SHALL correct its own manifest or schemas rather than relax the contract keys or the `$id` rules to make a consumer accept them.
 - An object artifact's frontmatter `id` SHALL match `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`: it starts with a letter and permits nonempty hyphen-separated segments. This admits established artifact ids such as `IF-001` without renaming cross-repository references. Semantic type and member names remain governed by the core `Identifier` grammar.
 - `typespec/main.tsp` SHALL state the pattern once, as the scalar `ObjectId`; the emitted `ObjectFrontmatter.json` is the frontmatter record every object type shares, requiring `id` (an `ObjectId`), `title` and `type`.
-- Every object type's `id` locator SHALL be the shared `frontmatter_field` locator carrying `regex: ^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$` and `required: true`, so an empty, leading, trailing or doubled hyphen segment yields no value and Quire refuses the artifact with its required `id` missing.
+- Every object type's `id` locator SHALL be the shared `frontmatter_field` locator carrying `regex: ^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$` and `required: true`, so an empty, leading, trailing or doubled hyphen segment yields no value and Quire refuses the artifact because its `id` does not match the pattern.
 
 ## Constraints
 
@@ -64,7 +64,7 @@ meaning.
 | FR-003-AC-5 | `quoin module install path:<module dir>` exits zero and `quoin module` lists `spec-objects-architecture`; the previously installed entry is restored afterwards. | Demonstration |
 | FR-003-AC-6 | A manifest copy whose `semantic` block gains a key `foo` is refused by Quire's loader naming `foo`. | Test |
 | FR-003-AC-8 | Handed this manifest's fourteen reference-form `data_schema` values verbatim, `extract_filament_core` answers one `semantic.data-schema-unresolved-reference` at error severity per exported object type; handed the same schemas resolved into the snapshot, it answers none. | Test |
-| FR-003-AC-9 | `ObjectId.json` carries the pattern `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`, `ObjectFrontmatter.json` requires `id` (by `$ref` to it), `title` and `type`, and every object type's `id` locator carries the equivalent capturing regex and `required: true`; every shipped skeleton and fixture frontmatter validates against `ObjectFrontmatter.json`; the same skeleton validates with underscore and hyphenated ids, while a doubled hyphen is refused with its required `id` missing. | Test |
+| FR-003-AC-9 | `ObjectId.json` carries the pattern `^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$`, `ObjectFrontmatter.json` requires `id` (by `$ref` to it), `title` and `type`, and every object type's `id` locator carries the equivalent capturing regex and `required: true`; every shipped skeleton and fixture frontmatter validates against `ObjectFrontmatter.json`; the same skeleton validates with underscore and hyphenated ids, while a doubled hyphen is refused because its `id` does not match the pattern. | Test |
 
 ## Dependencies
 
