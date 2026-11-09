@@ -45,7 +45,7 @@ operation-shaped types are separated by keys (`routes`, `registration`,
 
 ## Behavior
 
-Each model SHALL enforce its row of the following table; every item rule on `fields`, `operations` or `clauses` applies only when that key is present; a key is required only where the type's manifest locator for it is required ([FR-009](./FR-009-optional-sections-optional-keys.md)), so an item rule applies to a key whenever it is present. "Identity field"
+Each model SHALL enforce its row of the following table; every item rule on `fields`, `operations` or `clauses` applies only when that key is present; a key is required only where the type's manifest locator for it is required ([FR-009](./FR-009-optional-sections-optional-keys.md)). "Identity field"
 means a `FieldDecl` with `identity: true`; "returning operation" an
 `OperationDecl` carrying `returns`; "guaranteed operation" an `OperationDecl`
 whose `post` holds at least one `ClauseRef`. All three readings are

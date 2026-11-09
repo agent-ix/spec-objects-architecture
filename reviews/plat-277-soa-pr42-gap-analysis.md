@@ -49,3 +49,15 @@ hand-built `{}` record, and no committed test exercises a document.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | medium | No engine-level test covers FR-009-AC-1. The F1 failure is a *document* missing `## Invariants`, `## Operations` or `## Properties` being refused, but TC-130 only checks a hand-built `{}` against the JSON schema. The fix works only because the extractor *omits* the key for an absent section; emitting `clauses: []` would still fail `minItems`. No test pins that behaviour, and the one document that exercised it (`rate_limit-no-invariants.md`) was deleted rather than turned into a positive case. Add a test that runs `validate_document` on a rate_limit document with no `## Invariants` and on an api_endpoint document with no `## Operations`, and asserts zero errors. I reproduced this by hand: zero errors on the PR, `clauses is a required property` on main. | tests/test_role_schemas.py:510-521, spec/functional/FR-009-optional-sections-optional-keys.md | correct-requirement-no-evidence |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (0576d80). `test_a_document_without_the_optional_section_validates` (TC-130) cuts the section from a skeleton and runs `validate_document`. On `origin/main` schemas, the rate_limit, api_endpoint, action and binary_format cases fail `record-invalid`; on the PR they give zero errors. The external_contract and extension_point cases are vacuous (FND-002). |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-002 | medium | Two of the six cases in the new document test are vacuous. Cutting `## Invariants` from the external_contract and extension_point skeletons leaves `Post:` lines naming undeclared clauses. Those documents then fail `semantic.dangling-clause-ref` on both `origin/main` and the PR schemas, and no `record-invalid` is raised either way. The test only filters for `record-invalid`, so these cases pass on main too. Despite the test's name, the documents do not validate. Fix: also strip the `Pre:`/`Post:` lines (or use a fixture without them) and assert zero errors, so each case fails on the main schemas. | tests/test_role_schemas.py:555-576 | correct-requirement-no-evidence |

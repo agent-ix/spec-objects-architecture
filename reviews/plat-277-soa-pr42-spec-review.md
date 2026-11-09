@@ -50,3 +50,18 @@ types that "require" `operations` and `clauses`.
 | FND-002 | medium | FR-005 Behavior still says "Each skeleton whose type requires `operations` (...)" and "Each skeleton whose type requires `clauses` (...)". After FR-009 no type requires either key, so the condition matches nothing and only the parenthesised lists keep the rule meaningful. That contradicts FR-009 Outputs. Fix: reword to "whose type carries an item rule on `operations`" (or `clauses`), or name the types outright. | FR-005-executable-skeletons.md:54, FR-005-executable-skeletons.md:57 | wrong-requirement |
 | FND-003 | low | In the FR-004 table, nine rows now read "Required keys: none (FR-009)", but `operations`, `fields` and `clauses` were not added to the Optional keys column, so each of those keys is in neither column and appears only in Item rules. FR-004-AC-1 also still says "`BinaryFormat` and `RateLimit` share a required set", when nine types now share the empty set. | FR-004 Behavior table, FR-004-AC-1 | wrong-requirement |
 | FND-004 | low | Value test: hand-kept counts and ranges are ceremony. "at least the nine cases" (FR-005-AC-5), the TC-054 title, the test name `..._named_nine_...`, the comment "six of the nine", and the tests.md coverage ranges (`FR-004-CON-1, FR-004-CON-3`) all had to be edited by hand for one fixture removal. The `NEGATIVE_FIXTURES` tuple already pins the set, so drop the numbers from the AC, TC title, test name and comment. | FR-005-AC-5, spec/tests.md TC-054, tests/test_skeletons_semantic.py:202,226,257 | wrong-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (0576d80). FR-009 Inputs now gives the mapping: `operations` feeds `operations`, `properties` feeds `fields`, `invariants` feeds `clauses`, and `features` feeds `featureOrder` (required). `api_contract` is gone. CON-1 and AC-3 are reworded to refer to "the manifest locator that feeds it". |
+| FND-002 | fixed | Round 1 (0576d80). FR-005 Behavior now reads "whose type declares `operations`" and "declares `clauses`", and the `fields` bullet matches. |
+| FND-003 | fixed | Round 1 (0576d80). The FR-004 table lists `operations`, `fields` and `clauses` under Optional keys. FR-004-AC-1 now reads "the types that require no key share an empty required set". |
+| FND-004 | fixed | Round 1 (0576d80). The counts are gone: FR-005-AC-5 reads "at least the cases listed", and the TC-041/TC-054 titles, the test name `..._named_set_...` and the "most surface" comment no longer give a number. |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-005 | low | The FR-004 Behavior lead sentence now says the same rule twice: "every item rule on `fields`, `operations` or `clauses` applies only when that key is present; a key is required only where ...; so an item rule applies to a key whenever it is present". One of the two item-rule clauses should be dropped. | FR-004 Behavior lead sentence | wrong-requirement |

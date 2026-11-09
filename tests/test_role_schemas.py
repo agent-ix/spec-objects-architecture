@@ -558,19 +558,20 @@ def test_a_schema_requires_a_key_only_where_a_required_locator_feeds_it():
         ("rate_limit", "Invariants"),
         ("api_endpoint", "Operations"),
         ("action", "Operations"),
-        ("external_contract", "Invariants"),
         ("extension_point", "Invariants"),
         ("binary_format", "Invariants"),
     ],
 )
 def test_a_document_without_the_optional_section_validates(quire_engine, kind, heading):
     """The fix depends on the extractor omitting the key for an absent section
-    rather than emitting an empty array."""
+    rather than emitting an empty array. `external_contract` is absent: its
+    guaranteed operation needs a `Post:` clause, so no document can both lack
+    `## Invariants` and satisfy it; its schema half is TC-037."""
     text = (SKELETONS_DIR / f"{kind}.md").read_text()
     cut = re.sub(rf"(?ms)^## {heading}\n.*?(?=^## |\Z)", "", text)
     assert cut != text
+    # Pre:/Post: lines name clauses of the cut section; drop them with it.
+    cut = re.sub(r"(?m)^(Pre|Post):.*\n", "", cut)
     result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), cut)
-    refusals = [
-        e["message"] for e in result["errors"] if "record-invalid" in e["message"]
-    ]
-    assert not refusals, refusals
+    assert result["is_valid"], [e["message"] for e in result["errors"]]
+    assert not result["errors"], [e["message"] for e in result["errors"]]
