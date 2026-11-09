@@ -557,7 +557,7 @@ def test_a_schema_requires_a_key_only_where_a_required_locator_feeds_it():
     ("kind", "headings"),
     [
         ("rate_limit", ["Invariants"]),
-        ("api_endpoint", ["Operations"]),
+        ("api_endpoint", ["Operations", "Routes"]),
         ("action", ["Operations"]),
         ("extension_point", ["Invariants"]),
         ("binary_format", ["Invariants"]),
@@ -571,7 +571,9 @@ def test_a_document_without_the_optional_section_validates(
     rather than emitting an empty array. `external_contract` is cut of both
     `## Invariants` and `## Operations`, the prose-`## Contract` shape: its
     guaranteed operation needs a `Post:` clause declared under `## Invariants`,
-    so a document with only `## Invariants` cut cannot validate; its schema
+    so a document with only `## Invariants` cut cannot validate. `api_endpoint`
+    drops `## Routes` with `## Operations`, since a route names an operation
+    declared there; its schema
     half is TC-037."""
     text = (SKELETONS_DIR / f"{kind}.md").read_text()
     cut = text
