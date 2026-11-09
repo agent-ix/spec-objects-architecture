@@ -55,9 +55,16 @@ hand-built `{}` record, and no committed test exercises a document.
 | FND | outcome | reason |
 |---|---|---|
 | FND-001 | fixed | Round 1 (0576d80). `test_a_document_without_the_optional_section_validates` (TC-130) cuts the section from a skeleton and runs `validate_document`. On `origin/main` schemas, the rate_limit, api_endpoint, action and binary_format cases fail `record-invalid`; on the PR they give zero errors. The external_contract and extension_point cases are vacuous (FND-002). |
+| FND-002 | fixed | Round 2 (0693a8f). The test strips `Pre:`/`Post:` and asserts `is_valid` with zero errors. I re-ran the five cases (rate_limit, api_endpoint, action, extension_point, binary_format): each fails `record-invalid` on `origin/main` schemas and validates with 0 errors on the PR. Dropping external_contract when only `## Invariants` is cut is correct: a guaranteed operation needs a `Post:` clause, and that clause must be declared under `## Invariants` (FND-003 covers the remaining case). |
 
 ## New findings (disposition pass 1)
 
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-002 | medium | Two of the six cases in the new document test are vacuous. Cutting `## Invariants` from the external_contract and extension_point skeletons leaves `Post:` lines naming undeclared clauses. Those documents then fail `semantic.dangling-clause-ref` on both `origin/main` and the PR schemas, and no `record-invalid` is raised either way. The test only filters for `record-invalid`, so these cases pass on main too. Despite the test's name, the documents do not validate. Fix: also strip the `Pre:`/`Post:` lines (or use a fixture without them) and assert zero errors, so each case fails on the main schemas. | tests/test_role_schemas.py:555-576 | correct-requirement-no-evidence |
+
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-003 | low | The docstring's reason for dropping external_contract ("no document can both lack `## Invariants` and satisfy it") is too broad. A document that lacks both `## Invariants` and `## Operations`, which is the prose-`## Contract` shape the corpus measurement found, validates with 0 errors on the PR and fails `operations is a required property` on `origin/main`. That case can be tested, and it is the external_contract half of F1. Add `("external_contract", ["Invariants", "Operations"])` and correct the docstring. | tests/test_role_schemas.py:555-577 | correct-requirement-no-evidence |

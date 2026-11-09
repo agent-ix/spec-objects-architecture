@@ -59,6 +59,7 @@ types that "require" `operations` and `clauses`.
 | FND-002 | fixed | Round 1 (0576d80). FR-005 Behavior now reads "whose type declares `operations`" and "declares `clauses`", and the `fields` bullet matches. |
 | FND-003 | fixed | Round 1 (0576d80). The FR-004 table lists `operations`, `fields` and `clauses` under Optional keys. FR-004-AC-1 now reads "the types that require no key share an empty required set". |
 | FND-004 | fixed | Round 1 (0576d80). The counts are gone: FR-005-AC-5 reads "at least the cases listed", and the TC-041/TC-054 titles, the test name `..._named_set_...` and the "most surface" comment no longer give a number. |
+| FND-005 | fixed | Round 2 (0693a8f). The trailing "so an item rule applies to a key whenever it is present" is removed, and the rule is now stated once. |
 
 ## New findings (disposition pass 1)
 
