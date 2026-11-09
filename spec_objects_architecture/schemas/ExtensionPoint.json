@@ -27,10 +27,6 @@
       "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/StabilityPolicy.json"
     }
   },
-  "required": [
-    "operations",
-    "clauses"
-  ],
   "unevaluatedProperties": {
     "not": {}
   },

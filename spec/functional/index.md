@@ -14,3 +14,4 @@ description: "Index of artifacts in this directory."
 * [FR-005: Make every skeleton an executable typed fixture](./FR-005-executable-skeletons.md)
 * [FR-006: Fix the three architecture-specific lowerings the module owns](./FR-006-architecture-lowerings.md)
 * [FR-007: Declare the systems-model kinds as object types with construct declarations](./FR-007-systems-model-kinds.md)
+* [FR-009: Require a declaration key only when its source section is required](./FR-009-optional-sections-optional-keys.md)

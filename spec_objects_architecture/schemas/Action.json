@@ -30,9 +30,6 @@
       }
     }
   },
-  "required": [
-    "operations"
-  ],
   "unevaluatedProperties": {
     "not": {}
   },

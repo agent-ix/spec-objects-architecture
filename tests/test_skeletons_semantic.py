@@ -197,7 +197,7 @@ def test_the_item_rule_bearing_skeletons_carry_the_operations_their_schemas_dema
     assert demand(record), (name, record["operations"])
 
 
-#: The ten cases FR-005 Behavior names, pinned by file so that deleting one and
+#: The cases FR-005 Behavior names, pinned by file so that deleting one and
 #: duplicating another cannot keep TC-054 green.
 NEGATIVE_FIXTURES = (
     "api_endpoint-no-returning-operation.md",
@@ -205,8 +205,7 @@ NEGATIVE_FIXTURES = (
     "queue-no-identity-row.md",
     "action-two-operations.md",
     "ui_component-identity-row.md",
-    "external_contract-no-invariants.md",
-    "rate_limit-no-invariants.md",
+    "external_contract-no-guaranteed-operation.md",
     "properties-both-forms.md",
     "operation-dangling-post-clause.md",
     "type-token-not-identifier.md",
@@ -224,7 +223,7 @@ DANGLING_POST_FIXTURE = "operation-dangling-post-clause.md"
 
 
 @pytest.mark.trace("TC-054", "FR-005-AC-5")
-def test_the_negative_fixture_set_is_the_named_ten_covering_every_code():
+def test_the_negative_fixture_set_is_the_named_set_covering_every_code():
     fixtures = sorted(NEGATIVE_DIR.glob("*.md"))
     names = {p.name for p in fixtures}
     assert set(NEGATIVE_FIXTURES) <= names, set(NEGATIVE_FIXTURES) - names
@@ -255,7 +254,7 @@ def test_every_negative_fixture_fails_for_its_own_reason(quire_engine, name):
     messages = [e["message"] for e in result["errors"]]
     assert any(front["expect"] in m for m in messages), (path.name, messages)
     # The fixture must fail for its own reason, not merely with its code:
-    # seven of the ten surface as `semantic.record-invalid`.
+    # most surface as `semantic.record-invalid`.
     hit = next(m for m in messages if front["expect"] in m)
     assert len(hit) > len(front["expect"]), f"{path.name}: the error carries no detail"
 

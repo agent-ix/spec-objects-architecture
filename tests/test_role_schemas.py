@@ -12,16 +12,21 @@ extraction evidence**, and say so.
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
+import yaml
 
 from tests.conftest import (
     FIXTURES_DIR,
+    MANIFEST_PATH,
     MODEL_OF,
     OBJECT_TYPES,
+    PACKAGE_ROOT,
     PROFILE_KEYS,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
+    SKELETONS_DIR,
     semantic_target_value,
 )
 
@@ -197,9 +202,8 @@ def test_external_contract_requires_a_clause_and_a_guaranteed_operation(
         "ExternalContract",
         {"operations": [GUARANTEED_OP], "clauses": [CLAUSE]},
     )
-    assert not valid(
-        schema_registry, "ExternalContract", {"operations": [GUARANTEED_OP]}
-    )
+    # FR-009: the clause set is optional, a guaranteed operation alone is valid.
+    assert valid(schema_registry, "ExternalContract", {"operations": [GUARANTEED_OP]})
     assert not valid(
         schema_registry, "ExternalContract", {"operations": [OP], "clauses": [CLAUSE]}
     )
@@ -226,7 +230,7 @@ def test_extension_point_requires_an_operation_and_a_stability_clause(schema_reg
             "stability": {"compatibility": "major", "deprecation_window": "one major"},
         },
     )
-    assert not valid(schema_registry, "ExtensionPoint", {"operations": [OP]})
+    assert valid(schema_registry, "ExtensionPoint", {"operations": [OP]})
     assert not valid(
         schema_registry,
         "ExtensionPoint",
@@ -281,10 +285,14 @@ def test_rate_limit_requires_a_clause_and_a_scoped_threshold(schema_registry):
     )
 
 
-@pytest.mark.trace("TC-041", "FR-004-AC-12", "FR-004-CON-2")
-def test_the_empty_record_fails_every_one_of_the_ten_types(schema_registry):
+@pytest.mark.trace("TC-041", "FR-004-AC-12")
+def test_the_empty_record_fails_only_the_types_with_a_required_key(schema_registry):
+    # FR-009: a type whose manifest locators are all optional for its record
+    # keys requires none; only `Interface` still requires `featureOrder`.
     for model in MODELS:
-        assert not valid(schema_registry, model, {}), f"{model} accepted `{{}}`"
+        assert valid(schema_registry, model, {}) == (
+            model != "Interface"
+        ), f"{model} on `{{}}`"
 
 
 @pytest.mark.trace("TC-042", "FR-004-AC-13")
@@ -404,7 +412,9 @@ def test_an_api_endpoint_and_a_rate_limit_record_are_distinguishable_by_schema_a
     assert valid(schema_registry, "ApiEndpoint", endpoint)
     assert not valid(schema_registry, "RateLimit", endpoint)
     assert valid(schema_registry, "RateLimit", limit)
-    assert not valid(schema_registry, "ApiEndpoint", limit)
+    assert not valid(
+        schema_registry, "ApiEndpoint", {"clauses": [CLAUSE], "thresholds": []}
+    )
 
 
 #: Key-name shapes that would mark a record as an *observation* of running code
@@ -481,3 +491,87 @@ def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry)
         assert not valid(
             schema_registry, model, {**core, "relations": [relation]}
         ), model
+
+
+#: The manifest locator that feeds each record key (quire-rs FR-070/FR-071:
+#: `operations` from `## Operations`, `fields` from `## Properties`, `clauses`
+#: from `## Invariants`; `featureOrder` from the interface `## Features` table).
+KEY_LOCATOR = {
+    "operations": "operations",
+    "fields": "properties",
+    "clauses": "invariants",
+    "featureOrder": "features",
+}
+
+
+@pytest.mark.trace("TC-130", "FR-009-AC-1", "FR-009-AC-2")
+def test_a_record_lacking_an_optional_section_key_validates_and_the_key_stays_checked(
+    schema_registry,
+):
+    """Hand-built: the record a document without the optional section yields."""
+    for name in OBJECT_TYPES:
+        model = MODEL_OF[name]
+        if name == "interface":
+            continue
+        assert valid(schema_registry, model, {}), model
+    # A key still present is still checked: the item rules stand.
+    assert not valid(schema_registry, "DataSchema", {"fields": []})
+    assert not valid(schema_registry, "ApiEndpoint", {"operations": [OP]})
+    assert not valid(schema_registry, "ExternalContract", {"operations": [OP]})
+    assert not valid(schema_registry, "Action", {"operations": [OP, OP]})
+    assert not valid(schema_registry, "BinaryFormat", {"clauses": []})
+
+
+@pytest.mark.trace("TC-131", "FR-009-AC-3", "FR-009-CON-1")
+def test_a_schema_requires_a_key_only_where_a_required_locator_feeds_it():
+    manifest = yaml.safe_load(MANIFEST_PATH.read_text())
+    checked = set()
+    for object_type in manifest["object_types"]:
+        name = object_type["name"]
+        if name not in OBJECT_TYPES:
+            continue
+        required = set(schema(MODEL_OF[name]).get("required", []))
+        declared = set(schema(MODEL_OF[name])["properties"])
+        match = object_type["body_extraction"]["yield_pattern"]["match"]
+        for key, locator in KEY_LOCATOR.items():
+            if key not in declared or locator not in match:
+                continue
+            checked.add((name, key))
+            assert (key in required) == match[locator].get("required", True), (
+                name,
+                key,
+                locator,
+            )
+        # A key no locator feeds is never required.
+        fed = {k for k, loc in KEY_LOCATOR.items() if loc in match}
+        assert not {k for k in required if k in KEY_LOCATOR} - fed, name
+    # The check is not vacuous: required Interface and optional DataSchema keys.
+    assert ("interface", "featureOrder") in checked
+    assert ("api_endpoint", "operations") in checked
+    assert ("external_contract", "operations") in checked
+
+
+@pytest.mark.trace("TC-130", "FR-009-AC-1")
+@pytest.mark.parametrize(
+    ("kind", "heading"),
+    [
+        ("rate_limit", "Invariants"),
+        ("api_endpoint", "Operations"),
+        ("action", "Operations"),
+        ("extension_point", "Invariants"),
+        ("binary_format", "Invariants"),
+    ],
+)
+def test_a_document_without_the_optional_section_validates(quire_engine, kind, heading):
+    """The fix depends on the extractor omitting the key for an absent section
+    rather than emitting an empty array. `external_contract` is absent: its
+    guaranteed operation needs a `Post:` clause, so no document can both lack
+    `## Invariants` and satisfy it; its schema half is TC-037."""
+    text = (SKELETONS_DIR / f"{kind}.md").read_text()
+    cut = re.sub(rf"(?ms)^## {heading}\n.*?(?=^## |\Z)", "", text)
+    assert cut != text
+    # Pre:/Post: lines name clauses of the cut section; drop them with it.
+    cut = re.sub(r"(?m)^(Pre|Post):.*\n", "", cut)
+    result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), cut)
+    assert result["is_valid"], [e["message"] for e in result["errors"]]
+    assert not result["errors"], [e["message"] for e in result["errors"]]

@@ -45,7 +45,7 @@ operation-shaped types are separated by keys (`routes`, `registration`,
 
 ## Behavior
 
-Each model SHALL enforce its row of the following table. "Identity field"
+Each model SHALL enforce its row of the following table; every item rule on `fields`, `operations` or `clauses` applies only when that key is present; a key is required only where the type's manifest locator for it is required ([FR-009](./FR-009-optional-sections-optional-keys.md)). "Identity field"
 means a `FieldDecl` with `identity: true`; "returning operation" an
 `OperationDecl` carrying `returns`; "guaranteed operation" an `OperationDecl`
 whose `post` holds at least one `ClauseRef`. All three readings are
@@ -57,16 +57,16 @@ handled by a manifest version bump, not by widening a rule.
 
 | Object type | Model | Required keys | Optional keys | Item rules |
 |---|---|---|---|---|
-| api_endpoint | `ApiEndpoint` | `operations` | `routes: RouteDecl[]`, `clauses`, `relations`, `requires: SemanticId[]` | `operations` has ≥ 1 item and ≥ 1 returning operation (an endpoint answers); `fields` forbidden |
-| data_schema | `DataSchema` | `fields` | `clauses`, `relations` | `fields` has ≥ 1 item; `operations` forbidden — a record declares data, not behaviour |
-| queue | `Queue` | `fields` | `delivery: DeliveryPolicy`, `carries: SemanticId[]`, `clauses` | `fields` has ≥ 1 item and ≥ 1 identity field (the partition key); `operations` and `relations` forbidden |
-| action | `Action` | `operations` | `clauses`, `relations`, `triggers: SemanticId[]` | `operations` has exactly 1 item — an action is one invocation; `fields` forbidden |
-| ui_component | `UiComponent` | `fields` | `operations`, `clauses`, `relations`, `renders: SemanticId[]` | `fields` has ≥ 1 item and 0 identity fields — props are not identified |
+| api_endpoint | `ApiEndpoint` | none (FR-009) | `operations`, `routes: RouteDecl[]`, `clauses`, `relations`, `requires: SemanticId[]` | `operations` has ≥ 1 item and ≥ 1 returning operation (an endpoint answers); `fields` forbidden |
+| data_schema | `DataSchema` | none (FR-009) | `fields`, `clauses`, `relations` | `fields` has ≥ 1 item; `operations` forbidden — a record declares data, not behaviour |
+| queue | `Queue` | none (FR-009) | `fields`, `delivery: DeliveryPolicy`, `carries: SemanticId[]`, `clauses` | `fields` has ≥ 1 item and ≥ 1 identity field (the partition key); `operations` and `relations` forbidden |
+| action | `Action` | none (FR-009) | `operations`, `clauses`, `relations`, `triggers: SemanticId[]` | `operations` has exactly 1 item — an action is one invocation; `fields` forbidden |
+| ui_component | `UiComponent` | none (FR-009) | `fields`, `operations`, `clauses`, `relations`, `renders: SemanticId[]` | `fields` has ≥ 1 item and 0 identity fields — props are not identified |
 | interface | `Interface` | `featureOrder: Identifier[]` | `fields`, `operations`, `associated_types: TypeRef[]`, `clauses`, `relations` | features are fields and operations (QSpec FR-152, FR-208), ordered as one sequence by `featureOrder` ([FR-007](./FR-007-systems-model-kinds.md)) |
-| external_contract | `ExternalContract` | `operations`, `clauses` | `provider: SemanticId`, `versioning: VersioningPolicy`, `relations` | `operations` has ≥ 1 item and ≥ 1 guaranteed operation; `clauses` has ≥ 1 item; `fields` forbidden |
-| extension_point | `ExtensionPoint` | `operations`, `clauses` | `exposes: SemanticId`, `registration: RegistrationPolicy`, `stability: StabilityPolicy` | `operations` has ≥ 1 item; `clauses` has ≥ 1 item (the stability guarantee); `fields` and `relations` forbidden |
-| binary_format | `BinaryFormat` | `clauses` | `records: RecordLayout[]`, `endianness: Endianness`, `serializes: SemanticId[]` | `clauses` has ≥ 1 item (the layout invariants); `fields` and `operations` forbidden |
-| rate_limit | `RateLimit` | `clauses` | `thresholds: Threshold[]`, `throttles: SemanticId[]` | `clauses` has ≥ 1 item; `fields` and `operations` forbidden |
+| external_contract | `ExternalContract` | none (FR-009) | `operations`, `clauses`, `provider: SemanticId`, `versioning: VersioningPolicy`, `relations` | `operations` has ≥ 1 item and ≥ 1 guaranteed operation; `clauses` has ≥ 1 item; `fields` forbidden |
+| extension_point | `ExtensionPoint` | none (FR-009) | `operations`, `clauses`, `exposes: SemanticId`, `registration: RegistrationPolicy`, `stability: StabilityPolicy` | `operations` has ≥ 1 item; `clauses` has ≥ 1 item (the stability guarantee); `fields` and `relations` forbidden |
+| binary_format | `BinaryFormat` | none (FR-009) | `clauses`, `records: RecordLayout[]`, `endianness: Endianness`, `serializes: SemanticId[]` | `clauses` has ≥ 1 item (the layout invariants); `fields` and `operations` forbidden |
+| rate_limit | `RateLimit` | none (FR-009) | `clauses`, `thresholds: Threshold[]`, `throttles: SemanticId[]` | `clauses` has ≥ 1 item; `fields` and `operations` forbidden |
 
 - `RouteDecl` SHALL be `{ method: HttpMethod, path: string (minLength 1), operation: Identifier }` with `HttpMethod` the closed set `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`.
 - `DeliveryPolicy` SHALL be `{ semantics: DeliverySemantics, ordering?: OrderingScope, retention?: string }` with `DeliverySemantics` the closed set `at_most_once`, `at_least_once`, `exactly_once` and `OrderingScope` the closed set `none`, `partition`, `global`.
@@ -90,25 +90,24 @@ handled by a manifest version bump, not by widening a rule.
 | ID | Constraint | Type | Validation |
 |----|------------|------|------------|
 | FR-004-CON-1 | No model SHALL redeclare a semantic-core model or scalar; the module namespace contributes archetype shapes only (semantic-core NFR-014 kernel discipline). | Architecture | Test |
-| FR-004-CON-2 | The empty record `{}` SHALL fail every one of the ten types, because every type requires at least one extractable key. | Integrity | Test |
 | FR-004-CON-3 | Protocol-specific detail SHALL live in an optional profile key (`delivery`, `versioning`, `registration`, `stability`, `endianness`), never weakening a required key or an item rule of the common contract. | Compatibility | Test |
 
 ## Acceptance Criteria
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-004-AC-1 | Each of the ten shipped object-type schemas differs from every other in the fingerprint (required key set, admitted key set, item rules) the table fixes; `BinaryFormat` and `RateLimit` share a required set and are separated by their admitted keys alone, which the fingerprint counts. A schema with only `type: object` is absent, and every schema is sealed. | Test |
+| FR-004-AC-1 | Each of the ten shipped object-type schemas differs from every other in the fingerprint (required key set, admitted key set, item rules) the table fixes; the types that require no key ([FR-009](./FR-009-optional-sections-optional-keys.md)) share an empty required set and are separated by their admitted keys and item rules. A schema with only `type: object` is absent, and every schema is sealed. | Test |
 | FR-004-AC-2 | An api-endpoint record whose `operations` holds one operation with `returns` validates against `ApiEndpoint.json`; the same record with `returns` removed fails; a record carrying `fields` fails. | Test |
 | FR-004-AC-3 | A data-schema record with one field validates against `DataSchema.json`; an empty `fields` array fails; a record carrying `operations` fails. | Test |
 | FR-004-AC-4 | A queue record with an identity field validates against `Queue.json`, with `delivery` and `carries` accepted when present; the same record with the identity flag removed fails; a record carrying `operations` fails. | Test |
 | FR-004-AC-5 | An action record with exactly one operation validates against `Action.json`; a record with two operations fails; a record carrying `fields` fails. | Test |
 | FR-004-AC-6 | A ui-component record with one non-identity field validates against `UiComponent.json`, with `operations` accepted when present; a record with an identity field fails. | Test |
 | FR-004-AC-7 | An interface record with one operation and its `featureOrder` validates against `Interface.json`, with `associated_types` accepted when present; a record with one field and its `featureOrder` validates; a record without `featureOrder` fails; a record carrying `routes` fails. | Test |
-| FR-004-AC-8 | An external-contract record with one clause and one operation carrying a `post` clause validates; the same record without `clauses` fails; the same record whose only operation carries no `post` fails. | Test |
-| FR-004-AC-9 | An extension-point record with one operation and one clause validates, with `registration` and `stability` accepted when present; a record without `clauses` fails; a record carrying `fields` fails. | Test |
+| FR-004-AC-8 | An external-contract record with one clause and one operation carrying a `post` clause validates; the same record without `clauses` validates ([FR-009](./FR-009-optional-sections-optional-keys.md)); the same record whose only operation carries no `post` fails. | Test |
+| FR-004-AC-9 | An extension-point record with one operation and one clause validates, with `registration` and `stability` accepted when present; a record without `clauses` validates ([FR-009](./FR-009-optional-sections-optional-keys.md)); a record carrying `fields` fails. | Test |
 | FR-004-AC-10 | A binary-format record with one clause validates, with `records` and `endianness` accepted when present; a `RecordLayout` whose `fields` array is empty fails; a record carrying `operations` fails. | Test |
 | FR-004-AC-11 | A rate-limit record with one clause validates, with `thresholds` accepted when present; a `Threshold` whose `scope` is outside `LimitScope` fails; a record carrying `fields` fails. | Test |
-| FR-004-AC-12 | The empty record `{}` fails all ten object-type schemas. | Test |
+| FR-004-AC-12 | The empty record `{}` fails `Interface.json` and validates against every other object-type schema, none of which requires a key ([FR-009](./FR-009-optional-sections-optional-keys.md)). | Test |
 | FR-004-AC-13 | A `type.target` of `ix://agent-ix/spec-objects-architecture/unresolved/Mystery` is accepted by the schema (it is a `SemanticId`) and reported by the extractor as `semantic.unresolved-type`; a bare `Mystery` string is rejected by the schema. | Test |
 | FR-004-AC-14 | Removing an optional profile key (`delivery`, `versioning`, `registration`, `stability`, `endianness`) from an otherwise valid record leaves it valid, and no profile key appears in any model's required list. | Test |
 | FR-004-AC-15 | No shipped schema declares an observation key — a measured call count, a discovered route, a live resource id, a timestamp of an observation, or any key whose name marks it as extracted from running code — so a declaration record cannot be read as an observation. This is the ticket's "definition objects remain distinct from observed routes, calls, queues and runtime resources" and the Project 17 resource-vocabulary alignment, expressed as a rule a test can check. | Test |

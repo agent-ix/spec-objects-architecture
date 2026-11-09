@@ -67,10 +67,11 @@ skipped.
 | FR-001 | FR-001-AC-2..4 | TC-002..TC-004 | 🚧 AC-2..AC-4 need a running filament-core |
 | FR-002 | FR-002-AC-1..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-010..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
 | FR-003 | FR-003-AC-1..9 except AC-3 and AC-7, FR-003-CON-1 | TC-020, TC-024..TC-027, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
-| FR-004 | FR-004-AC-1..16, FR-004-CON-1..3 | TC-030..TC-046 | ✅ |
+| FR-004 | FR-004-AC-1..16, FR-004-CON-1, FR-004-CON-3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ AC-10's per-file half is an expected failure |
 | FR-006 | FR-006-AC-1..6, FR-006-CON-1..2 | TC-080..TC-086 | ✅ |
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
+| FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
 
 ### Integration Test Coverage
 
@@ -108,11 +109,11 @@ skipped.
 | TC-034 | Action: exactly one operation validates; two operations fail; `fields` fails | Integration | P0 | FR-004-AC-5 | ✅ |
 | TC-035 | Ui component: a non-identity field validates with `operations`; an identity field fails | Integration | P0 | FR-004-AC-6 | ✅ |
 | TC-036 | Interface: one operation or one field validates with its `featureOrder`, `associated_types` accepted; no `featureOrder` fails; `routes` fails | Integration | P0 | FR-004-AC-7 | ✅ |
-| TC-037 | External contract: a clause plus a post-carrying operation validates; no `clauses` fails; no `post` fails | Integration | P0 | FR-004-AC-8 | ✅ |
-| TC-038 | Extension point: an operation and a clause validate with `registration` and `stability`; no `clauses` fails; `fields` fails | Integration | P1 | FR-004-AC-9 | ✅ |
+| TC-037 | External contract: a clause plus a post-carrying operation validates; no `clauses` validates (FR-009); no `post` fails | Integration | P0 | FR-004-AC-8 | ✅ |
+| TC-038 | Extension point: an operation and a clause validate with `registration` and `stability`; no `clauses` validates (FR-009); `fields` fails | Integration | P1 | FR-004-AC-9 | ✅ |
 | TC-039 | Binary format: one clause validates with `records` and `endianness`; an empty `RecordLayout.fields` fails; `operations` fails | Integration | P1 | FR-004-AC-10 | ✅ |
 | TC-040 | Rate limit: one clause validates with `thresholds`; a `scope` outside `LimitScope` fails; `fields` fails | Integration | P1 | FR-004-AC-11 | ✅ |
-| TC-041 | The empty record `{}` fails all ten object-type schemas | Integration | P0 | FR-004-AC-12, FR-004-CON-2 | ✅ |
+| TC-041 | The empty record `{}` fails `Interface` and validates against every other type (FR-009) | Integration | P0 | FR-004-AC-12 | ✅ |
 | TC-042 | Placeholder `unresolved` target is accepted by the schema and reported by the extractor; a bare token is refused | Integration | P1 | FR-004-AC-13 | ✅ |
 | TC-043 | Every optional profile key can be removed without invalidating the record, and no profile key is required anywhere | Integration | P1 | FR-004-AC-14, FR-004-CON-3 | ✅ |
 | TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1 | ✅ |
@@ -122,7 +123,7 @@ skipped.
 | TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
 | TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
 | TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4 | ✅ |
-| TC-054 | Every negative fixture fails with its `expect:` code and the ten named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
+| TC-054 | Every negative fixture fails with its `expect:` code and the named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
 | TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6 | ✅ |
 | TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7 | ✅ |
 | TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
@@ -160,6 +161,8 @@ skipped.
 | TC-111 | `ObjectId` states the frontmatter id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; underscore and hyphenated ids validate, while a doubled hyphen is refused with its required `id` missing | Integration | P0 | FR-003-AC-9 | ✅ |
 | TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ |
 | TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
+| TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
+| TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
 
 ## Test Environment
 
