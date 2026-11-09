@@ -40,7 +40,7 @@ SEMANTIC_CORE_DIR = (
 
 SEMANTIC_CORE_BASE = (
     "https://schemas.agent-ix.org/semantic-core/"
-    f"{yaml.safe_load(MANIFEST_PATH.read_text())['semantic']['semantic_core']}/"
+    f"{json.loads((REPO_ROOT / 'package.json').read_text())['devDependencies']['@agent-ix/semantic-core']}/"
 )
 
 QUIRE_MISSING = (
@@ -221,7 +221,6 @@ def _extract_probe(markdown: str, kind: str):
         "markdown": markdown,
         "module": {
             "contractVersion": "1.0.0",
-            "semanticCore": load_manifest()["semantic"]["semantic_core"],
             "package": "agent-ix/spec-objects-architecture",
             "exports": [kind],
         },
@@ -303,7 +302,6 @@ def semantic_module(semantic_block: dict[str, Any]) -> dict[str, Any]:
     """The `module` block `extract_semantic` takes, derived from the manifest."""
     return {
         "contractVersion": semantic_block["contract_version"],
-        "semanticCore": semantic_block["semantic_core"],
         "package": semantic_block["package"],
         "exports": semantic_block["exports"],
         "imports": semantic_block["imports"],

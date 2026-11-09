@@ -34,7 +34,7 @@ and without touching the `lexicon`.
 
 ## Subtasks
 
-- [x] **`semantic` block.** Exactly the nine admitted keys, `exports` naming the ten object types.
+- [x] **`semantic` block.** Exactly the eight admitted keys, `exports` naming the ten object types.
 - [x] **Reference-form `data_schema`.** `{ schema, digest }` on every exported type; no inline form survives.
 - [x] **Version 0.3.0**, bumped with the `@jsonSchema` base in one commit.
 - [x] **Locator preservation.** Every 0.2.0 locator keeps its facets, compared structurally against the Task-007 baseline.

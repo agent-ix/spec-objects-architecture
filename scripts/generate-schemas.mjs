@@ -28,12 +28,12 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const MIN_NODE_MAJOR = 20;
-// The base is derived from the manifest's `semantic.semantic_core` declaration
-// (the one declared pin), never typed here.
+// The base is derived from the semantic-core version pinned in package.json
+// (the version the emitter compiles against), never typed here.
 function semanticCoreBase() {
-  const manifest = readFileSync(resolve(packageDir, "manifest.yaml"), "utf8");
+  const pkg = JSON.parse(readFileSync(resolve(repoRoot, "package.json"), "utf8"));
   return `https://schemas.agent-ix.org/semantic-core/${
-    manifest.match(/^\s+semantic_core:\s*(\S+)\s*$/m)[1]
+    pkg.devDependencies["@agent-ix/semantic-core"]
   }/`;
 }
 

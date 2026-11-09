@@ -100,7 +100,7 @@ skipped.
 | TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
 | TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2 | ✅ |
 | TC-019 | `package-lock.json` resolves every package from npmjs, `@agent-ix/semantic-core` included | Unit | P2 | FR-002-CON-4 | ✅ |
-| TC-020 | The `semantic` block equals the nine admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
+| TC-020 | The `semantic` block equals the eight admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
 | TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
 | TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |

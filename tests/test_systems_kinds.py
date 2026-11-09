@@ -500,7 +500,6 @@ def test_the_interface_skeleton_lowers_its_feature_order(quire_engine, semantic_
             "markdown": text,
             "module": {
                 "contractVersion": semantic_block["contract_version"],
-                "semanticCore": semantic_block["semantic_core"],
                 "package": semantic_block["package"],
                 "exports": semantic_block["exports"],
             },
