@@ -48,13 +48,13 @@ refuse.
 
 ## Behavior
 
-- Each skeleton with a `fields` requirement (`data_schema`, `queue`, `ui_component`) SHALL author `## Properties` as one table with the header exactly `Field | Type | Multiplicity | Constraints`.
+- Each skeleton whose type declares `fields` (`data_schema`, `queue`, `ui_component`) SHALL author `## Properties` as one table with the header exactly `Field | Type | Multiplicity | Constraints`.
 - The `data_schema`, `queue`, and `ui_component` alternate skeletons SHALL author the same declarations as one ```` ```sysml ```` fence of `attribute <name> : <Type>[<mult>] { <constraints> }` and `ref item <name> : <Type>[<mult>]` lines.
 - Each alternate skeleton SHALL declare the same fields as its table skeleton, under that skeleton's frontmatter `id` and `title`; the module therefore ships two files under one id by intent, and the identity of their extracted `FieldDecl[]` is the obligation FR-005-AC-2 tests.
-- Each skeleton whose type requires `operations` (`api_endpoint`, `action`, `interface`, `external_contract`, `extension_point`) SHALL author `## Operations` with one `### <name>` per operation, an optional `| Param | Type | Multiplicity | Constraints |` table, a `Returns:` line where the operation returns a value, and optional `Pre:`/`Post:` lines that, when present, name clause ids declared in the same artifact.
+- Each skeleton whose type declares `operations` (`api_endpoint`, `action`, `interface`, `external_contract`, `extension_point`) SHALL author `## Operations` with one `### <name>` per operation, an optional `| Param | Type | Multiplicity | Constraints |` table, a `Returns:` line where the operation returns a value, and optional `Pre:`/`Post:` lines that, when present, name clause ids declared in the same artifact.
 - The `action` skeleton SHALL declare exactly one operation, because `Action` admits exactly one.
 - The `api_endpoint` skeleton SHALL declare at least one operation carrying a `Returns:` line, and the `external_contract` skeleton at least one operation carrying a `Post:` line, because those are the item rules their schemas enforce.
-- Each skeleton whose type requires `clauses` (`external_contract`, `extension_point`, `binary_format`, `rate_limit`) SHALL author `## Invariants` with one `### <clauseId>` per clause, each owning exactly one ```` ```ocl ```` fence.
+- Each skeleton whose type declares `clauses` (`external_contract`, `extension_point`, `binary_format`, `rate_limit`) SHALL author `## Invariants` with one `### <clauseId>` per clause, each owning exactly one ```` ```ocl ```` fence.
 - The `interface` skeleton SHALL author the [FR-007](./FR-007-systems-model-kinds.md) `## Features` table, one `operation` row per `### <name>` under `## Operations`, in that order.
 - The `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, and `interface` skeletons SHALL carry no `## Invariants` section, so the module ships both the clause-bearing and the clause-free availability state.
 - Each skeleton's frontmatter SHALL carry `object: <type name>` beside `type: <type name>`, because Quire runs the semantic layer (extraction and record validation) on the `object:` archetype of a document; a skeleton without it validates its headings only.
@@ -85,7 +85,7 @@ refuse.
 | FR-005-AC-2 | For `data_schema`, `queue`, and `ui_component`, the table and `sysml` skeletons extract to identical normalized `fields` with `fieldsForm` `table` and `fence` respectively. | Test |
 | FR-005-AC-3 | Under a bundle index built from the skeleton frontmatter, every skeleton extracts with zero `error` diagnostics and zero `semantic.unresolved-type` findings, and every non-kernel `type.target` starts with `ix://agent-ix/spec-objects-architecture/type/`. | Test |
 | FR-005-AC-4 | Each skeleton's `availability` states match its type: `fields` `available` for `data_schema`, `queue`, and `ui_component`; `operations` `available` for `api_endpoint`, `action`, `interface`, `external_contract`, and `extension_point`; `clauses` `available` for `external_contract`, `extension_point`, `binary_format`, and `rate_limit`; `not_applicable` for every other kind. | Test |
-| FR-005-AC-5 | Every negative fixture fails validation with an error message containing its `expect:` code, and at least the nine cases listed in Behavior are present. | Test |
+| FR-005-AC-5 | Every negative fixture fails validation with an error message containing its `expect:` code, and at least the cases listed in Behavior are present. | Test |
 | FR-005-AC-6 | Every skeleton's H2 set equals a subset of the headings the manifest asserts for its type and includes every `required: true` heading. | Test |
 | FR-005-AC-7 | The skeleton for each of the ten types has no placeholder token and every asserted section body is non-empty. | Test |
 | FR-005-AC-8 | Every skeleton `title` matches the `Identifier` pattern, is unique across the skeletons, and is not a `KernelScalar` name; every skeleton frontmatter carries `object` equal to `type`. | Test |

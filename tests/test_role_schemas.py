@@ -12,6 +12,7 @@ extraction evidence**, and say so.
 from __future__ import annotations
 
 import json
+import re
 
 import pytest
 import yaml
@@ -25,6 +26,7 @@ from tests.conftest import (
     PROFILE_KEYS,
     SCHEMAS_DIR,
     SEMANTIC_CORE_BASE,
+    SKELETONS_DIR,
     semantic_target_value,
 )
 
@@ -491,18 +493,14 @@ def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry)
         ), model
 
 
-#: Object type -> (schema model, the record key the schema once required but the
-#: type's manifest locator for the matching section marks `required: false`).
-OPTIONAL_SECTION_KEYS = {
-    "api_endpoint": ("ApiEndpoint", ("operations",)),
-    "data_schema": ("DataSchema", ("fields",)),
-    "queue": ("Queue", ("fields",)),
-    "action": ("Action", ("operations",)),
-    "ui_component": ("UiComponent", ("fields",)),
-    "external_contract": ("ExternalContract", ("operations", "clauses")),
-    "extension_point": ("ExtensionPoint", ("operations", "clauses")),
-    "binary_format": ("BinaryFormat", ("clauses",)),
-    "rate_limit": ("RateLimit", ("clauses",)),
+#: The manifest locator that feeds each record key (quire-rs FR-070/FR-071:
+#: `operations` from `## Operations`, `fields` from `## Properties`, `clauses`
+#: from `## Invariants`; `featureOrder` from the interface `## Features` table).
+KEY_LOCATOR = {
+    "operations": "operations",
+    "fields": "properties",
+    "clauses": "invariants",
+    "featureOrder": "features",
 }
 
 
@@ -511,9 +509,11 @@ def test_a_record_lacking_an_optional_section_key_validates_and_the_key_stays_ch
     schema_registry,
 ):
     """Hand-built: the record a document without the optional section yields."""
-    for model, keys in OPTIONAL_SECTION_KEYS.values():
+    for name in OBJECT_TYPES:
+        model = MODEL_OF[name]
+        if name == "interface":
+            continue
         assert valid(schema_registry, model, {}), model
-        assert not set(keys) & set(schema(model).get("required", [])), model
     # A key still present is still checked: the item rules stand.
     assert not valid(schema_registry, "DataSchema", {"fields": []})
     assert not valid(schema_registry, "ApiEndpoint", {"operations": [OP]})
@@ -522,16 +522,55 @@ def test_a_record_lacking_an_optional_section_key_validates_and_the_key_stays_ch
     assert not valid(schema_registry, "BinaryFormat", {"clauses": []})
 
 
-@pytest.mark.trace("TC-131", "FR-009-AC-3")
-def test_no_schema_requires_a_key_its_manifest_locator_marks_optional():
+@pytest.mark.trace("TC-131", "FR-009-AC-3", "FR-009-CON-1")
+def test_a_schema_requires_a_key_only_where_a_required_locator_feeds_it():
     manifest = yaml.safe_load(MANIFEST_PATH.read_text())
+    checked = set()
     for object_type in manifest["object_types"]:
-        schema_ref = object_type.get("data_schema", {}).get("schema")
-        required = set(
-            json.loads((PACKAGE_ROOT / schema_ref).read_text()).get("required", [])
-        )
+        name = object_type["name"]
+        if name not in OBJECT_TYPES:
+            continue
+        required = set(schema(MODEL_OF[name]).get("required", []))
+        declared = set(schema(MODEL_OF[name])["properties"])
         match = object_type["body_extraction"]["yield_pattern"]["match"]
-        for key in required & set(match):
-            assert match[key].get("required", True), (object_type["name"], key)
-    # `featureOrder` has a required locator, so `Interface` still requires it.
-    assert schema("Interface")["required"] == ["featureOrder"]
+        for key, locator in KEY_LOCATOR.items():
+            if key not in declared or locator not in match:
+                continue
+            checked.add((name, key))
+            assert (key in required) == match[locator].get("required", True), (
+                name,
+                key,
+                locator,
+            )
+        # A key no locator feeds is never required.
+        fed = {k for k, loc in KEY_LOCATOR.items() if loc in match}
+        assert not {k for k in required if k in KEY_LOCATOR} - fed, name
+    # The check is not vacuous: required Interface and optional DataSchema keys.
+    assert ("interface", "featureOrder") in checked
+    assert ("api_endpoint", "operations") in checked
+    assert ("external_contract", "operations") in checked
+
+
+@pytest.mark.trace("TC-130", "FR-009-AC-1")
+@pytest.mark.parametrize(
+    ("kind", "heading"),
+    [
+        ("rate_limit", "Invariants"),
+        ("api_endpoint", "Operations"),
+        ("action", "Operations"),
+        ("external_contract", "Invariants"),
+        ("extension_point", "Invariants"),
+        ("binary_format", "Invariants"),
+    ],
+)
+def test_a_document_without_the_optional_section_validates(quire_engine, kind, heading):
+    """The fix depends on the extractor omitting the key for an absent section
+    rather than emitting an empty array."""
+    text = (SKELETONS_DIR / f"{kind}.md").read_text()
+    cut = re.sub(rf"(?ms)^## {heading}\n.*?(?=^## |\Z)", "", text)
+    assert cut != text
+    result = quire_engine.validate_document(kind, str(PACKAGE_ROOT), cut)
+    refusals = [
+        e["message"] for e in result["errors"] if "record-invalid" in e["message"]
+    ]
+    assert not refusals, refusals

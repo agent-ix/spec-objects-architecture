@@ -113,7 +113,7 @@ skipped.
 | TC-038 | Extension point: an operation and a clause validate with `registration` and `stability`; no `clauses` validates (FR-009); `fields` fails | Integration | P1 | FR-004-AC-9 | ✅ |
 | TC-039 | Binary format: one clause validates with `records` and `endianness`; an empty `RecordLayout.fields` fails; `operations` fails | Integration | P1 | FR-004-AC-10 | ✅ |
 | TC-040 | Rate limit: one clause validates with `thresholds`; a `scope` outside `LimitScope` fails; `fields` fails | Integration | P1 | FR-004-AC-11 | ✅ |
-| TC-041 | The empty record `{}` fails `Interface` and validates against the nine types that require no key (FR-009) | Integration | P0 | FR-004-AC-12 | ✅ |
+| TC-041 | The empty record `{}` fails `Interface` and validates against every other type (FR-009) | Integration | P0 | FR-004-AC-12 | ✅ |
 | TC-042 | Placeholder `unresolved` target is accepted by the schema and reported by the extractor; a bare token is refused | Integration | P1 | FR-004-AC-13 | ✅ |
 | TC-043 | Every optional profile key can be removed without invalidating the record, and no profile key is required anywhere | Integration | P1 | FR-004-AC-14, FR-004-CON-3 | ✅ |
 | TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1 | ✅ |
@@ -123,7 +123,7 @@ skipped.
 | TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
 | TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
 | TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4 | ✅ |
-| TC-054 | Every negative fixture fails with its `expect:` code and the nine named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
+| TC-054 | Every negative fixture fails with its `expect:` code and the named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
 | TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6 | ✅ |
 | TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7 | ✅ |
 | TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
@@ -161,8 +161,8 @@ skipped.
 | TC-111 | `ObjectId` states the frontmatter id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; underscore and hyphenated ids validate, while a doubled hyphen is refused with its required `id` missing | Integration | P0 | FR-003-AC-9 | ✅ |
 | TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ |
 | TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
-| TC-130 | A record lacking the optional section key validates against each of the nine schemas; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
-| TC-131 | No schema requires a key its manifest locator marks optional; `Interface` still requires `featureOrder` | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
+| TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
+| TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
 
 ## Test Environment
 
