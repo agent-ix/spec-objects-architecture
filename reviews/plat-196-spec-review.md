@@ -39,3 +39,12 @@ Merge is blocked by the code-review highs (SR-010), not by the spec.
 | FND-002 | low | FR-008-AC-5 reads "two `RecordLayout`s with `tag` `\"0x21\"`", which says both records carry the tag. Only `posting_tuple` does, which is what TC-124 asserts. Reword to "two `RecordLayout`s, `posting_tuple` with `tag` `\"0x21\"`". | spec/functional/FR-008-record-key-sections.md AC-5 | wrong-requirement |
 | FND-003 | low | The rewritten FR-004 bullet ("The schema criteria over those keys SHALL be verified against hand-built JSON records and SHALL say so in the test itself...") is a test-labelling rule, not behaviour. It is ceremony under the value test, since tests test functionality, and `quire validate` flags it `ears:non-singular` and `quality:agentless-passive`. Delete it. Its `tests.md` Test Environment counterpart can go with it. | spec/functional/FR-004-role-schemas.md:84 | wrong-requirement |
 | FND-004 | low | `tests.md` adds hand-written ✅ status cells for FR-008 and TC-120..TC-126, but `quire matrix` computes the matrix. The cells are false today: TC-121 fails against the declared semantic-core, and every TC fails under the locked `quire`. A hand-kept status column is ceremony that drifts. Drop the status cells, or at least do not claim ✅. | spec/tests.md (FR-008 row, TC-120..TC-126) | correct-requirement-no-evidence |
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | fixed | d24396c: FR-006 Behavior names quoin FR-122, implemented by quire-rs FR-081, matching its Dependencies. |
+| FND-002 | fixed | d24396c: AC-5 reads "two `RecordLayout`s the second with `tag` `\"0x21\"`". |
+| FND-003 | fixed | d24396c: the test-labelling bullet is deleted from FR-004. |
+| FND-004 | fixed | d24396c: the FR-008 and TC-120..TC-126 status cells are empty; no ✅ is claimed. |

@@ -73,3 +73,14 @@ Python and Markdown only. No Rust, no React lane.
 The `@pytest.mark.trace` tags sit on test functions. `require_quire` fails
 rather than skips. No mocks. Records are extracted by the real engine, not
 hand-built.
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | deferred | Release-blocked, not fixed. It needs a `@agent-ix/semantic-core` release (above 0.3.3) whose `TypeRef.target` takes the adjacent `{kind, value}` form already on filament-core-data `main` (IR-994, `7e6f209e`), plus a module `semantic_core` bump. Re-checked on `7b21aef` against the published 0.3.3 schemas: TC-121[interface] still fails. FR-008 Dependencies now name the blocker (d24396c). It still blocks merge, because merging makes `main` red. |
+| FND-002 | deferred | Release-blocked, not fixed. It needs a quire-rs release carrying FR-081 (merged as `4b744c6`, after v0.54.0), then `poetry lock` by tooling in this PR. On bump, `test_consumer_boundaries::test_a_per_file_bundle_index_does_not_make_a_declaration_ambiguous_with_itself` and `test_manifest_semantic::test_underscore_and_hyphenated_frontmatter_ids_validate` still fail on `7b21aef` (reproduced) and must be adapted in the same change. FR-008 Dependencies now name the blocker (d24396c). It still blocks merge. |
+| FND-003 | fixed | d24396c: `## Provider` is `` `identity_service` ``, and TC-121 asserts `ix://agent-ix/spec-objects-architecture/identity_service` with zero errors (passes on a FR-081 build). |
+| FND-004 | fixed | d24396c: `## Exposes` is `` `renderer_registry` ``, the Contract prose is restored to its pre-PR text, and TC-121 pins `renderer_registry` (passes). |
+| FND-005 | fixed | d24396c: the Discovery cell is now the registration call and the duplicate-registration warning, so the dropped guarantee is restored. |
+| FND-006 | fixed | d24396c: the docstring names quoin FR-122 (quire-rs FR-081). |
