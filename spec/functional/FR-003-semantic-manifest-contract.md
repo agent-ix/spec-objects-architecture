@@ -34,7 +34,7 @@ meaning.
 
 ## Behavior
 
-- The manifest `semantic` block SHALL carry exactly these keys and values: `contract_version: 1.0.0`, `semantic_core` (the declared semantic-core bundle this module extends), `package: agent-ix/spec-objects-architecture`, `exports` listing every object type that ships a schema, `imports: {}`, `targets: [json-schema, markdown]`, `mappings: [typed-table, sysml-fence, ocl-clause, generalization]`, `compatibility_posture: strict`, `legacy_forms: warning`. [FR-007](./FR-007-systems-model-kinds.md) states why `generalization` is declared.
+- The manifest `semantic` block SHALL carry exactly these keys and values: `contract_version: 1.0.0`, `package: agent-ix/spec-objects-architecture`, `exports` listing every object type that ships a schema, `imports: {}`, `targets: [json-schema, markdown]`, `mappings: [typed-table, sysml-fence, ocl-clause, generalization]`, `compatibility_posture: strict`, `legacy_forms: warning`. [FR-007](./FR-007-systems-model-kinds.md) states why `generalization` is declared.
 - `compatibility_posture` SHALL be `strict`, because the frontmatter id pattern and the required interface `## Features` table refuse artifacts that lack them; `additive` would misstate that, and `declared-lossy` names lossy mappings, which this module declares none of.
 - `semantic.exports` SHALL name all fourteen object types, in this order: `api_endpoint`, `data_schema`, `queue`, `action`, `ui_component`, `interface`, `external_contract`, `extension_point`, `binary_format`, `rate_limit`, and the [FR-007](./FR-007-systems-model-kinds.md) systems types `part`, `port`, `connection`, `allocation`.
 - No exported object type SHALL carry an inline `data_schema`.
@@ -59,7 +59,7 @@ meaning.
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-003-AC-1 | The loaded `semantic` block equals the nine admitted keys with the values above, and `exports` equals the fourteen object-type names. | Test |
+| FR-003-AC-1 | The loaded `semantic` block equals the eight admitted keys with the values above, and `exports` equals the fourteen object-type names. | Test |
 | FR-003-AC-4 | `quire.Registry.load_from([module dir])` lists all fourteen archetypes and `validate_document` on each [FR-005](./FR-005-executable-skeletons.md) skeleton reports no `semantic.*` load failure. | Test |
 | FR-003-AC-5 | `quoin module install path:<module dir>` exits zero and `quoin module` lists `spec-objects-architecture`; the previously installed entry is restored afterwards. | Demonstration |
 | FR-003-AC-6 | A manifest copy whose `semantic` block gains a key `foo` is refused by Quire's loader naming `foo`. | Test |
