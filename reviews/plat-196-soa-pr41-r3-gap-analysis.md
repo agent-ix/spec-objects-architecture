@@ -45,3 +45,9 @@ intent-matched evidence (coder-reported run at e164b70; not re-run here).
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | medium | FR-003-AC-9 still ends "while a doubled hyphen is refused with its required `id` missing". The FR-003 Behavior bullet ("yields no value and Quire refuses the artifact with its required `id` missing") and the TC-111 title say the same. The engine-drift adaptation changed the test to assert a different observable: the message `[queue] required 'id' (frontmatter_field(id)) value "queue--001" does not match pattern /…/`, a pattern mismatch on a present value rather than a missing one. The criterion now names behaviour that no longer occurs, and its bound test asserts something else. Reword AC-9, the Behavior bullet and the TC-111 title to "refused because its `id` does not match the pattern". | spec/functional/FR-003-semantic-manifest-contract.md:50, :67; spec/tests.md:164; tests/test_manifest_semantic.py:145-150, :200 | wrong-requirement |
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (2970c1a). FR-003-AC-9, the FR-003 Behavior bullet (line 50) and the TC-111 title now say a doubled hyphen is "refused because its `id` does not match the pattern". That matches the message TC-111 asserts. `quire validate` passes FR-003. |

@@ -45,3 +45,9 @@ Verified clean:
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | medium | The TC-091 row title still reads "a per-file index makes an alternate-bearing declaration ambiguous with itself". FR-005-AC-10 now states the opposite ("raises no `semantic.ambiguous-type` for a declaration against itself"). The test `test_a_per_file_bundle_index_does_not_make_a_declaration_ambiguous_with_itself` asserts that, with no xfail. The row's ✅ sits beside a title that describes the old engine failure, so the matrix cell is not honest. Reword the title to "a per-file index raises no `semantic.ambiguous-type` for a declaration against itself". | spec/tests.md:152 | wrong-requirement |
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (2970c1a). The TC-091 title now reads "a per-file index raises no `semantic.ambiguous-type` for a declaration against itself". That agrees with FR-005-AC-10 and the non-xfail test. |

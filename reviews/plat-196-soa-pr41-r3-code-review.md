@@ -81,3 +81,9 @@ Verified clean:
 ## Language Dispatch
 
 Python, JSON and Markdown only. No Rust, no React lane.
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (2970c1a). The TC-130 docstring now ends the `external_contract` sentence with "its schema half is TC-037", and the `api_endpoint` sentence follows it without the clause. |
