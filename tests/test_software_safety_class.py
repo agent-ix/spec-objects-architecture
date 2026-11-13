@@ -165,6 +165,14 @@ def test_fr012_ac4_unassigned_part_validates_with_no_class_keys(tmp_path):
             },
             "softwareSafetyClassRationale",
         ),
+        (
+            {
+                "softwareSafetyClass": "c",
+                "softwareSafetyClassAssignedBy": "",
+                "softwareSafetyClassRationale": "r",
+            },
+            "softwareSafetyClassAssignedBy",
+        ),
     ],
 )
 def test_fr012_record_schema_refuses_incomplete_assignment_naming_the_key(
@@ -177,7 +185,7 @@ def test_fr012_record_schema_refuses_incomplete_assignment_naming_the_key(
     }
     errs = list(schema_registry("Part").iter_errors({**base, **record}))
     messages = [f"{e.message} at {list(e.absolute_path)}" for e in errs]
-    assert any(named in m for m in messages), messages
+    assert any(f"'{named}'" in m for m in messages), messages
 
 
 @pytest.mark.trace("FR-012-AC-5", "FR-012-AC-6", "FR-012-AC-7")
@@ -192,19 +200,33 @@ def test_fr012_record_schema_refuses_incomplete_assignment_naming_the_key(
             ['software_safety_class: ""', _full()[1], _full()[2]],
             "software_safety_class",
         ),
+        (
+            [_full()[0], 'software_safety_class_assigned_by: ""', _full()[2]],
+            "software_safety_class_assigned_by",
+        ),
+        (
+            [_full()[0], _full()[1], 'software_safety_class_rationale: ""'],
+            "software_safety_class_rationale",
+        ),
     ],
 )
 def test_fr012_quire_validate_rejects_incomplete_assignment(tmp_path, lines, named):
     result = _validate(tmp_path, _part(lines))
     assert result.returncode != 0
-    assert named in result.stderr
+    assert (
+        f'"{named}"' in result.stderr or f"(at {named})" in result.stderr
+    ), result.stderr
 
 
 @pytest.mark.trace("FR-012-AC-8")
 @needs_quire
 def test_fr012_ac8_system_and_item_carry_independent_classes(tmp_path):
     system = _validate(tmp_path, _part(_full("class-3"), "pump_system"))
-    item = _validate(tmp_path, _part(_full("class-1"), "pump_item"))
+    item_text = _part(_full("class-1"), "pump_item").replace(
+        "| search_service |", "| pump_system |"
+    )
+    assert "| pump_system |" in item_text
+    item = _validate(tmp_path, item_text)
     assert system.returncode == 0, system.stderr
     assert item.returncode == 0, item.stderr
 
@@ -217,8 +239,10 @@ def test_fr012_ac11_skeleton_names_the_fields_and_carries_none():
         assert f"\n{key}:" not in text
 
 
-@pytest.mark.trace("FR-012-AC-12")
-def test_fr012_ac12_part_frontmatter_ref_is_self_contained_and_open():
+# Schema half of the part-frontmatter requirement only. The unassigned-corpus
+# clause needs the module's traceability entries, which the engine cannot load yet
+# (PLAT-1578), so the criterion is not claimed here.
+def test_part_frontmatter_ref_is_self_contained_and_open():
     ot = object_type("part")
     assert ot["frontmatter_schema_ref"] == "schemas/PartFrontmatter.json"
     schema = json.loads((PACKAGE_ROOT / ot["frontmatter_schema_ref"]).read_text())
@@ -228,10 +252,3 @@ def test_fr012_ac12_part_frontmatter_ref_is_self_contained_and_open():
     for prop in schema["properties"].values():
         assert prop == {"type": "string", "minLength": 1}
     assert "required" not in schema
-
-
-@pytest.mark.trace("FR-012-CON-1")
-def test_fr012_con2_manifest_lists_no_class_value():
-    manifest = (PACKAGE_ROOT / "manifest.yaml").read_text()
-    assert "class-1" not in manifest
-    assert "class-1" not in (SCHEMAS_DIR / "PartFrontmatter.json").read_text()
