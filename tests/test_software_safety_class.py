@@ -1,11 +1,9 @@
 """The part software safety class (FR-012): optional, human-assigned, never defaulted.
 
 Validation runs through the `quire validate` binary against this module;
-records are extracted by the engine. The manifest's `field_consistency`,
-`vocabulary` and `required_fields` (`unassigned-class`) entries
-(FR-012-AC-9, AC-10, AC-13 to AC-15) are not declared yet: the installed
-engine rejects those keys until quire-rs implements FR-090 and FR-091
-(PLAT-1578).
+records are extracted by the engine. The manifest's `field_consistency`, `vocabulary`
+and `required_fields` entries (FR-012-AC-9, AC-10, AC-12 to AC-15) are exercised in
+`test_software_safety_class_checks.py`.
 """
 
 from __future__ import annotations

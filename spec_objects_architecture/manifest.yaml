@@ -69,6 +69,35 @@ traceability:
     direction: incoming
     check: nfr-without-design
   design_relations: [fr-has-design-element, nfr-has-design-element]
+  # FR-012: a requirement must not state a class below the part it is
+  # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
+  # carries; a project that enables `trace:unassigned-class` requires a class.
+  field_consistency:
+  - name: requirement-class-below-allocated-part
+    from: FR
+    field: software_safety_class
+    via: {archetype: allocation, edges: [allocates], direction: incoming}
+    edges: [allocated_to]
+    direction: outgoing
+    to: [part]
+    to_field: software_safety_class
+    order_from: {archetype: FR, field: software_safety_class}
+    rule: not_below
+    check: class-below-part
+  vocabulary:
+  - name: part-class-in-vocabulary
+    from: [part]
+    field: software_safety_class
+    carried: software_safety_class
+    check: undeclared-class-value
+  required_fields:
+  - name: part-needs-class
+    from: [part]
+    field: software_safety_class
+    exclude: []
+    check: unassigned-class
+grammar_severity:
+  trace:unassigned-class: "off"
 artifact_types: []
 lint_rules: []
 object_types:
