@@ -399,6 +399,7 @@ object_types:
 # agent-ix/quire-specification#86 (FR-208).
 - name: part
   roles: [systems-part]
+  frontmatter_schema_ref: schemas/PartFrontmatter.json
   allowed_links:
     owned_by: ["*"]
     typed_by: ["*"]
@@ -427,6 +428,21 @@ object_types:
           assert:
             columns: [Owner, Declared Type, Multiplicity]
             min_rows: 1
+        softwareSafetyClass:
+          from: frontmatter_field
+          path:
+          - software_safety_class
+          required: false
+        softwareSafetyClassAssignedBy:
+          from: frontmatter_field
+          path:
+          - software_safety_class_assigned_by
+          required: false
+        softwareSafetyClassRationale:
+          from: frontmatter_field
+          path:
+          - software_safety_class_rationale
+          required: false
 - name: port
   roles: [systems-port]
   allowed_links:

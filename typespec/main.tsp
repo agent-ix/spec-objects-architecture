@@ -448,11 +448,39 @@ model RateLimit {
  * A part: a typed, multiplicity-bearing member of its owning composite type.
  * `fields` and `operations` are forbidden by the seal.
  */
+@extension("dependentRequired", #{
+  softwareSafetyClass: #["softwareSafetyClassAssignedBy", "softwareSafetyClassRationale"],
+  softwareSafetyClassAssignedBy: #["softwareSafetyClass"],
+  softwareSafetyClassRationale: #["softwareSafetyClass"],
+})
 model Part {
   owner: SemanticId;
   declaredType: TypeRef;
   multiplicity: Multiplicity;
+  /** Human-assigned software safety class; plain string, the vocabulary is declared by the ISO module. Never defaulted. */
+  @minLength(1) softwareSafetyClass?: string;
+  /** Person who assigned the class. */
+  @minLength(1) softwareSafetyClassAssignedBy?: string;
+  /** That person's reason for the class. */
+  @minLength(1) softwareSafetyClassRationale?: string;
   ...Record<never>;
+}
+
+/**
+ * The frontmatter a part document may carry for its software safety class.
+ * Open and self-contained, with no schema references, declaring only the three properties as
+ * plain strings with no value list. Required together.
+ */
+@extension("dependentRequired", #{
+  software_safety_class: #["software_safety_class_assigned_by", "software_safety_class_rationale"],
+  software_safety_class_assigned_by: #["software_safety_class"],
+  software_safety_class_rationale: #["software_safety_class"],
+})
+model PartFrontmatter {
+  @minLength(1) software_safety_class?: string;
+  @minLength(1) software_safety_class_assigned_by?: string;
+  @minLength(1) software_safety_class_rationale?: string;
+  ...Record<unknown>;
 }
 
 /**

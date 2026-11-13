@@ -39,6 +39,14 @@ FR152_MEMBERS = {
     "allocation": {"sourceElement", "targetElement"},
 }
 
+# The FR-012 optional human-assigned class keys `Part` carries beside its
+# FR-152 members (record keys, extracted from frontmatter).
+PART_CLASS_KEYS = {
+    "softwareSafetyClass",
+    "softwareSafetyClassAssignedBy",
+    "softwareSafetyClassRationale",
+}
+
 # The FR-004 keys `Interface` carries beside its FR-152 features.
 INTERFACE_FR004_KEYS = {"associated_types", "clauses", "relations"}
 
@@ -211,7 +219,8 @@ def test_each_kind_has_one_required_table_row_locator(kind):
     assert loc["required"] is True
     assert loc["assert"] == {"columns": columns, "min_rows": 1}
     assert columns[0] not in FR075_TABLE_KEYS
-    assert set(locs) == {"id", "title", "type", kind}
+    optional = PART_CLASS_KEYS if kind == "part" else set()
+    assert set(locs) == {"id", "title", "type", kind} | optional
 
 
 @pytest.mark.trace("TC-103", "FR-007-AC-4")
@@ -319,7 +328,8 @@ def test_no_member_beyond_fr152(kind):
         assert FR152_MEMBERS[kind] <= set(members)
         assert set(schema["required"]) == required == {"featureOrder"}
         return
-    assert set(schema["properties"]) == FR152_MEMBERS[kind]
+    optional = PART_CLASS_KEYS if kind == "part" else set()
+    assert set(schema["properties"]) == FR152_MEMBERS[kind] | optional
     assert set(schema["required"]) == FR152_MEMBERS[kind]
     assert required == FR152_MEMBERS[kind]
 
