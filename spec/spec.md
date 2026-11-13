@@ -147,7 +147,8 @@ declares the semantic contract in the manifest; FR-004 fixes each type's
 role-distinct schema; FR-005 makes the skeletons executable fixtures; FR-006
 fixes the three architecture-specific lowerings; FR-007 declares the systems-model
 kinds; FR-008 authors the optional record keys as Markdown sections; FR-009 keeps a
-declaration key optional where its source section is. Integration tests in `integration/` verify the
+declaration key optional where its source section is; FR-012 lets a person record a
+human-assigned software safety class, assigner and rationale on a part as frontmatter. Integration tests in `integration/` verify the
 activation and Quoin-install boundaries; the third external boundary, the
 Quire engine (loader, extraction, record surface), has no IT artifact of its
 own — the FR-003, FR-005 and FR-006 test harness is this module's Quire
