@@ -47,3 +47,20 @@ vocabulary.
 | FND-004 | low | FR-012-AC-1 and AC-9 name the generated `Part.json`; the source is `model Part` in `typespec/main.tsp:451` (FR-002), and a hand edit of the JSON fails `make schemas-check`. Fix: name the TypeSpec model and the projected schema, as iso FR-009-AC-3 does. | FR-012-AC-1, FR-012-AC-9 | wrong-requirement |
 | FND-005 | low | No AC covers an empty `Class` cell; AC-5 and AC-6 cover `Rationale` and `Assigned By` only, so the third required cell is asserted only by the schema text of AC-1. Fix: extend AC-5/AC-6 to the `Class` cell. | FR-012-AC-5, FR-012-AC-6 | correct-requirement-no-evidence |
 | FND-006 | low | `spec/spec.md:140-152` lists each FR by number in prose and is not updated for FR-012. Separately, `spec/tests.md` (TM-001) on main is a hand-kept test matrix with per-row status ticks, which is file-tracking ceremony (coverage is computed by `quire matrix`); this PR rightly adds nothing to it, but it should be deleted rather than extended. | spec/spec.md:149; spec/tests.md | wrong-requirement |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-007 | high | The fix for FND-002 copies the class vocabulary. `model Part` declares `softwareSafetyClass` as "the same string-literal union in the same order" as spec-artifacts-iso, and FR-012-AC-9 pins the two lists equal with a parity test that reads the installed iso schema. That is a second copy of module data plus a pin test, which is the vendoring/pin antipattern. It also contradicts the redesign's own "declared once, in the ISO module" and the original FR-012 "holds no copy of the list". Fix: remove the union and AC-9. Validate the part's value without a copy, by importing a named iso type or through an engine vocabulary check (see the round-1 note on `carried_vocabulary`). | FR-012-AC-9, FR-012-AC-10, FR-012 Description "One mechanism: frontmatter" | wrong-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (849d139). The `quire trace` AC is gone. The class is now a top-level frontmatter key, carried by quire-rs FR-090 `carried_fields` (`from: [part]`, FR-012-AC-12). The new SR-020 FND-005 covers whether the carried value reaches any output. |
+| FND-002 | still-open | Round 1 (849d139) makes `class-9` and `Class-1` fail against `Part.json` (AC-10), but only by copying the iso list into `model Part` (new FND-007), and that copy has to be removed. Under the coordinator's no-copy direction, Part.json has no enum and the part frontmatter is the open `ObjectFrontmatter`, so `class-9` on a part passes `quire validate` again. quire-rs#669 FR-091 reports an out-of-enum value only for documents in a compared pair, and `carried_vocabulary` is a report output, not a validator. |
+| FND-003 | fixed | Round 1 (849d139). The work is split into AC-12, AC-13 and AC-14. They name the entries `requirement-class-below-allocated-part`/`class-below-part` and `part-needs-class`/`unassigned-class`, and the `grammar_severity` key `trace:unassigned-class: off`. |
+| FND-004 | fixed | Round 1 (849d139). AC-1 names `model Part` in `typespec/main.tsp` and requires `make schemas-check` to pass. |
+| FND-005 | fixed | Round 1 (849d139). AC-7 covers an empty `software_safety_class` string, and an assigner or rationale with no class. |
+| FND-006 | deferred | The `spec/spec.md` half is fixed in round 1 (849d139). The `spec/tests.md` hand-kept matrix is on main, this PR does not touch it, and deleting it is a main-wide cleanup routed to the coordinator. This PR correctly adds nothing to it. |
