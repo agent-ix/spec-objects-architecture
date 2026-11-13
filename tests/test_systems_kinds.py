@@ -260,7 +260,7 @@ def test_edge_verbs_and_roles_are_declared_and_used():
                     assert token in REQUIREMENT_KINDS, (kind, token)
                 else:
                     assert token == "*" or token in manifest["roles"], (kind, token)
-    assert used_verbs - {DESIGN_VERB} == EDGE_VERBS
+    assert used_verbs == EDGE_VERBS | {DESIGN_VERB}
 
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")

@@ -14,58 +14,36 @@ spec-artifacts-process, resolved from the installed filament modules
 from __future__ import annotations
 
 import json
-import os
 import pathlib
 import shutil
-import subprocess
 
 import pytest
 import yaml
 
-from tests.conftest import FIXTURES_DIR, MANIFEST_PATH, PACKAGE_ROOT, object_type
+from tests.conftest import (
+    FIXTURES_DIR,
+    MANIFEST_PATH,
+    module_args,
+    object_type,
+    run_quire,
+    validate_bundle,
+)
 
 CORPUS = FIXTURES_DIR / "design_edges"
 VALID = CORPUS / "valid"
 INVALID = CORPUS / "invalid"
 MEMBER = "agent-ix/design-fixture"
-MODULES_ROOT = pathlib.Path(
-    os.environ.get("IX_FILAMENT_MODULES_PATH")
-    or pathlib.Path.home() / ".ix" / "filament" / "modules"
-)
-
-
-def _module(name: str) -> str:
-    path = MODULES_ROOT / name
-    assert (path / "manifest.yaml").is_file(), (
-        f"{name} is not installed under {MODULES_ROOT}; the design-edge rows "
-        "load it beside this module, and a skipped row is not coverage"
-    )
-    return str(path)
-
-
-def _modules(*extra: str, process: bool = True) -> list[str]:
-    names = ["spec-artifacts-iso"] + (["spec-artifacts-process"] if process else [])
-    args: list[str] = []
-    for name in names:
-        args += ["--module", _module(name)]
-    args += ["--module", str(PACKAGE_ROOT)]
-    return args + list(extra)
-
-
-def _run(*args: str) -> subprocess.CompletedProcess:
-    assert shutil.which("quire"), "quire CLI not installed"
-    return subprocess.run(["quire", *args], capture_output=True, text=True, check=False)
 
 
 def _report(
     members: dict[str, pathlib.Path], process: bool = True, relation: str | None = None
 ) -> dict[tuple[str, str], dict]:
-    args = ["relations", "--json", *_modules(process=process)]
+    args = ["relations", "--json", *module_args(process=process)]
     for member, root in members.items():
         args += ["--repo", f"{member}={root}"]
     if relation:
         args += ["--relation", relation]
-    result = _run(*args)
+    result = run_quire(*args)
     assert result.returncode == 0, result.stderr
     rows = {}
     for rel in json.loads(result.stdout)["relations"]:
@@ -78,16 +56,8 @@ def _linked(row: dict) -> list[tuple[str, str]]:
     return [(e["id"], e["archetype"]) for e in row["linked"]]
 
 
-def _bundle(
-    root: pathlib.Path, *extra: str, process: bool = True
-) -> subprocess.CompletedProcess:
-    return _run(
-        "validate",
-        "--okf",
-        *_modules(*extra, process=process),
-        "--repo",
-        f"{MEMBER}={root}",
-    )
+def _bundle(root: pathlib.Path, *extra: str, process: bool = True):
+    return validate_bundle(MEMBER, root, *extra, process=process)
 
 
 def _manifest() -> dict:
@@ -104,7 +74,10 @@ def test_fr010_ac1_edge_declared_with_inverse_and_no_realizes_key():
     assert edges["realizes_requirement"]["inverse"] == "requirement_realized_by"
     assert edges["realizes_requirement"]["category"] == "traceability"
     assert "realizes" not in edges
-    result = _run("validate", *_modules(), str(VALID / "spec/design/scoring_engine.md"))
+    result = run_quire(
+        "validate", *module_args(), str(VALID / "spec/design/scoring_engine.md")
+    )
+    assert result.returncode == 0, result.stderr
     assert "DuplicateEdgeType" not in result.stderr
 
 
@@ -116,6 +89,7 @@ def test_fr010_ac2_part_and_connection_admit_the_edge_toward_requirements():
             "NFR",
         ]
     result = _bundle(VALID)
+    assert result.returncode == 0, result.stderr
     for doc in ("scoring_engine.md", "planner_to_scoring.md"):
         for line in result.stderr.splitlines():
             if doc in line:
@@ -140,7 +114,10 @@ def test_fr010_ac3_manifest_declares_exactly_the_two_relations():
         assert rel["to"] == ["part", "connection", "ADR"]
     assert manifest["traceability"]["design_relations"] == list(fields)
     assert manifest["object_types"] and not manifest.get("archetypes")
-    assert _run("relations", "--json", *_modules(), "--repo", f"{MEMBER}={VALID}")
+    loaded = run_quire(
+        "relations", "--json", *module_args(), "--repo", f"{MEMBER}={VALID}"
+    )
+    assert loaded.returncode == 0, loaded.stderr
 
 
 @pytest.mark.trace("TC-143", "FR-010-AC-4")
@@ -285,33 +262,77 @@ def test_fr010_ac10_criterion_edge_needs_an_obligations_source(tmp_path):
     bare = _report({MEMBER: corpus}, process=False)[("fr-has-design-element", "FR-001")]
     assert bare["state"] == "uncovered"
     assert bare["dangling"] == []
-    # `realized_criteria` is carried by the design join (`relations --design`),
-    # which releases after quire 0.45.0.
-    if "--design" in _run("relations", "--help").stdout:
-        result = _run(
-            "relations",
-            "--design",
-            "--json",
-            *_modules(),
-            "--repo",
-            f"{MEMBER}={corpus}",
+    # The part's edge to the criterion id stays a dangling reference (FR-026)
+    # where no obligations source mints it, and resolves where one does.
+    without = _bundle(corpus, process=False)
+    dangling = [
+        ln
+        for ln in without.stderr.splitlines()
+        if "dangling-reference" in ln and "FR-001-AC-1" in ln
+    ]
+    assert dangling and "scoring_engine.md" in dangling[0], without.stderr
+    with_process = _bundle(corpus)
+    assert "FR-001-AC-1" not in with_process.stderr, with_process.stderr
+
+
+def _design_join_available() -> bool:
+    return "--design" in run_quire("relations", "--help").stdout
+
+
+@pytest.mark.trace("TC-149", "FR-010-AC-10")
+@pytest.mark.xfail(
+    condition=not _design_join_available(),
+    reason="`quire relations --design` (the join that carries realized_criteria) "
+    "is not in quire-cli 0.45.0; the clause is claimed once the CLI ships it",
+    strict=True,
+)
+def test_fr010_ac10_design_join_lists_the_realized_criterion(tmp_path):
+    corpus = tmp_path / "criterion-only"
+    shutil.copytree(VALID, corpus)
+    part = corpus / "spec/design/scoring_engine.md"
+    part.write_text(
+        part.read_text().replace(
+            '  - target: "ix://agent-ix/design-fixture/FR-001"\n'
+            '    type: "realizes_requirement"\n',
+            "",
+            1,
         )
-        assert result.returncode == 0, result.stderr
-        design = json.loads(result.stdout)["relations"][0]["rows"][0]
-        assert design["linked"][0]["realized_criteria"] == ["FR-001-AC-1"]
+    )
+    result = run_quire(
+        "relations",
+        "--design",
+        "--json",
+        *module_args(),
+        "--repo",
+        f"{MEMBER}={corpus}",
+    )
+    assert result.returncode == 0, result.stderr
+    design = json.loads(result.stdout)["relations"][0]["rows"][0]
+    assert design["linked"][0]["realized_criteria"] == ["FR-001-AC-1"]
 
 
 @pytest.mark.trace("TC-150", "FR-010-AC-11")
-def test_fr010_ac11_dangling_and_wrong_kind_targets_fail_validate_with_a_location():
+def test_fr010_ac11_dangling_and_wrong_kind_targets_fail_validate_with_a_location(
+    tmp_path,
+):
     result = _bundle(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
     lines = result.stderr.splitlines()
     dangling = [ln for ln in lines if "dangling-reference" in ln and "FR-999" in ln]
-    assert dangling and "dangling_part.md" in dangling[0]
+    assert len(dangling) >= 1 and "dangling_part.md" in dangling[0]
     assert "'realizes_requirement'" in dangling[0]
     wrong = [ln for ln in lines if "disallowed-edge-target" in ln]
-    assert wrong and "wrong_kind_part" in wrong[0] and "scoring_engine" in wrong[0]
-    # The valid corpus draws neither.
-    clean = _bundle(VALID, "--strict").stderr
+    assert len(wrong) == 1
+    assert "wrong_kind_part" in wrong[0] and "scoring_engine" in wrong[0]
+    # Control: the same corpus without the two bad parts draws neither
+    # diagnostic, so they are what the findings above come from.
+    control = tmp_path / "control"
+    shutil.copytree(INVALID, control)
+    (control / "spec/design/dangling_part.md").unlink()
+    (control / "spec/design/wrong_kind_part.md").unlink()
+    clean = _bundle(control, "--strict").stderr
     assert "dangling-reference" not in clean
     assert "disallowed-edge-target" not in clean
+    valid = _bundle(VALID, "--strict").stderr
+    assert "dangling-reference" not in valid
+    assert "disallowed-edge-target" not in valid

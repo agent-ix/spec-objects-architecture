@@ -15,8 +15,11 @@ from __future__ import annotations
 
 import functools
 import json
+import os
 import pathlib
 import re
+import shutil
+import subprocess
 from typing import Any
 
 import pytest
@@ -389,3 +392,50 @@ def schema_documents(schema_registry) -> dict[str, Any]:
         schema = json.loads(path.read_text())
         documents[schema.get("$id") or f"{SEMANTIC_CORE_BASE}{path.name}"] = schema
     return documents
+
+
+# ── quire CLI over the sibling modules (FR-010, FR-012 checks) ────────────
+
+#: The installed filament modules that declare the `FR`/`NFR` archetypes
+#: (spec-artifacts-iso) and the trace targets and `ADR` (spec-artifacts-process).
+MODULES_ROOT = pathlib.Path(
+    os.environ.get("IX_FILAMENT_MODULES_PATH")
+    or pathlib.Path.home() / ".ix" / "filament" / "modules"
+)
+
+
+def ix_module(name: str) -> str:
+    path = MODULES_ROOT / name
+    assert (path / "manifest.yaml").is_file(), (
+        f"{name} is not installed under {MODULES_ROOT}; the rows that load it "
+        "beside this module fail rather than skip, because a skipped row is "
+        "not coverage"
+    )
+    return str(path)
+
+
+def module_args(*extra: str, process: bool = True) -> list[str]:
+    """`--module` roots: iso, optionally process, then this module."""
+    names = ["spec-artifacts-iso"] + (["spec-artifacts-process"] if process else [])
+    args: list[str] = []
+    for name in names:
+        args += ["--module", ix_module(name)]
+    return args + ["--module", str(PACKAGE_ROOT), *extra]
+
+
+def run_quire(*args: str) -> subprocess.CompletedProcess:
+    assert shutil.which("quire"), "quire CLI not installed"
+    return subprocess.run(["quire", *args], capture_output=True, text=True, check=False)
+
+
+def validate_bundle(
+    member: str, root: pathlib.Path, *extra: str, process: bool = True
+) -> subprocess.CompletedProcess:
+    """`quire validate --okf` over `root` loaded as corpus member `member`."""
+    return run_quire(
+        "validate",
+        "--okf",
+        *module_args(*extra, process=process),
+        "--repo",
+        f"{member}={root}",
+    )

@@ -15,27 +15,20 @@ import shutil
 import pytest
 import yaml
 
-from tests.conftest import FIXTURES_DIR, MANIFEST_PATH, PACKAGE_ROOT
-from tests.test_design_edges import _module, _run
+from tests.conftest import (
+    FIXTURES_DIR,
+    MANIFEST_PATH,
+    PACKAGE_ROOT,
+    run_quire,
+    validate_bundle,
+)
 
 CORPUS = FIXTURES_DIR / "safety_class"
 MEMBER = "agent-ix/class-fixture"
 
 
-def _bundle(root: pathlib.Path, *extra: str):
-    return _run(
-        "validate",
-        "--okf",
-        "--module",
-        _module("spec-artifacts-iso"),
-        "--module",
-        _module("spec-artifacts-process"),
-        "--module",
-        str(PACKAGE_ROOT),
-        "--repo",
-        f"{MEMBER}={root}",
-        *extra,
-    )
+def _bundle(root: pathlib.Path, *extra: str, process: bool = True):
+    return validate_bundle(MEMBER, root, *extra, process=process)
 
 
 def _findings(result, check: str) -> list[str]:
@@ -90,6 +83,7 @@ def test_fr012_ac12_all_unassigned_corpus_draws_no_undeclared_vocabulary(tmp_pat
     (corpus / "spec/design").mkdir(parents=True)
     shutil.copy(CORPUS / "spec/design/part_none.md", corpus / "spec/design")
     result = _bundle(corpus)
+    assert result.returncode == 0, result.stderr
     for name in (
         "requirement-class-below-allocated-part",
         "part-class-in-vocabulary",
@@ -135,6 +129,6 @@ def test_fr012_ac14_unassigned_part_is_reported_only_when_the_key_is_enabled():
 def test_fr012_ac15_module_loads_on_its_own(tmp_path):
     part = tmp_path / "part.md"
     part.write_text((PACKAGE_ROOT / "skeletons" / "part.md").read_text())
-    result = _run("validate", "--module", str(PACKAGE_ROOT), str(part))
+    result = run_quire("validate", "--module", str(PACKAGE_ROOT), str(part))
     assert result.returncode == 0, result.stderr
     assert "ManifestError" not in result.stderr

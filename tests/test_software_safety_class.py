@@ -237,9 +237,9 @@ def test_fr012_ac11_skeleton_names_the_fields_and_carries_none():
         assert f"\n{key}:" not in text
 
 
-# Schema half of the part-frontmatter requirement only. The unassigned-corpus
-# clause needs the module's traceability entries, which the engine cannot load yet
-# (PLAT-1578), so the criterion is not claimed here.
+# Schema half of FR-012-AC-12; the unassigned-corpus half is in
+# test_software_safety_class_checks.py.
+@pytest.mark.trace("FR-012-AC-12")
 def test_part_frontmatter_ref_is_self_contained_and_open():
     ot = object_type("part")
     assert ot["frontmatter_schema_ref"] == "schemas/PartFrontmatter.json"

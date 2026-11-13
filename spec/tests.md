@@ -77,7 +77,8 @@ skipped.
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
 | FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | ✅ |
-| FR-010 | FR-010-AC-1..11, FR-010-CON-1 | TC-140..TC-150 | ✅ |
+| FR-010 | FR-010-AC-1..11, FR-010-CON-1 | TC-140..TC-150 | ✅ except the `realized_criteria` clause of AC-10, an expected failure until quire-cli ships `relations --design` |
+| FR-012 | FR-012-AC-1..15, FR-012-CON-1..2 | TC-160..TC-162 | ✅ AC-9, AC-10 and AC-12..AC-15 need spec-artifacts-iso `carried_fields` loaded |
 
 ### Integration Test Coverage
 
@@ -187,6 +188,9 @@ skipped.
 | TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9 | ✅ |
 | TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10 | ✅ |
 | TC-150 | A dangling `realizes_requirement` target and a wrong-kind target fail `quire validate --okf --strict` naming the file; the valid corpus draws neither | Integration | P0 | FR-010-AC-11 | ✅ |
+| TC-160 | `Part.json` and `PartFrontmatter.json` carry the three plain optional class fields; the `part` locators read them; an assigned part validates and extracts, an unassigned one extracts no key, an incomplete assignment fails naming the key (`test_software_safety_class.py`) | Integration | P0 | FR-012-AC-1..8, FR-012-AC-11 | ✅ |
+| TC-161 | The `vocabulary` entry is declared and lists no class value; an out-of-vocabulary or wrong-case part value yields one `trace:undeclared-class-value` naming part and value; an all-unassigned corpus draws no `undeclared-relation-vocabulary` for the three entries, and `PartFrontmatter` is self-contained and open (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-9, FR-012-AC-10, FR-012-AC-12 | ✅ |
+| TC-162 | A requirement stating a lower class than its allocated part yields `trace:class-below-part`, a higher one nothing; an unassigned part yields `trace:unassigned-class` only when the key is enabled; the module loads on its own (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-13..15 | ✅ |
 
 ## Test Environment
 
