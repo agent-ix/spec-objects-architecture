@@ -72,3 +72,14 @@ installed.
 | FND-004 | low | `assert _run("relations", ...)` in TC-142 is always true: a `CompletedProcess` is truthy whatever the exit code. So the "module loads under quire-rs without error" clause of FR-010-AC-3 is not checked here. Assert `returncode == 0`. | tests/test_design_edges.py:143 | correct-requirement-no-evidence |
 | FND-005 | low | TC-140 (`"DuplicateEdgeType" not in stderr`), TC-141 (no `disallowed-edge` line) and the FR-012-AC-12 test check only that a message is absent, with no exit-code or positive control. They would pass if the command failed before reporting anything. Today the commands exit 0, so this is only a weak oracle. Assert the expected exit code, or a known line, alongside the absence. | tests/test_design_edges.py:102-122, tests/test_software_safety_class_checks.py:87-101 | correct-requirement-no-evidence |
 | FND-006 | low | `test_software_safety_class_checks.py` imports the private helpers `_module` and `_run` from another test module (`tests.test_design_edges`). It also redefines `_bundle` and `_manifest`, which `test_design_edges.py` already defines. Move the shared helpers into `tests/conftest.py`. | tests/test_software_safety_class_checks.py:19, tests/test_design_edges.py:37-104 | implementation-bug-despite-evidence |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (af58351). TC-150 now adds a control: the same invalid corpus with `dangling_part.md` and `wrong_kind_part.md` removed draws no `dangling-reference` and no `disallowed-edge-target`. So the two diagnostics come from the bad parts. It also asserts exactly one `disallowed-edge-target`. |
+| FND-002 | fixed | Round 1 (af58351). FR-007-AC-5 now names `realizes_requirement` and its `FR`/`NFR` targets. TC-104 asserts `used_verbs == EDGE_VERBS \| {DESIGN_VERB}`. |
+| FND-003 | deferred | Merge order, not code: the coordinator rules that spec-artifacts-iso#75 merges first. Re-run at 66900a1 with the iso#75 head (8aabfc7): the class-check tests pass. |
+| FND-004 | fixed | Round 1 (af58351). TC-142 asserts `loaded.returncode == 0` on `quire relations --json`. |
+| FND-005 | fixed | Round 1 (af58351). TC-140, TC-141 and the FR-012-AC-12 test now assert `returncode == 0` alongside the absence checks. All pass with quire-cli 0.45.0. |
+| FND-006 | fixed | Round 1 (af58351). `ix_module`, `module_args`, `run_quire` and `validate_bundle` move to `tests/conftest.py`. Neither test module imports from the other or redefines them. |

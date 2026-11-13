@@ -68,3 +68,14 @@ authoring the edge) is not delivered and has no follow-up.
 | FND-004 | medium | PLAT-1599 AC 1 says "the ADR archetype accept[s] a realizing edge". It is not delivered. ADR is declared by spec-artifacts-process, whose `allowed_links` does not list `realizes_requirement`, so an ADR authoring the edge draws `disallowed-edge-type`. FR-010 says so, and the fixture avoids it by authoring the inverse from NFR-001. spec-artifacts-process is not in the ticket's repo list, and no follow-up is linked. File the spec-artifacts-process change, or amend the ticket AC to "via the inverse". | spec/functional/FR-010-design-realization-edge.md:79-82 | missing-requirement |
 | FND-005 | low | PLAT-1599 AC 2 asks for a "located message" for wrong-kind targets. `disallowed-edge-target` names the source id (`wrong_kind_part: edge ... targets 'scoring_engine'`) but no file path, unlike `dangling-reference`. FR-010 asks only for the source, the target and its kind, so this conforms to the spec. The difference from the ticket's wording comes from the engine (quire-rs). | spec/functional/FR-010-design-realization-edge.md:47-49 | wrong-requirement |
 | FND-006 | low | FR-012 has no rows in `spec/tests.md`. This PR moves the FR-010 rows to ✅ and lands FR-012-AC-9, AC-10 and AC-12 to AC-15, but the test spec does not list any FR-012 criterion. | spec/tests.md:70-80 | missing-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (af58351). TC-149 now asserts that, without spec-artifacts-process, the part's edge is a `dangling-reference` to `FR-001-AC-1` naming `scoring_engine.md`, and that it resolves with spec-artifacts-process loaded. The `realized_criteria` clause is a separate `xfail(strict=True)` test that is conditional on `relations --design`. It reports XFAIL on quire-cli 0.45.0 and will fail loudly once the flag ships. FR-010-AC-10 and `spec/tests.md` say so. |
+| FND-002 | fixed | Round 1 (af58351). `test_part_frontmatter_ref_is_self_contained_and_open` is tagged FR-012-AC-12, and the stale "cannot load yet" comment is gone. |
+| FND-003 | fixed | Round 1 (af58351). FR-010-AC-4 now names `quire relations --json`, which is the command TC-143 runs, and `--design` only where the CLI release has it. |
+| FND-004 | deferred | Moved to PLAT-1688 (ADR archetype accepts a realizing edge to requirements, spec-artifacts-process), which I verified exists. |
+| FND-005 | accepted-no-change | The engine's wording: `disallowed-edge-target` names the source id, which FR-010 asks for. Adding a file path is a quire-rs output change and outside this module. |
+| FND-006 | fixed | Round 1 (af58351). `spec/tests.md` adds an FR-012 coverage row and TC-160 to TC-162. |
