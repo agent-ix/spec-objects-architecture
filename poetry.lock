@@ -932,17 +932,17 @@ files = [
 
 [[package]]
 name = "quire"
-version = "0.55.0"
+version = "0.60.0"
 description = "Python bindings for quire-rs: parse, corpus load, and whole-spec queries (FR-023)."
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "quire-0.55.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:f78095e4eb9232eb09b35b785b048da95fbf71ec8a4b086574aee9702ee65557"},
-    {file = "quire-0.55.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:7f2ce880e1ce1d318f8635d4647fdc7bd81d3939026a24e791549118e576afc7"},
-    {file = "quire-0.55.0-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:52bbdea792becebe6fea61cf46b27b2cbac3f691413d18c5ca0dbd7b652b7a77"},
-    {file = "quire-0.55.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:11273d781dd2d5a2ecab3d8d64a587b1a38cb47ad7114bf15014f0428bf86cf5"},
-    {file = "quire-0.55.0-cp39-abi3-win_amd64.whl", hash = "sha256:03fae35427857145bcfb5995300f49bd72a7c1ed1ea08f8b75ebf5402fc15613"},
+    {file = "quire-0.60.0-cp39-abi3-macosx_10_12_x86_64.whl", hash = "sha256:a2907aeee0f531ef502ce2b049980715739feb8fb20f26c85aa0986ef51cc11f"},
+    {file = "quire-0.60.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:2b2e8203f50263162ba2b66634d0dce21b946597f4cd3dc247c6c9853e041e52"},
+    {file = "quire-0.60.0-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:74368a66602715c05706952dc5b8bd9dde68026d882e604c170628e9b5348685"},
+    {file = "quire-0.60.0-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:fcb14f71b07b192127fc6e657df27ec5b3560c10c66e39953089c794936cf592"},
+    {file = "quire-0.60.0-cp39-abi3-win_amd64.whl", hash = "sha256:2d33e1569a2286f9766121db12d67c4008d035356270d00759b9db4664ddbac8"},
 ]
 
 [package.source]
@@ -1157,4 +1157,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.14"
-content-hash = "cdb8959292e5253cd1de4fe9bac9289d1606708fff293ff82635674fdab3e112"
+content-hash = "5ece48f5ac063aae2209bd5600408353cba9cadb9f253454724a8b499dd91b02"

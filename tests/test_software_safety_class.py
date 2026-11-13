@@ -1,11 +1,9 @@
 """The part software safety class (FR-012): optional, human-assigned, never defaulted.
 
 Validation runs through the `quire validate` binary against this module;
-records are extracted by the engine. The manifest's `field_consistency`,
-`vocabulary` and `required_fields` (`unassigned-class`) entries
-(FR-012-AC-9, AC-10, AC-13 to AC-15) are not declared yet: the installed
-engine rejects those keys until quire-rs implements FR-090 and FR-091
-(PLAT-1578).
+records are extracted by the engine. The manifest's `field_consistency`, `vocabulary`
+and `required_fields` entries (FR-012-AC-9, AC-10, AC-12 to AC-15) are exercised in
+`test_software_safety_class_checks.py`.
 """
 
 from __future__ import annotations
@@ -239,9 +237,9 @@ def test_fr012_ac11_skeleton_names_the_fields_and_carries_none():
         assert f"\n{key}:" not in text
 
 
-# Schema half of the part-frontmatter requirement only. The unassigned-corpus
-# clause needs the module's traceability entries, which the engine cannot load yet
-# (PLAT-1578), so the criterion is not claimed here.
+# Schema half of FR-012-AC-12; the unassigned-corpus half is in
+# test_software_safety_class_checks.py.
+@pytest.mark.trace("FR-012-AC-12")
 def test_part_frontmatter_ref_is_self_contained_and_open():
     ot = object_type("part")
     assert ot["frontmatter_schema_ref"] == "schemas/PartFrontmatter.json"

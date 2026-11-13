@@ -76,6 +76,9 @@ REFERENCE_COLUMNS = {
 FR075_TABLE_KEYS = {"Value", "State", "Step", "From", "Term", "Member", "Type"}
 
 EDGE_VERBS = {"owned_by", "typed_by", "connects", "allocates", "allocated_to"}
+# FR-010: the design-realization verb and the requirement archetypes it targets.
+DESIGN_VERB = "realizes_requirement"
+REQUIREMENT_KINDS = {"FR", "NFR"}
 SYSTEMS_ROLES = {"systems-part", "systems-port", "systems-interface"}
 
 # QSpec #86 TC-197 fixture Y: node identities are `ix://test/orders/<artifact
@@ -243,7 +246,7 @@ def test_construct_references_name_only_declared_members_and_roles():
 @pytest.mark.trace("TC-104", "FR-007-AC-5")
 def test_edge_verbs_and_roles_are_declared_and_used():
     manifest = load_manifest()
-    assert EDGE_VERBS <= set(manifest["edge_types"])
+    assert EDGE_VERBS | {DESIGN_VERB} <= set(manifest["edge_types"])
     assert SYSTEMS_ROLES <= set(manifest["roles"])
     assert "systems-interface" in object_type("interface")["roles"]
     used_verbs: set[str] = set()
@@ -253,8 +256,11 @@ def test_edge_verbs_and_roles_are_declared_and_used():
         for verb, targets in ot["allowed_links"].items():
             used_verbs.add(verb)
             for token in targets:
-                assert token == "*" or token in manifest["roles"], (kind, token)
-    assert used_verbs == EDGE_VERBS
+                if verb == DESIGN_VERB:
+                    assert token in REQUIREMENT_KINDS, (kind, token)
+                else:
+                    assert token == "*" or token in manifest["roles"], (kind, token)
+    assert used_verbs == EDGE_VERBS | {DESIGN_VERB}
 
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")

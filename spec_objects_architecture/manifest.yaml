@@ -43,12 +43,61 @@ edge_types:
   connects: { description: "Connection joins the ports at its source and target ends.", category: structural }
   allocates: { description: "Allocation names its source element (part, port or operation).", category: realization }
   allocated_to: { description: "Allocation names its target element (part).", category: realization }
+  # FR-010: a design element realizes a requirement. `realizes` stays the
+  # enterprise-capability verb spec-artifacts-iso declares.
+  realizes_requirement: { description: "A design element (part, connection or decision record) realizes the requirement at the target.", category: traceability, inverse: requirement_realized_by }
 roles:
   systems-part: { description: "A systems-model part (QSpec FR-152 Part)." }
   systems-port: { description: "A systems-model port owned by a part (QSpec FR-152 Port)." }
   systems-interface: { description: "An interface a systems port is typed by (QSpec FR-152 Interface)." }
 archetypes: []
 grammars: []
+# FR-010: the design relations. Each requirement kind is asked for a part,
+# connection or ADR that realizes it; the engine names none of them.
+traceability:
+  required_relations:
+  - name: fr-has-design-element
+    from: FR
+    edges: [realizes_requirement]
+    to: [part, connection, ADR]
+    direction: incoming
+    check: requirement-without-design
+  - name: nfr-has-design-element
+    from: NFR
+    edges: [realizes_requirement]
+    to: [part, connection, ADR]
+    direction: incoming
+    check: nfr-without-design
+  design_relations: [fr-has-design-element, nfr-has-design-element]
+  # FR-012: a requirement must not state a class below the part it is
+  # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
+  # carries; a project that enables `trace:unassigned-class` requires a class.
+  field_consistency:
+  - name: requirement-class-below-allocated-part
+    from: FR
+    field: software_safety_class
+    via: {archetype: allocation, edges: [allocates], direction: incoming}
+    edges: [allocated_to]
+    direction: outgoing
+    to: [part]
+    to_field: software_safety_class
+    order_from: {archetype: FR, field: software_safety_class}
+    rule: not_below
+    check: class-below-part
+  vocabulary:
+  - name: part-class-in-vocabulary
+    from: [part]
+    field: software_safety_class
+    carried: software_safety_class
+    check: undeclared-class-value
+  required_fields:
+  - name: part-needs-class
+    from: [part]
+    field: software_safety_class
+    exclude: []
+    check: unassigned-class
+grammar_severity:
+  trace:unassigned-class: "off"
 artifact_types: []
 lint_rules: []
 object_types:
@@ -403,6 +452,7 @@ object_types:
   allowed_links:
     owned_by: ["*"]
     typed_by: ["*"]
+    realizes_requirement: [FR, NFR]
   construct:
     identity: none
     shape: record
@@ -480,6 +530,7 @@ object_types:
 - name: connection
   allowed_links:
     connects: [systems-port]
+    realizes_requirement: [FR, NFR]
   construct:
     identity: none
     shape: record
