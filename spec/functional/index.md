@@ -17,3 +17,4 @@ description: "Index of artifacts in this directory."
 * [FR-008: Author the optional record keys as Markdown sections](./FR-008-record-key-sections.md)
 * [FR-009: Require a declaration key only when its source section is required](./FR-009-optional-sections-optional-keys.md)
 * [FR-010: Declare the design-realization edge and the design relations](./FR-010-design-realization-edge.md)
+* [FR-012: A part carries an optional human-assigned software safety class with assigner and rationale as frontmatter](./FR-012-software-safety-class-assignment.md)
