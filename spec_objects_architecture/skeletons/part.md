@@ -13,6 +13,11 @@ object: part
        `Owner | Declared Type | Multiplicity` — the owning composite type,
        the part's declared type, and its typed multiplicity (QSpec FR-152).
        Part.json requires all three.
+     - Optional frontmatter: `software_safety_class`,
+       `software_safety_class_assigned_by` and `software_safety_class_rationale`
+       state the human-assigned software safety class, who assigned it and why.
+       The three are required together; omit all three when no class is
+       assigned (the part is then unassigned; nothing supplies a default).
      - A part declares structure, not data or calls: Part.json forbids
        `fields` and `operations`, so there is neither a "## Properties" nor
        an "## Operations" section.

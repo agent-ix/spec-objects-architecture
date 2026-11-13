@@ -161,7 +161,8 @@ def test_the_id_pattern_is_stated_once_and_carried_by_every_id_locator(
     assert set(base["required"]) == {"id", "title", "type"}
     assert OBJECT_ID_LOCATOR_REGEX == f"^({OBJECT_ID_PATTERN[1:-1]})$"
     for ot in object_types():
-        assert "frontmatter_schema_ref" not in ot, ot["name"]
+        if ot["name"] != "part":
+            assert "frontmatter_schema_ref" not in ot, ot["name"]
         loc = locators(ot)["id"]
         assert loc["from"] == "frontmatter_field", ot["name"]
         assert loc["regex"] == OBJECT_ID_LOCATOR_REGEX, ot["name"]

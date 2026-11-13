@@ -135,6 +135,7 @@ SUPPORT_MODELS = (
     "ConnectionEnd",
     "ObjectId",
     "ObjectFrontmatter",
+    "PartFrontmatter",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.
