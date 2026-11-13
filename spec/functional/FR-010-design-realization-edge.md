@@ -58,15 +58,21 @@ that realize it and a gap when there are none. The engine knows no name below; t
   `fr-has-design-element` (`from: FR`, `check: requirement-without-design`) and
   `nfr-has-design-element` (`from: NFR`, `check: nfr-without-design`).
 - The module SHALL list both names, in that order, in `traceability.design_relations`.
-- `to` is non-empty, so an edge from a document of another kind is a kind mismatch and a dangling
-  edge never satisfies the relation (FR-058, FR-085).
+- `to` is non-empty, so a dangling edge never satisfies the relation, and an edge from a document of
+  another kind does not satisfy it either: the relations are `incoming`, so such a source leaves the
+  requirement `uncovered` and yields neither a `kind_mismatch` entry nor a
+  `trace:target-kind-mismatch` finding (quire-rs FR-085-AC-25, FR-086).
 - A design element may realize a single acceptance criterion by authoring the edge directly to the
   criterion's own id (no `#fragment`); the join attributes it to the owning requirement and lists the
-  criterion id in `realized_criteria` (quire-rs FR-086, FR-058 CR-417).
-- In a corpus that loads this module without the modules declaring `FR`, `NFR` or `ADR`, or with no
-  document of a kind a relation names, each relation SHALL report `trace:undeclared-relation-vocabulary`
+  criterion id in `realized_criteria` (quire-rs FR-086, FR-058 CR-417). The precondition is a trace
+  target named by an `obligations:` source, which mints the criterion ids; in the installed modules
+  only spec-artifacts-process declares one. Without it the edge stays dangling and the requirement is
+  a gap, so this module declares no such source and relies on the module that does.
+- In a corpus where no loaded module declares a kind a relation names (`FR`, `NFR` or `ADR`) and no
+  document of that kind exists, each relation SHALL report `trace:undeclared-relation-vocabulary`
   naming that kind (quire-rs FR-058-AC-11). This is the intended outcome: the declaration is live
-  only where its kinds exist, and the finding says so. It is advisory and a repository may map the key
+  only where its kinds exist (either a declaring module or a document of the kind keeps it live,
+  quire-rs FR-058-AC-11), and the finding says so. It is advisory and a repository may map the key
   `off` or load the module that declares the kind.
 - The relations ship advisory like every FR-058 relation; this module sets no severity.
 - The `ADR` archetype is declared by `spec-artifacts-process`, which does not list the verb in its
@@ -83,10 +89,11 @@ that realize it and a gap when there are none. The engine knows no name below; t
 | FR-010-AC-3 | The manifest declares exactly the relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and `design_relations` lists them in that order; the module loads under quire-rs without error. | Test |
 | FR-010-AC-4 | Over a fixture corpus, `quire relations --design --json` reports an `FR` with a realizing part as `covered` with that part's id and archetype `part`, and an `FR` with none as `uncovered`. | Test |
 | FR-010-AC-5 | A requirement that authors `requirement_realized_by` toward a connection is `covered` with that connection in the same run, and a pair authored both ways yields one element. | Test |
-| FR-010-AC-6 | An `NFR` realized by an `ADR` is `covered` with the ADR's id and archetype; the same edge from a document of an archetype outside `to` is a kind mismatch and the `NFR` is `uncovered`. | Test |
-| FR-010-AC-7 | With the architecture repository and the requirements repository loaded as two members through `--repo`, an `FR` in one is `covered` by a part in the other; without the part's repository loaded the `FR` is `uncovered` and the reference is dangling as authored. | Test |
+| FR-010-AC-6 | An `NFR` realized by an `ADR` is `covered` with the ADR's id and archetype; the same edge authored by a document of an archetype outside `to` leaves the `NFR` `uncovered`, with no `kind_mismatch` entry and no `trace:target-kind-mismatch` finding. | Test |
+| FR-010-AC-7 | With the architecture repository and the requirements repository loaded as two members through `--repo`, an `FR` in one is `covered` by a part in the other; with the part's repository not loaded, an edge the part authors is not in the corpus and the `FR` is `uncovered` with no `dangling` entry, while an `FR` that authors `requirement_realized_by` toward the unloaded repository is `uncovered` with the reference in `dangling` as authored. | Test |
 | FR-010-AC-8 | The `trace:requirement-without-design` and `trace:nfr-without-design` findings are advisory: a corpus whose only faults are those findings stays valid, and mapping a key `off` drops it. | Test |
-| FR-010-AC-9 | Loading the module with a corpus that has no document of kind `ADR`, or without the module declaring it, yields `trace:undeclared-relation-vocabulary` for each relation naming it and no other finding for that cause, advisory under both postures. | Test |
+| FR-010-AC-9 | Loading the module where no loaded module declares kind `ADR` and the corpus has no document of kind `ADR` yields `trace:undeclared-relation-vocabulary` for each relation naming it and no other finding for that cause, advisory under both postures. | Test |
+| FR-010-AC-10 | With a trace target named by an `obligations:` source minting the criterion ids of an `FR`, a part whose edge targets one of them makes that `FR` `covered` with the part in `linked` and the id in `realized_criteria`; without such a source the same edge is `dangling` as authored and the `FR` is `uncovered`. | Test |
 
 ## Constraints
 

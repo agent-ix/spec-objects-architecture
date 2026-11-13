@@ -56,3 +56,23 @@ These parts are clean:
 CR-416, FR-084, FR-085 and quire-cli FR-041 on names, fields, order and semantics. FND-001 is a
 coverage gap, because the Test Matrix does not record FR-010. FND-002 is an unspecified edge
 that produces a real advisory finding.
+
+## New findings (disposition pass 1)
+
+These were checked at head bd41121 against the merged quire-rs main f8a8cdb (FR-086, FR-058 CR-416/CR-417, FR-085) and quire-cli FR-041.
+
+| ID | Severity | Summary | Refs | Escape Cause |
+| --- | --- | --- | --- | --- |
+| FND-005 | high | The new Behavior bullet and AC-9 say `trace:undeclared-relation-vocabulary` fires when the declaring module is absent **or** no document of the kind exists. The engine fires only when **both** hold: FR-058-AC-11 says "no loaded module declares **and** no document in the bundle is", and `check_declaration_is_live` treats a kind as live if it is declared or present. With spec-artifacts-process loaded and zero ADR documents, nothing is reported, so AC-9 and TC-148 fail as written. | FR-010-AC-9, FR-010 Behavior bullet 6, spec/tests.md TC-148, quire-rs FR-058-AC-11, src/corpus/required_relations.rs:113-127 | wrong-requirement |
+| FND-006 | high | AC-6 and Behavior bullet 4 say a wrong-kind source "is a kind mismatch". Both relations are `direction: incoming`, and merged FR-086 says "A wrong-kind source under an `incoming` relation leaves the requirement a gap and yields no `kind_mismatch` entry (FR-085-AC-25)". FR-085-AC-25 also says no `trace:target-kind-mismatch` is reported. TC-145 papers over this with "under an outgoing reading", which these relations never have. | FR-010-AC-6, FR-010 Behavior bullet 4, spec/tests.md TC-145, quire-rs FR-086 The join, FR-085-AC-25 | wrong-requirement |
+| FND-007 | medium | AC-7 says that without the part's repository loaded "the reference is dangling as authored". Under merged FR-086, an edge that the design element authors in an unloaded member is not in the corpus, so the requirement is a gap with no `dangling` entry. A dangling entry appears only when the requirement authors the inverse toward the unloaded member. AC-7 does not say which end authors the edge, and its natural reading ("covered by a part in the other") contradicts FR-086. | FR-010-AC-7, spec/tests.md TC-146, quire-rs FR-086 Cross-repository elements resolve | wrong-requirement |
+| FND-008 | medium | The rewritten criterion bullet states, unconditionally, that an edge to a criterion id is attributed to the owning requirement and listed in `realized_criteria`. Merged FR-086 and FR-058-AC-27/28 make that conditional on a trace target named by an `obligations:` source. With none, the edge stays dangling and the requirement is a gap. FR-010 does not state the precondition or which module supplies it, and no AC or TC covers criterion realization. | FR-010 Behavior bullet 5, quire-rs FR-086 Criteria, FR-058-AC-27, FR-058-AC-28 | missing-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | tests.md adds an FR-010 matrix row (AC-1..9, CON-1 -> TC-140..TC-148, 🚧) and TC rows; spec.md FR roster names FR-010 |
+| FND-002 | fixed | Behavior bullet and AC-9 now state the undeclared-vocabulary outcome (its or/and condition is wrong; see FND-005) |
+| FND-003 | fixed | AC-1 now checks no `realizes` key and no `DuplicateEdgeType` on merge with spec-artifacts-iso (a real quire-rs diagnostic) |
+| FND-004 | fixed | Outputs now states the wildcard rationale: the requirement end is constrained by the relations' `from` |

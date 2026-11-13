@@ -33,3 +33,11 @@ repositories.
 **PASS with low findings.** The dependency direction and enablement split are sound. There is no
 cycle, and no dependency on PR #45's FR-012. The three low findings are edge and identity
 hygiene.
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | Frontmatter now carries depends_on edges to quire-rs FR-084 and quire-cli FR-041; Upstream lists FR-084 |
+| FND-002 | fixed | Behavior references read "quire-rs FR-041" and "quire-rs FR-041-AC-2" |
+| FND-003 | fixed | Every quire-rs and quire-cli link uses the ix://agent-ix/<repo>/spec/functional/FR-NNN form |
