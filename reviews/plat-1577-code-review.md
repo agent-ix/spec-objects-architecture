@@ -64,3 +64,10 @@ twice for a part with no class. That is engine behaviour, not this PR.
 |---|---|---|---|---|
 | FND-001 | medium | `test_fr012_con2_manifest_lists_no_class_value` is tagged `FR-012-CON-1`, but CON-1 is "names no standard / quotes no standard text". The test checks neither. Its name says CON-2, and what it does check is the AC-9 clause "no file of the module lists a class value", which this PR defers. It also checks only for the literal `class-1` in two files, so it cannot fail for any other value or file. The tag inflates the CON-1 matrix row with a test that does not exercise it. CON-1 and CON-2 are Inspection items, so delete the test (or move it to the AC-9 slice with a real assertion) rather than retagging it. | tests/test_software_safety_class.py:233-237 | correct-requirement-no-evidence |
 | FND-002 | low | `test_fr012_quire_validate_rejects_incomplete_assignment` asserts `named in result.stderr` with `named = "software_safety_class"` for the no-class and empty-class cases. That substring also matches `software_safety_class_assigned_by` and `software_safety_class_rationale`, so a diagnostic naming the wrong key would still pass. Match the quoted name or the `(at <key>)` location instead, for example `'"software_safety_class" is a required property'` and `'(at software_safety_class)'`. The record-schema test has the same pattern with `softwareSafetyClass`. | tests/test_software_safety_class.py:183-200, tests/test_software_safety_class.py:136-180 | correct-requirement-no-evidence |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (c34ee27). `test_fr012_con2_manifest_lists_no_class_value` and its `FR-012-CON-1` tag are deleted. CON-1 and CON-2 stay Inspection items, and both still hold by inspection. |
+| FND-002 | fixed | Round 1 (c34ee27). The record-schema test now matches `f"'{named}'"`. The `quire validate` test matches `f'"{named}"'` or `f"(at {named})"`. The closing quote or parenthesis stops `software_safety_class` / `softwareSafetyClass` from matching the longer keys. Focused run: 19 passed. |
