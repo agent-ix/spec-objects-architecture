@@ -16,3 +16,4 @@ description: "Index of artifacts in this directory."
 * [FR-007: Declare the systems-model kinds as object types with construct declarations](./FR-007-systems-model-kinds.md)
 * [FR-008: Author the optional record keys as Markdown sections](./FR-008-record-key-sections.md)
 * [FR-009: Require a declaration key only when its source section is required](./FR-009-optional-sections-optional-keys.md)
+* [FR-010: Declare the design-realization edge and the design relations](./FR-010-design-realization-edge.md)
