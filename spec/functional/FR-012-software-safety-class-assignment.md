@@ -36,8 +36,9 @@ class is a separate axis from requirement criticality
 The class is stated the way the ISO module states it on a requirement
 ([spec-artifacts-iso FR-009](ix://agent-ix/spec-artifacts-iso/FR-009)): three optional frontmatter fields,
 `software_safety_class`, `software_safety_class_assigned_by` and `software_safety_class_rationale`, required together. The module
-**SHALL** declare the three on a part frontmatter schema, `PartFrontmatter` (extending the open `ObjectFrontmatter` of
-[FR-002](./FR-002-emitted-json-schemas.md), referenced by the `part` object type), as plain non-empty strings with **no value list**,
+**SHALL** declare the three on a part frontmatter schema, `PartFrontmatter`, referenced by the `part` object type through `frontmatter_schema_ref`. It is a self-contained **open** schema
+(additional keys admitted, as `ObjectFrontmatter` of [FR-002](./FR-002-emitted-json-schemas.md) admits them) with **no `$ref`**, because
+the reference is compiled without a resolver; it declares only the three properties, as plain non-empty strings with **no value list**,
 so that an all-unassigned corpus draws no undeclared-vocabulary finding for them. The module extracts them into three optional record
 keys of the `part` declaration with `frontmatter_field` locators in the `part` `yield_pattern` ([FR-008](./FR-008-record-key-sections.md)
 form, key optional per [FR-009](./FR-009-optional-sections-optional-keys.md)): `softwareSafetyClass`, `softwareSafetyClassAssignedBy`
@@ -93,10 +94,10 @@ These entries land after the engine accepts them (quire-rs FR-090 and FR-091).
 | FR-012-AC-9 | The manifest declares the `vocabulary` entry `part-class-in-vocabulary` with `check: undeclared-class-value` stated above, and no file of the module lists a class value. | Test |
 | FR-012-AC-10 | With the ISO module loaded, a part stating `software_safety_class: class-9` or `Class-1` yields one `trace:undeclared-class-value` finding (the quire-rs FR-091 `vocabulary` rule) naming the part, the field and the value, whether or not the part is allocated to any requirement; a part stating a value in the carried vocabulary yields none. | Test |
 | FR-012-AC-11 | The `part` skeleton validates, names the three optional fields in its contract comment, and carries none of them. | Test |
-| FR-012-AC-12 | The `part` object type references a `PartFrontmatter` schema that declares the three properties as plain strings; over a corpus in which every part is unassigned and the ISO module is loaded, the merged corpus yields no `trace:undeclared-relation-vocabulary` finding for `requirement-class-below-allocated-part`, `part-class-in-vocabulary` or `part-needs-class`. | Test |
+| FR-012-AC-12 | The `part` object type references, through `frontmatter_schema_ref`, a self-contained open `PartFrontmatter` schema with no `$ref` that declares only the three properties as plain strings; over a corpus in which every part is unassigned and the ISO module is loaded, the merged corpus yields no `trace:undeclared-relation-vocabulary` finding for `requirement-class-below-allocated-part`, `part-class-in-vocabulary` or `part-needs-class`. | Test |
 | FR-012-AC-13 | The manifest declares the `field_consistency` entry `requirement-class-below-allocated-part` with `check: class-below-part` and the path stated above; over a fixture corpus with the ISO module loaded, a requirement stating a lower class than the part it reaches through an `allocation` yields `trace:class-below-part`, and a matching or higher requirement yields nothing. | Test |
 | FR-012-AC-14 | The manifest declares the `required_fields` entry `part-needs-class` with `check: unassigned-class` and `grammar_severity` key `trace:unassigned-class` set to `off`; with the key enabled an unassigned part yields `trace:unassigned-class`, and by default it yields nothing. | Test |
-| FR-012-AC-15 | The module loads on its own without error although its `field_consistency` and `vocabulary` entries name the ISO module's `FR` and carried name. | Test |
+| FR-012-AC-15 | The module loads on its own without error, compiling the `PartFrontmatter` reference without a resolver, although its `field_consistency` and `vocabulary` entries name the ISO module's `FR` and carried name. | Test |
 
 ## Constraints
 
