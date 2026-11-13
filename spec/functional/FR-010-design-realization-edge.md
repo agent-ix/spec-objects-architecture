@@ -93,7 +93,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
 | FR-010-AC-7 | With the architecture repository and the requirements repository loaded as two members through `--repo`, an `FR` in one is `covered` by a part in the other; with the part's repository not loaded, an edge the part authors is not in the corpus and the `FR` is `uncovered` with no `dangling` entry, while an `FR` that authors `requirement_realized_by` toward the unloaded repository is `uncovered` with the reference in `dangling` as authored. | Test |
 | FR-010-AC-8 | The `trace:requirement-without-design` and `trace:nfr-without-design` findings are advisory: a corpus whose only faults are those findings stays valid, and mapping a key `off` drops it. | Test |
 | FR-010-AC-9 | Loading the module where no loaded module declares kind `ADR` and the corpus has no document of kind `ADR` yields `trace:undeclared-relation-vocabulary` for each relation naming it and no other finding for that cause, advisory under both postures. | Test |
-| FR-010-AC-10 | With a trace target named by an `obligations:` source minting the criterion ids of an `FR`, a part whose edge targets one of them makes that `FR` `covered` with the part in `linked` and the id in `realized_criteria`; without such a source the same edge is `dangling` as authored and the `FR` is `uncovered`. | Test |
+| FR-010-AC-10 | With a trace target named by an `obligations:` source minting the criterion ids of an `FR`, a part whose edge targets one of them makes that `FR` `covered` with the part in `linked` and the id in `realized_criteria`; without such a source the `FR` is `uncovered` with no `dangling` entry, and the part's edge stays an FR-026 dangling reference. | Test |
 
 ## Constraints
 

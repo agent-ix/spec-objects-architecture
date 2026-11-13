@@ -76,3 +76,15 @@ These were checked at head bd41121 against the merged quire-rs main f8a8cdb (FR-
 | FND-002 | fixed | Behavior bullet and AC-9 now state the undeclared-vocabulary outcome (its or/and condition is wrong; see FND-005) |
 | FND-003 | fixed | AC-1 now checks no `realizes` key and no `DuplicateEdgeType` on merge with spec-artifacts-iso (a real quire-rs diagnostic) |
 | FND-004 | fixed | Outputs now states the wildcard rationale: the requirement end is constrained by the relations' `from` |
+| FND-005 | fixed | AC-9, the Behavior bullet and TC-148 now require both conditions (no declaring module and no document), matching FR-058-AC-11 |
+| FND-006 | fixed | AC-6, Behavior bullet 4 and TC-145 now state uncovered with no `kind_mismatch` and no `trace:target-kind-mismatch` (FR-085-AC-25, FR-086-AC-7) |
+| FND-007 | fixed | AC-7 and TC-146 now separate a part-authored edge (no dangling entry) from a requirement-authored inverse (dangling as authored), matching FR-086-AC-6 and quire-cli FR-041-AC-6 |
+| FND-008 | fixed | The Behavior bullet states the `obligations:` precondition and its source module; new AC-10 and TC-149 cover criterion realization |
+
+## New findings (disposition pass 2)
+
+This pass checked head 8f8b3d7 against merged quire-rs main f8a8cdb (FR-084, FR-086, FR-058 CR-416/CR-417, FR-085-AC-25) and merged quire-cli FR-041.
+
+| ID | Severity | Summary | Refs | Escape Cause |
+| --- | --- | --- | --- | --- |
+| FND-009 | medium | New AC-10 (and TC-149) says that without an `obligations:` source "the same edge is `dangling` as authored and the `FR` is `uncovered`". The edge is authored by the part toward an unminted criterion id, and FR-084 defines a row's `dangling` as that row document's own accepted-verb edges with an absent target. FR-086-AC-2/AC-6 attribute dangling only to a requirement that authors the inverse. Under these `incoming` relations, nothing ties the part's unresolved edge to the FR row, so the FR is `uncovered` with no `dangling` entry. The edge stays FR-026 `Dangling`, as FR-086 says "stays dangling". This is the same defect class as FND-007, now in AC-10. | FR-010-AC-10, spec/tests.md TC-149, quire-rs FR-084 `dangling` field, FR-086-AC-2, FR-086-AC-6, FR-086 Criteria | wrong-requirement |

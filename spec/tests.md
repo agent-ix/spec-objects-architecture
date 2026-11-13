@@ -185,7 +185,7 @@ skipped.
 | TC-146 | With the architecture and requirements repositories loaded through `--repo`, an `FR` is `covered` by a part in the other; with the part's repository not loaded an edge authored by the part leaves the `FR` `uncovered` with no `dangling` entry, and an `FR` authoring `requirement_realized_by` toward it has the reference dangling as authored | Integration | P1 | FR-010-AC-7 | 🚧 |
 | TC-147 | The `requirement-without-design` and `nfr-without-design` findings are advisory, and mapping a key `off` drops it | Integration | P1 | FR-010-AC-8 | 🚧 |
 | TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9 | 🚧 |
-| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the edge is dangling and the `FR` `uncovered` | Integration | P1 | FR-010-AC-10 | 🚧 |
+| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10 | 🚧 |
 
 ## Test Environment
 
