@@ -42,10 +42,11 @@ that realize it and a gap when there are none. The engine knows no name below; t
 - Edge verb `realizes_requirement` (category `traceability`) in `edge_types`, with
   `inverse: requirement_realized_by`. It is a new verb: the existing `realizes` verb means an
   enterprise capability and is left unchanged.
-- `allowed_links` of `part` and `connection` admitting `realizes_requirement: ["*"]`. The wildcard is
-  deliberate: `allowed_links` targets name object types and roles, `FR` and `NFR` are document
-  archetypes with no object role to name, and the requirement end is constrained where it can be, by
-  the relations' `from` (a document of another kind is simply not a requirement the relation obliges).
+- `allowed_links` of `part` and `connection` admitting `realizes_requirement: [FR, NFR]`. The targets are
+  the requirement archetypes, so a target of any other kind is reported by `quire validate` as
+  `disallowed-edge-target` naming the source, the target and its kind, and a target that resolves to no
+  document is reported as `dangling-reference` naming the file. An edge to a criterion id of an `FR` or
+  `NFR` is a dangling reference only where no `obligations:` source mints that id (see Behavior).
 - A `traceability` block with two `required_relations` and a `design_relations` list.
 
 ## Behavior
@@ -85,7 +86,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
 | ID | Criteria | Verification |
 |----|----------|--------------|
 | FR-010-AC-1 | `edge_types` declares `realizes_requirement` with `inverse: requirement_realized_by`, declares no `realizes` key, and merging the manifest with spec-artifacts-iso raises no `DuplicateEdgeType`, leaving the one `realizes` entry iso declares. | Test |
-| FR-010-AC-2 | `part` and `connection` admit `realizes_requirement`, and a part document authoring it toward an `FR` draws no `disallowed-edge-type` warning. | Test |
+| FR-010-AC-2 | `part` and `connection` admit `realizes_requirement` with targets `FR` and `NFR`, and a part or connection document authoring it toward an `FR` or `NFR` draws no `disallowed-edge-type` or `disallowed-edge-target` warning. | Test |
 | FR-010-AC-3 | The manifest declares exactly the relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and `design_relations` lists them in that order; the module loads under quire-rs without error. | Test |
 | FR-010-AC-4 | Over a fixture corpus, `quire relations --design --json` reports an `FR` with a realizing part as `covered` with that part's id and archetype `part`, and an `FR` with none as `uncovered`. | Test |
 | FR-010-AC-5 | A requirement that authors `requirement_realized_by` toward a connection is `covered` with that connection in the same run, and a pair authored both ways yields one element. | Test |
@@ -94,6 +95,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
 | FR-010-AC-8 | The `trace:requirement-without-design` and `trace:nfr-without-design` findings are advisory: a corpus whose only faults are those findings stays valid, and mapping a key `off` drops it. | Test |
 | FR-010-AC-9 | Loading the module where no loaded module declares kind `ADR` and the corpus has no document of kind `ADR` yields `trace:undeclared-relation-vocabulary` for each relation naming it and no other finding for that cause, advisory under both postures. | Test |
 | FR-010-AC-10 | With a trace target named by an `obligations:` source minting the criterion ids of an `FR`, a part whose edge targets one of them makes that `FR` `covered` with the part in `linked` and the id in `realized_criteria`; without such a source the `FR` is `uncovered` with no `dangling` entry, and the part's edge stays an FR-026 dangling reference. | Test |
+| FR-010-AC-11 | A part authoring `realizes_requirement` toward an id no document has fails `quire validate --okf --strict` with `dangling-reference` naming the file and the id, and a part authoring it toward a `part` fails with `disallowed-edge-target` naming the source and target; a corpus of well-formed edges draws neither. | Test |
 
 ## Constraints
 

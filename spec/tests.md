@@ -77,7 +77,7 @@ skipped.
 | FR-007 | FR-007-AC-1..12, FR-007-CON-1 | TC-100..TC-113 | ✅ |
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
 | FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | ✅ |
-| FR-010 | FR-010-AC-1..10, FR-010-CON-1 | TC-140..TC-149 | 🚧 needs quire-rs FR-086 (PLAT-1418) and the manifest data (PLAT-1599) |
+| FR-010 | FR-010-AC-1..11, FR-010-CON-1 | TC-140..TC-150 | ✅ |
 
 ### Integration Test Coverage
 
@@ -176,16 +176,17 @@ skipped.
 | TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5 | ✅ |
 | TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6 | ✅ |
 | TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 | ✅ |
-| TC-140 | `edge_types` declares `realizes_requirement` with inverse `requirement_realized_by` and no `realizes` key; merging with spec-artifacts-iso raises no `DuplicateEdgeType` | Unit | P0 | FR-010-AC-1 | 🚧 |
-| TC-141 | `part` and `connection` admit `realizes_requirement`; a part authoring it toward an `FR` extracts with no `disallowed-edge-type` | Integration | P0 | FR-010-AC-2 | 🚧 |
-| TC-142 | The manifest declares exactly `fr-has-design-element` and `nfr-has-design-element` with the stated fields and lists them in `design_relations`; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1 | 🚧 |
-| TC-143 | `quire relations --design --json` over a fixture reports an `FR` with a realizing part `covered` with the part's id and archetype, and an `FR` with none `uncovered` | Integration | P0 | FR-010-AC-4 | 🚧 |
-| TC-144 | A requirement authoring `requirement_realized_by` toward a connection is `covered` with it; a pair authored both ways yields one element | Integration | P1 | FR-010-AC-5 | 🚧 |
-| TC-145 | An `NFR` realized by an `ADR` is `covered`; the same edge authored by a document outside `to` leaves the `NFR` `uncovered` with no `kind_mismatch` and no `trace:target-kind-mismatch` | Integration | P1 | FR-010-AC-6 | 🚧 |
-| TC-146 | With the architecture and requirements repositories loaded through `--repo`, an `FR` is `covered` by a part in the other; with the part's repository not loaded an edge authored by the part leaves the `FR` `uncovered` with no `dangling` entry, and an `FR` authoring `requirement_realized_by` toward it has the reference dangling as authored | Integration | P1 | FR-010-AC-7 | 🚧 |
-| TC-147 | The `requirement-without-design` and `nfr-without-design` findings are advisory, and mapping a key `off` drops it | Integration | P1 | FR-010-AC-8 | 🚧 |
-| TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9 | 🚧 |
-| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10 | 🚧 |
+| TC-140 | `edge_types` declares `realizes_requirement` with inverse `requirement_realized_by` and no `realizes` key; merging with spec-artifacts-iso raises no `DuplicateEdgeType` | Unit | P0 | FR-010-AC-1 | ✅ |
+| TC-141 | `part` and `connection` admit `realizes_requirement`; a part authoring it toward an `FR` extracts with no `disallowed-edge-type` | Integration | P0 | FR-010-AC-2 | ✅ |
+| TC-142 | The manifest declares exactly `fr-has-design-element` and `nfr-has-design-element` with the stated fields and lists them in `design_relations`; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1 | ✅ |
+| TC-143 | `quire relations --json` (the design join, `--design`, where the CLI release has it) over a fixture reports an `FR` with a realizing part `covered` with the part's id and archetype, and an `FR` with none `uncovered` | Integration | P0 | FR-010-AC-4 | ✅ |
+| TC-144 | A requirement authoring `requirement_realized_by` toward a connection is `covered` with it; a pair authored both ways yields one element | Integration | P1 | FR-010-AC-5 | ✅ |
+| TC-145 | An `NFR` realized by an `ADR` is `covered`; the same edge authored by a document outside `to` leaves the `NFR` `uncovered` with no `kind_mismatch` and no `trace:target-kind-mismatch` | Integration | P1 | FR-010-AC-6 | ✅ |
+| TC-146 | With the architecture and requirements repositories loaded through `--repo`, an `FR` is `covered` by a part in the other; with the part's repository not loaded an edge authored by the part leaves the `FR` `uncovered` with no `dangling` entry, and an `FR` authoring `requirement_realized_by` toward it has the reference dangling as authored | Integration | P1 | FR-010-AC-7 | ✅ |
+| TC-147 | The `requirement-without-design` and `nfr-without-design` findings are advisory, and mapping a key `off` drops it | Integration | P1 | FR-010-AC-8 | ✅ |
+| TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9 | ✅ |
+| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10 | ✅ |
+| TC-150 | A dangling `realizes_requirement` target and a wrong-kind target fail `quire validate --okf --strict` naming the file; the valid corpus draws neither | Integration | P0 | FR-010-AC-11 | ✅ |
 
 ## Test Environment
 
