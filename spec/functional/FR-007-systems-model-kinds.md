@@ -36,7 +36,7 @@ data rather than a hard-coded kind list.
 - QSpec FR-152 (`ix://agent-ix/quire-specification/FR-152`): the kinds and
   their members.
 - QSpec FR-208 in `agent-ix/quire-specification#86`: the meaning ids
-  `quire.meaning.systems.<kind>/v1`.
+  `filament.meaning.systems.<kind>/v1`.
 - The FR-035 module-manifest schema, which admits `ObjectTypeEntry.construct`.
 - The IR member names `agent-ix/filament-core-data#172` defines in the core
   vocabulary: `owner`, `declaredType`, `multiplicity`, `direction`,
@@ -74,7 +74,7 @@ data rather than a hard-coded kind list.
 - `connection` SHALL require `sourceEnd` and `targetEnd` and `flowDirection` (`source-to-target`, `target-to-source`, `bidirectional`).
 - A connection end SHALL be a `ConnectionEnd`: `type`, the port it attaches to (a `systems-port`), required, and `multiplicity`, the multiplicity at that end, optional.
 - `allocation` SHALL require `sourceElement` and `targetElement` (a `systems-part`).
-- The kind of an allocation's source (a part, a port or an operation) SHALL be enforced by the QSL model `quire.model.systems.allocation/v1` and its binder, not by construct `references`.
+- The kind of an allocation's source (a part, a port or an operation) SHALL be enforced by the QSL model `filament.model.systems.allocation/v1` and its binder, not by construct `references`.
 - `interface` SHALL declare shape `interface` with `fields` optional, `operations` optional and `featureOrder` required, and no minimum-feature rule.
 - An interface's features SHALL be its fields and operations, ordered as one sequence across both by `featureOrder`, which lists the interface's own field and operation names.
 - An interface SHALL author its feature order as one table under `## Features` with the columns `Feature | Kind`: one row per declared field (`Kind` `field`) and operation (`Kind` `operation`), row order being the feature order.
@@ -83,7 +83,7 @@ data rather than a hard-coded kind list.
 - An interface's `specializes` relationships SHALL lower to the IR member `supertypes`; the filament-core-data extraction frontend owns that lowering, not this module or Quire.
 - The `specializes` declaration here SHALL equal spec-objects-business's, as copied in `tests/fixtures/spec-objects-business-specializes.json`. The two modules declare it independently, so a change on either side drifts silently until the fixture is refreshed against spec-objects-business and this declaration follows it.
 - The manifest `semantic.mappings` SHALL declare `generalization`, the quire-rs FR-075 `ModelFeature::Generalization` token: without it, `quire.validate_document` refuses an interface's `specializes` relationship with `semantic.feature-not-extractable` naming `generalization` instead of lowering it.
-- Every construct SHALL bind `meaning` to `quire.meaning.systems.<kind>/v1`.
+- Every construct SHALL bind `meaning` to `filament.meaning.systems.<kind>/v1`.
 - Every construct `references` entry SHALL name only roles the manifest declares, never `*`.
 - Each of `part`, `port`, `connection` and `allocation` SHALL author its members as one row of one table under an H2 named for the kind, extracted by one required `table_row` locator asserting the column header and `min_rows: 1`.
 - The `connection` table SHALL carry `Source`, `Source Multiplicity`, `Target`, `Target Multiplicity` and `Direction` columns.

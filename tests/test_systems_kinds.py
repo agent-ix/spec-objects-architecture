@@ -51,7 +51,7 @@ PART_CLASS_KEYS = {
 INTERFACE_FR004_KEYS = {"associated_types", "clauses", "relations"}
 
 # agent-ix/quire-specification#86 (FR-208).
-MEANING = {kind: f"quire.meaning.systems.{kind}/v1" for kind in SYSTEMS_KINDS}
+MEANING = {kind: f"filament.meaning.systems.{kind}/v1" for kind in SYSTEMS_KINDS}
 
 LOCATOR = {
     "part": ("Part", ["Owner", "Declared Type", "Multiplicity"]),

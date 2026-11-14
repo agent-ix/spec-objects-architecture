@@ -277,7 +277,7 @@ object_types:
       supertypes: optional
       clauses: optional
       relationships: optional
-    meaning: quire.meaning.systems.interface/v1
+    meaning: filament.meaning.systems.interface/v1
   data_schema:
     schema: schemas/Interface.json
   body_extraction:
@@ -462,7 +462,7 @@ object_types:
       multiplicity: required
       fields: forbidden
       operations: forbidden
-    meaning: quire.meaning.systems.part/v1
+    meaning: filament.meaning.systems.part/v1
   data_schema:
     schema: schemas/Part.json
   body_extraction:
@@ -511,7 +511,7 @@ object_types:
     references:
       owner: [systems-part]
       interfaceType: [systems-interface]
-    meaning: quire.meaning.systems.port/v1
+    meaning: filament.meaning.systems.port/v1
   data_schema:
     schema: schemas/Port.json
   body_extraction:
@@ -543,7 +543,7 @@ object_types:
     references:
       sourceEnd: [systems-port]
       targetEnd: [systems-port]
-    meaning: quire.meaning.systems.connection/v1
+    meaning: filament.meaning.systems.connection/v1
   data_schema:
     schema: schemas/Connection.json
   body_extraction:
@@ -573,7 +573,7 @@ object_types:
       operations: forbidden
     references:
       targetElement: [systems-part]
-    meaning: quire.meaning.systems.allocation/v1
+    meaning: filament.meaning.systems.allocation/v1
   data_schema:
     schema: schemas/Allocation.json
   body_extraction:
