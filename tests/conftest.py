@@ -415,8 +415,10 @@ def ix_module(name: str) -> str:
 
 
 def module_args(*extra: str, process: bool = True) -> list[str]:
-    """`--module` roots: iso, optionally process, then this module."""
+    """`--module` roots: iso, optionally process, the modules that own the
+    archetypes this module's links name (security, business), then this module."""
     names = ["spec-artifacts-iso"] + (["spec-artifacts-process"] if process else [])
+    names += ["spec-objects-security", "spec-objects-business"]
     args: list[str] = []
     for name in names:
         args += ["--module", ix_module(name)]

@@ -5,10 +5,9 @@ Every row runs the `quire` binary over `tests/fixtures/data_flow` with this
 module loaded beside spec-artifacts-iso, spec-artifacts-process and
 spec-objects-security (the owner of `data_classification`).
 
-Rows that read `regulatedCategories` need two changes that are not in a
-released quire: quire-rs PR #690 (the `record_keys` projection; without it the
-manifest does not load at all) and the `regulated_categories` vocabulary in
-spec-objects-security. Those rows fail until both land; they never skip.
+The manifest's `record_keys` projection needs an engine that supports it
+(quire-rs 0.61.0 or later); the `regulated_categories` vocabulary comes from
+spec-objects-security.
 """
 
 from __future__ import annotations
