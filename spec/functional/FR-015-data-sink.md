@@ -146,9 +146,10 @@ module derives none. A connection that carries nothing and delivers to a sink is
 
 | ID | Constraint | Type | Validation |
 |----|------------|------|------------|
-| FR-015-CON-1 | The module SHALL use generic terms (regulated data, processor agreement, trust boundary) and SHALL name no paywalled standard in any heading, description, example, skeleton or fixture. | Design | Inspection |
-| FR-015-CON-2 | No file of the module computes, fills in or rewrites a `kind`, a `processor_agreement`, a region or a `delivers_to` edge. | Design | Inspection |
-| FR-015-CON-3 | `flow_rules` is the only new engine kind; the module adds no engine code, no Python rule and no hard-coded sink list. | Scope | Inspection |
+| FR-015-CON-1 | The module SHALL use generic terms (regulated data, processor agreement, trust boundary). | Design | Inspection |
+| FR-015-CON-2 | The module SHALL name no paywalled standard in any heading, description, example, skeleton or fixture. | Design | Inspection |
+| FR-015-CON-3 | No file of the module computes, fills in or rewrites a `kind`, a `processor_agreement`, a region or a `delivers_to` edge. | Design | Inspection |
+| FR-015-CON-4 | `flow_rules` is the only new engine kind; the module adds no engine code, no Python rule and no hard-coded sink list. | Scope | Inspection |
 
 ## Acceptance Criteria
 
