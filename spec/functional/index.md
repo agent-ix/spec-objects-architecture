@@ -18,3 +18,4 @@ description: "Index of artifacts in this directory."
 * [FR-009: Require a declaration key only when its source section is required](./FR-009-optional-sections-optional-keys.md)
 * [FR-010: Declare the design-realization edge and the design relations](./FR-010-design-realization-edge.md)
 * [FR-012: A part carries an optional human-assigned software safety class with assigner and rationale as frontmatter](./FR-012-software-safety-class-assignment.md)
+* [FR-013: A connection states the data classifications it carries, and an unclassified connection is reported by an opt-in check](./FR-013-connection-carries-data-classification.md)
