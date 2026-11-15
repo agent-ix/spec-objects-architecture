@@ -42,3 +42,19 @@ this module, as their subject.
 |---|---|---|
 | FND-001 | fixed | The Description now states the capability ("The module SHALL let a `connection` state ...") and says stating classifications is optional. |
 | FND-002 | fixed | Both statements now have the edge as subject ("A `carries` edge ... SHALL yield ...") and cite quire-rs FR-040 and FR-026. |
+
+## Round 2 (a61972d)
+
+I re-checked the two Behavior lines a61972d changes. The cross-repository line is deleted. The security-module line no longer contains a `SHALL`. It is a statement of scope for the `off`-key bullet before it, and it adds no obligation. So it needs no EARS pattern. Every remaining Behavior bullet that has a `SHALL` still has one obligation and an active subject. The FND-001 and FND-002 fixes are unchanged.
+
+No new findings. **Round-2 verdict: PASS.**
+
+## Round 3 (f5970b9)
+
+The rewritten dangling bullet has two sentences, each with one obligation. The first is a ubiquitous
+`SHALL`, and the `carries` edge is its subject (the FND-002 fix stands). The second is an unwanted-behaviour
+`SHALL NOT` with a trailing `when` condition (the source member declares its identity). Its subject is the
+`ix://` target of the same `carries` edge. A trailing condition is acceptable EARS form here, and the
+condition can be tested. Neither sentence makes a ticket or an owner the subject.
+
+No new findings. **Round-3 verdict: PASS.**

@@ -54,3 +54,23 @@ holds only when the security module is loaded.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-003 | low | The added Behavior line "The module SHALL name `agent-ix/spec-objects-security` as the owner of the `data_classification` vocabulary, which is to be loaded alongside it" does not say where the module names it (manifest `imports`, skeleton comment, docs), and no AC checks it, so two implementers would satisfy it differently and no test can fail it. Fix: state the location (for example the connection skeleton's contract comment or a manifest field) and cover it in an AC, or reword as a statement of the dependency rather than a `SHALL`. | FR-013 Behavior (security module line) | ambiguous-requirement |
+
+## Dispositions (round 2, a61972d)
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-003 | fixed | The `SHALL name` obligation is gone. The line now states the dependency with no `SHALL`: the no-finding claim holds for a corpus that loads `agent-ix/spec-objects-security`, the owner of the `data_classification` vocabulary, and otherwise quire-rs reports `trace:undeclared-relation-vocabulary`. AC-4 is still limited to a corpus that loads the security module, so FND-002's fix is kept. No untestable obligation remains. |
+
+No new findings in round 2. The seven `relationships` edges and the Dependencies section are unchanged since round 1.
+
+**Round-2 verdict: PASS.**
+
+## Round 3 (f5970b9)
+
+f5970b9 cites quire-rs FR-085 inline in the dangling Behavior line. That matches how FR-013 already
+cites FR-026 and FR-040: inline, with no `relationships` edge. FR-085 is a resolution rule the engine
+already ships, not something this module needs delivered, so it adds no upstream dependency. The seven
+`relationships` edges and the Dependencies section are unchanged. PLAT-1440 is still the downstream
+implementer and is blocked by PLAT-1439 and PLAT-1441.
+
+No open findings, and no new ones. **Round-3 verdict: PASS.**

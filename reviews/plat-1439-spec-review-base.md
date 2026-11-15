@@ -67,3 +67,43 @@ quire-rs change", and one AC cannot fail under the Strict posture.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-005 | medium | The added Behavior line says a `carries` edge to a cross-repository `ix://` target outside the loaded bundle is "not reported as dangling ... quire-rs FR-040 skips both checks for it", and AC-2 now requires such an edge to yield "neither". quire-rs FR-040 says the opposite ("cross-repo `ix://` targets resolve as dangling", so Tier-2 checks only within one bundle). `validate.rs` suppresses `dangling-reference` for an unloaded authority only when the source's member declares an identity (bundle package, FR-085 / FR-038); "without one, every miss stays dangling". So a single-member corpus with no declared identity reports `dangling-reference` for the edge and AC-2's last clause fails. Fix: cite FR-085, not FR-040, for the dangling skip and condition it on the member declaring its identity, or drop the dangling half of the cross-repo clause and AC-2's "yields neither". | FR-013 Behavior; FR-013-AC-2; quire-rs FR-040; quire-rs FR-085; quire-rs src/corpus/validate.rs:414-433 | wrong-requirement |
+
+## Dispositions (round 2, a61972d)
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-005 | fixed | a61972d deletes the cross-repository Behavior line and AC-2's "yields neither" sentence (the second fix option). The kind-check line stays limited to targets in the loaded bundle. That still holds: quire-rs `validate_edge_targets` runs only on edges with a resolved `target_slot`, so a target outside the bundle never reaches it. No text in FR-013 now claims an engine skip for cross-repository targets. |
+
+## New findings (round 2)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-006 | low | Removing the cross-repo line leaves the dangling Behavior line unconditional: "A `carries` edge to an id that no document in the loaded bundle has SHALL yield `dangling-reference`". The edge section (line 33) still allows the target to be an `ix://` uri. In quire-rs `validate.rs` (validate_view_findings, reference-resolution loop), an `ix://` target under an authority that no loaded member declares is treated as `cross_repo` and draws no `dangling-reference` when the source's member declares an identity (FR-085). So a connection in a repo with a declared package that carries `ix://agent-ix/other-repo/CLASS-X` draws no finding, and the SHALL is false for it. AC-2 is unaffected because a fixture can use a bare id. This is what remains of FND-004's dangling half. Fix: limit the line to a bare id or an `ix://` uri under a loaded member's authority, or add "unless the target is under an unloaded authority and the source member declares its identity (quire-rs FR-085)". | FR-013 Behavior (lines 69-70); FR-013 The edge (line 33); quire-rs FR-085; quire-rs src/corpus/validate.rs | wrong-requirement |
+
+**Round-2 verdict: CONDITIONAL.** FND-001 to FND-005 are closed. One low finding (FND-006) is open. It does not affect any AC.
+
+## Dispositions (round 3, f5970b9)
+
+f5970b9 changes only the FR-013 dangling Behavior line. Checked against quire-rs `origin/main`
+`src/corpus/validate.rs` (`validate_view_findings`, reference-resolution loop) and FR-085.
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-006 | fixed | The line now requires `dangling-reference` only for a bare id, or an `ix://` target under a loaded member's authority, that no loaded document has. It adds that an `ix://` target under an authority no loaded member declares SHALL NOT yield `dangling-reference` when the source member declares its identity (FR-085). This matches the engine: `cross_repo` is true only when `edge.authorities` (unloaded authorities only) is non-empty and `member_identity(member_of(source))` is `Some`. It also matches FR-085-AC-17. The sentence does not cover an unloaded authority when the member has no identity, and the engine reports that case as dangling. Leaving it unstated is not a contradiction. AC-2 still uses a bare id and still holds. |
+
+Considered and not raised: CR-418 (FR-038). A dangling edge whose target is an acceptance-criterion id
+minted by exactly one document draws no `dangling-reference`. The engine reads that edge as an edge to
+the minting document, so the target is held by a document and the line is not falsified. This is a
+general engine rule for every verb, so FR-013 does not need to restate it.
+
+## New findings (round 3)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-007 | medium | FR-013-AC-7 requires that "the manifest declares `carries` neither in `edge_types` nor for any kind other than `connection`". The manifest already declares `carries: [data_schema, event]` on `queue` (`spec_objects_architecture/manifest.yaml:184`), and that predates this PR. So a test that follows AC-7 literally fails on `queue` today. PLAT-1440 cannot meet it without removing an existing edge. FR-007-AC-5 says it correctly: it limits the rule to the systems kinds. Rounds 1 and 2 missed this. Fix: change AC-7 to "nor for any systems kind other than `connection`", meaning the `SYSTEMS_TYPES` that TC-104 iterates. PLAT-1440 AC 8 says "every non-connection kind rejects `carries`" and needs the same scoping. | FR-013-AC-7; FR-007-AC-5; spec_objects_architecture/manifest.yaml:181-185; PLAT-1440 AC 8 | wrong-requirement |
+
+Not run: `quire validate spec`. The permission layer in this session refused it, as it did for
+`quoin`. This was a static review.
+
+**Round-3 verdict: FAIL.** FND-001 to FND-006 are closed. FND-007 (medium) is open: an AC that the
+existing manifest cannot pass. The fix is a one-word scoping change to AC-7.
