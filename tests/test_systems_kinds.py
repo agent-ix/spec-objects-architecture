@@ -260,7 +260,11 @@ def test_edge_verbs_and_roles_are_declared_and_used():
                     assert token in REQUIREMENT_KINDS, (kind, token)
                 else:
                     assert token == "*" or token in manifest["roles"], (kind, token)
-    assert used_verbs == EDGE_VERBS | {DESIGN_VERB}
+    # `carries` is allowed on `connection` only (FR-013); other kinds never use it.
+    assert used_verbs - {"carries"} == EDGE_VERBS | {DESIGN_VERB}
+    for kind in SYSTEMS_TYPES:
+        if kind != "connection":
+            assert "carries" not in object_type(kind)["allowed_links"], kind
 
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")
