@@ -45,3 +45,12 @@ Behavior line now contradict the new lines.
 | FND-002 | medium | Engine impact was not updated. It says "The edge, both relations and both `off` keys need no engine change". It also says the FR-084 change is "a carried-field entry on `linked` rows that reads `regulated_categories` from the target". The amended Behavior needs FR-058's new `record_keys` key, which is validated at load (FR-058-AC-36), and FR-084's `record` on both `document` and `linked` entries, keyed `regulatedCategories`. Fix: name FR-058 `record_keys` and FR-084 `record` as the engine change routed through PLAT-1441, and drop the `linked`-only, snake_case description. | spec/functional/FR-013-connection-carries-data-classification.md:105-113 |
 | FND-003 | medium | The older Behavior line still says `quire relations --json` SHALL list each `carries` target "together with each target's `regulated_categories`". The report key is the record key `regulatedCategories`, which AC-5 and the new lines now use; `regulated_categories` is the frontmatter key and never appears in the report. Two SHALLs name different keys for one output, so a test written from line 95 fails against the engine. Fix: `regulatedCategories`. | spec/functional/FR-013-connection-carries-data-classification.md:94-96 |
 | FND-004 | low | The no-`level` rationale is now wrong and unneeded. Both the Behavior line and Engine impact say `level` is excluded because it "is a `## Properties` table row that the engine does not extract". `DataClassification.json` declares `level` as a record property, and the module enables `record-sections`, so the record can hold `level`. That was the premise of the #688 base-review finding that introduced `record_keys`. The exclusion now holds by declaration. Fix: ground the SHALL NOT in `record_keys` ("`level` is not in `record_keys`"), and delete the extraction claim. | spec/functional/FR-013-connection-carries-data-classification.md:98-99,112-113 |
+
+## Disposition pass 1
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | FR-013 behavior and AC-5 condition category presence on a valid FR-084 record. |
+| FND-002 | still-open | The sentence saying both relations need no engine change contradicts their `record_keys` configuration. |
+| FND-003 | fixed | The report key spelling is `regulatedCategories`. |
+| FND-004 | fixed | `level` is excluded by the `record_keys` allow-list. |

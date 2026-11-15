@@ -37,3 +37,16 @@ file.
 | ID | Severity | Summary | Refs |
 |---|---|---|---|
 | FND-001 | low | FR-013-AC-5 says "no `level` or other unselected key appears in either" view, but the report rows hold many keys that are not record keys (`id`, `path`, `verification`, ...), so a literal test cannot pass. The first sentence says "no `level` value", which reads as the value, not the key. FR-084-AC-22/23 say "no `level` key at any depth". Fix: "no record key outside `record_keys` (in particular no `level` key) appears in either view, at any depth". | spec/functional/FR-013-connection-carries-data-classification.md:130 |
+
+## Disposition pass 1
+
+| FND | Outcome | Reason |
+| --- | --- | --- |
+| FND-001 | fixed | AC-5 makes category presence conditional on a valid record and asserts no unselected record key unconditionally. |
+| FND-002 | still-open | New low finding: AC-5 dropped `and` between its report assertions. |
+
+### New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+| --- | --- | --- | --- |
+| FND-002 | low | FR-013-AC-5 dropped `and` between the first sentence's report assertions. | spec/functional/FR-013-connection-carries-data-classification.md:130 |
