@@ -53,8 +53,10 @@ report. M1 reports this and denies nothing; denial is M2.
 ## Outputs
 
 - `carries: [data_classification]` in the `connection` `allowed_links`.
-- A `traceability.required_relations` entry `connection-carries-classification` (the per-connection view).
-- A `traceability.required_relations` entry `classification-carried-by-connection` (the per-classification view).
+- A `traceability.required_relations` entry `connection-carries-classification` (the per-connection view) with
+  `record_keys: [regulatedCategories]`.
+- A `traceability.required_relations` entry `classification-carried-by-connection` (the per-classification view) with
+  `record_keys: [regulatedCategories]`.
 - `grammar_severity` keys `trace:connection-without-classification` and `trace:classification-without-connection`, both set
   to `off`.
 
@@ -75,6 +77,14 @@ report. M1 reports this and denies nothing; denial is M2.
 - The module SHALL declare the reverse `required_relations` entry `{name: classification-carried-by-connection, from:
   data_classification, edges: [carries], to: [connection], direction: incoming, check: classification-without-connection}`,
   so the per-classification view is a declared relation and not an engine side effect.
+- Both `required_relations` entries SHALL set `record_keys: [regulatedCategories]`, the generic FR-058/FR-084 projection
+  allow-list, so the module selects the key and the engine holds no category names.
+- The relation report SHALL contain `regulatedCategories` on a document or linked entry if and only if a valid FR-084
+  `record` for that entry contains the selected key.
+- The relation report SHALL omit `regulatedCategories` from a document or linked entry when FR-084 omits `record` for it
+  (unresolved schema, invalid record or empty selected projection) or the key is absent from the `record`.
+- The relation report SHALL NOT expose, at any depth, a record key outside the entry's `record_keys`, including the
+  confidentiality `level`.
 - The module SHALL set `grammar_severity` `trace:connection-without-classification` and
   `trace:classification-without-connection` to `"off"`, following the `trace:unassigned-class` precedent of
   [FR-012](./FR-012-software-safety-class-assignment.md), so a corpus without data-flow modelling draws no finding. A project
@@ -83,25 +93,24 @@ report. M1 reports this and denies nothing; denial is M2.
   `data_classification` vocabulary; with it absent and no `data_classification` document, quire-rs reports
   `trace:undeclared-relation-vocabulary`, which is separate from the `off` keys.
 - With the quire-rs FR-084 change routed through PLAT-1441, `quire relations --json` SHALL list, for each connection, its
-  `carries` targets together with each target's `regulated_categories`, and a gap row for each connection with no `carries`
-  edge.
+  `carries` targets together with each target's `regulatedCategories` where the report contains it, and a gap row for each
+  connection with no `carries` edge.
 - `quire relations --json` SHALL list, per classification, the connections that carry it, from the reverse relation.
-- The report SHALL NOT include the confidentiality `level`, which is a `## Properties` table row that the engine does not
-  extract.
 - The module SHALL NOT derive a `carries` edge, a category or a level.
 - The module SHALL issue no denial.
 
 ## Engine impact
 
 The edge uses the existing `allowed_links`, `required_relations` (quire-rs FR-058) and relation report (quire-rs FR-084)
-mechanisms, and `ConnectionRecord` in `src/semantic/systems.rs` is unchanged. The edge, both relations and both `off` keys need
-no engine change.
+mechanisms, and `ConnectionRecord` in `src/semantic/systems.rs` is unchanged. The edge, the relation routing, both `off` keys
+and the severities need no engine change beyond the `record_keys` projection below.
 
-FR-084 does need an engine and report change. Its rows and linked entries carry no field value of the target, so the report
-cannot show a carried classification's `regulated_categories`. That change, a carried-field entry on `linked` rows that reads
-`regulated_categories` from the target, is routed through PLAT-1441, which also owns the security-side engine change for the
-category key (`agent-ix/spec-objects-security` FR-023). The report keeps the no-`level` boundary: `level` is a `## Properties`
-row the engine does not extract and the report does not show it. FR-013-AC-5 and AC-6 hold once that change lands.
+The record projection does need an engine change. quire-rs FR-058 and FR-084 add a generic `record_keys` allow-list to
+`required_relations` entries, routed through PLAT-1441, which also owns the security-side change for the category key
+(`agent-ix/spec-objects-security` FR-023). This module selects the camelCase record key `regulatedCategories` on both the
+document and the linked entries; the engine does not know the key name and projects only the keys an entry lists. `level` is
+excluded by this module's `record_keys` allow-list, not because the engine fails to extract it. FR-013-AC-5, AC-6 and AC-9
+hold once that change lands.
 
 ## Out of scope
 
@@ -118,10 +127,11 @@ row the engine does not extract and the report does not show it. FR-013-AC-5 and
 | FR-013-AC-2 | In a loaded bundle, a connection with `carries` to a `part` yields `disallowed-edge-target` naming the source, the target and its kind, and `carries` to an id no document has yields `dangling-reference` naming the file and the id. | Test |
 | FR-013-AC-3 | With `trace:connection-without-classification` turned on, a connection with no `carries` edge yields that finding, and a connection with a `carries` edge to a `data_classification` yields none. With `trace:classification-without-connection` turned on, a `data_classification` that no connection carries yields that finding, and one that a connection carries yields none. | Test |
 | FR-013-AC-4 | With the default severities, in a corpus that loads `spec-objects-security`, an unclassified connection yields no `trace:connection-without-classification` finding and an uncarried classification yields no `trace:classification-without-connection` finding. | Test |
-| FR-013-AC-5 | After the FR-084 change routed through PLAT-1441, `quire relations --json` over a fixture lists each connection with its carried classifications and their `regulated_categories`, lists a gap row for an unclassified connection, lists per classification the connections that carry it, and contains no `level` value. | Test |
+| FR-013-AC-5 | After the FR-084 change routed through PLAT-1441, `quire relations --json` over a fixture lists each connection with its carried classifications and their `regulatedCategories`, lists a gap row for an unclassified connection, and lists per classification the connections that carry it. Where the classification's valid record has `regulatedCategories`, that value appears in both the per-connection and per-classification views. Whether or not `regulatedCategories` is present, no record key outside `record_keys`, including `level`, appears at any depth in either view. | Test |
 | FR-013-AC-6 | Integration criterion, verified once PLAT-1532 (the crossing edge) and the FR-084 change in PLAT-1441 have both landed: in a fixture where a connection carries a `health` classification and, through the PLAT-1532 crossing edge, crosses a boundary whose `trust_level` is `untrusted`, one `quire relations --json` report shows both facts and the run issues no denial. PLAT-1440 alone does not satisfy it. | Test |
 | FR-013-AC-7 | `Connection.json` is unchanged, a connection record carrying `fields` still fails, and the architecture manifest does not redeclare `carries` in its own `edge_types`, and among the four systems kinds (`part`, `port`, `connection`, `allocation`) only `connection` admits `carries` to `data_classification`. This criterion does not cover the existing `queue` kind: its `carries` links to `data_schema` and `event` remain valid and unchanged. | Test |
-| FR-013-AC-8 | The `connection-carries-classification` and `classification-carried-by-connection` entries have exactly the fields stated above and `grammar_severity` maps `trace:connection-without-classification` and `trace:classification-without-connection` to `off`. | Test |
+| FR-013-AC-8 | The `connection-carries-classification` and `classification-carried-by-connection` entries have exactly the fields stated above, including `record_keys` equal to exactly `[regulatedCategories]` on both, and `grammar_severity` maps `trace:connection-without-classification` and `trace:classification-without-connection` to `off`. | Test |
+| FR-013-AC-9 | After the FR-084 change routed through PLAT-1441, where FR-084 omits `record` for a classification (unresolved schema, invalid record or empty selected projection) or its `record` lacks `regulatedCategories`, the `quire relations --json` entry for that classification has no `regulatedCategories` in either view. | Test |
 
 ## Dependencies
 
