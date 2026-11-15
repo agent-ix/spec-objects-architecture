@@ -23,7 +23,9 @@ relationships:
     type: "depends_on"
   - target: "ix://agent-ix/quire-rs/spec/functional/FR-096"
     type: "depends_on"
-  - target: "ix://agent-ix/quire-cli/spec/functional/FR-026"
+  - target: "ix://agent-ix/quire-cli/spec/functional/FR-044"
+    type: "depends_on"
+  - target: "ix://agent-ix/spec-objects-security/FR-025"
     type: "depends_on"
 ---
 # FR-015: A data_sink declares where data lands, with a closed kind and a stated processor agreement, fed by delivers_to edges
@@ -49,10 +51,17 @@ frontmatter and not a body section.
 |----|----|----|
 | `kind` | yes | the closed enum `SinkKind`: `ui_screen`, `log`, `export_file`, `analytics_event`, `llm_prompt`, `tool_call`, `outbound_message`, `datastore` |
 | `processor_agreement` | yes | the closed enum `covered`, `not_covered`, `not_applicable`, `unknown` |
-| `processor` | no | the id of the `part` (with an external role) or `external_contract` that receives the data |
-| `region` | no | a list of region codes: ISO 3166-1 alpha-2, or `eu`, or `eea`; where the data is processed or stored |
+| `processor` | no | the id of the `part` or `external_contract` that receives the data; a free id, see below |
+| `region` | no | a list of region codes matching `^([A-Z]{2}|eu|eea)$`: an upper-case two-letter ISO 3166-1 alpha-2 shape, or lower-case `eu` or `eea`; where the data is processed or stored |
 | `purpose` | no | a list of purpose names, free tokens a project uses consistently |
-| `audience_roles` | no | a list of `role` ids (`agent-ix/spec-objects-security` `role`) who see the sink's content |
+| `audience_roles` | no | a list of ids of `role` documents (`agent-ix/spec-objects-security` `role`) who see the sink's content; free ids, see below |
+
+`processor` and `audience_roles` hold document ids as plain frontmatter values and are not relationships. The module and the
+engine do not resolve them: there is no dangling-reference or wrong-kind check on them, they carry no role check on the part,
+and no `flow_rules` path can follow them. A rule reads them only as the authored strings.
+
+`region` is checked by the pattern alone; it is not checked against the ISO 3166-1 list, so `XX` passes and `de`, `Germany` and
+`xx-bad` fail.
 
 `llm_prompt` covers the prompt and the context window sent to a model provider. `tool_call` covers the arguments passed to a
 tool or function an agent invokes. `SinkKind` and the `processor_agreement` enum are closed: any value outside them is
@@ -88,7 +97,7 @@ module derives none. A connection that carries nothing and delivers to a sink is
 - The `data_classification` and `role` object types of `agent-ix/spec-objects-security` (FR-023 for the regulated categories).
 - quire-rs [FR-096](ix://agent-ix/quire-rs/spec/functional/FR-096) `flow_rules`, which reads sink fields and edges, and the
   [FR-058](ix://agent-ix/quire-rs/spec/functional/FR-058) `where` and enum lookup it shares.
-- quire-cli [FR-026](ix://agent-ix/quire-cli/spec/functional/FR-026) `quire relations --flow`.
+- quire-cli [FR-044](ix://agent-ix/quire-cli/spec/functional/FR-044) `quire relations --flow`.
 - PLAT-1532 (FR-014), the trust-boundary crossing edge, which is a sibling and not a dependency of the sink.
 
 ## Outputs
@@ -109,7 +118,8 @@ module derives none. A connection that carries nothing and delivers to a sink is
 - The `processor_agreement` enum SHALL list exactly `covered`, `not_covered`, `not_applicable` and `unknown`, and SHALL admit no other value.
 - A `data_sink` document with a `kind` outside `SinkKind`, or a `processor_agreement` outside the enum, SHALL fail validation naming the field and the value.
 - A `data_sink` document with `kind` or `processor_agreement` absent SHALL fail validation naming the missing field; the module SHALL NOT supply a default.
-- `region` SHALL be a list of strings, each an ISO 3166-1 alpha-2 code or `eu` or `eea`; `purpose` and `audience_roles` SHALL be lists of non-empty strings.
+- `region` SHALL be a list of strings, each matching `^([A-Z]{2}|eu|eea)$`, and SHALL be emitted as that `pattern` in both schemas; `purpose` and `audience_roles` SHALL be lists of non-empty strings.
+- The module SHALL NOT resolve or kind-check `processor` or `audience_roles`.
 - The extracted `DataSink` record SHALL carry `kind` and `processorAgreement` as written, and each optional key if and only if its frontmatter field is present.
 - The emitted `DataSink.json` and `DataSinkFrontmatter.json` SHALL carry the two enums as closed `enum` lists and SHALL carry no `default`.
 
@@ -118,7 +128,7 @@ module derives none. A connection that carries nothing and delivers to a sink is
 - The `connection` and `part` `allowed_links` SHALL each list `delivers_to: [data_sink]`, and the `data_sink` `allowed_links` SHALL list `carries: [data_classification]`.
 - A `delivers_to` edge from a connection or a part to a `data_sink` SHALL validate with no `disallowed-edge-type` or `disallowed-edge-target` finding.
 - A `delivers_to` edge to a target in the loaded bundle that is not a `data_sink` SHALL yield `disallowed-edge-target` naming the source, the target and its kind (quire-rs FR-040); a `delivers_to` edge from a `port` or `allocation` SHALL yield `disallowed-edge-type`.
-- A `delivers_to` edge to an id no document in the loaded bundle has SHALL yield `dangling-reference` naming the file and the id (quire-rs FR-026).
+- A `delivers_to` edge to a bare id, or to an `ix://` target under a loaded member's authority, that no document in the loaded bundle has SHALL yield `dangling-reference` naming the file and the id (quire-rs FR-026). An `ix://` target under an authority that no loaded member declares SHALL NOT yield `dangling-reference` when the source member declares its identity (quire-rs FR-085).
 - A `carries` edge from a `data_sink` to a `data_classification` SHALL validate; one to any other kind SHALL yield `disallowed-edge-target`.
 - Among `part`, `port`, `connection` and `allocation`, only `connection` and `part` SHALL admit `delivers_to`, and only `connection` SHALL admit `carries`.
 - The module SHALL NOT redeclare `carries` in `edge_types`, and SHALL declare `delivers_to` once, with `category: dataflow`.
@@ -127,13 +137,13 @@ module derives none. A connection that carries nothing and delivers to a sink is
 ### What a rule can read: exact facts, no inference
 
 - A `data_sink` document SHALL expose `kind`, `processor_agreement`, `processor`, `region`, `purpose` and `audience_roles` as top-level frontmatter, exactly as authored, to a quire-rs FR-096 `flow_rules` condition.
-- A `flow_rules` condition `any_of` over `kind` or `processor_agreement` in this module's rules SHALL be checked at module load against these two enums; a value outside them (for example `any_of: [medical]` on a sink field) SHALL fail the module load naming the rule and the value (quire-rs FR-096).
-- Over a seeded model in which a `connection` that carries a `health` classification delivers to a `data_sink` with `kind: llm_prompt` and `processor_agreement: not_covered`, `quire relations --flow --json` SHALL list that sink in `facts.sinks`, with its `kind`, `processor_agreement` and `delivers_to` edge, and SHALL list the connection and the classification it reaches.
-- Over the same model with `processor_agreement` changed to `covered`, the `quire relations --flow --json` facts for the sink SHALL show `covered` and the report SHALL list no denial for it under the LLM-sink rule; with `unknown`, the sink SHALL appear unchanged apart from that value and a denial SHALL be listed.
+- A `flow_rules` condition in any loaded module whose `any_of` reads `kind` or `processor_agreement` of a `data_sink` SHALL be checked at module load against these two enums; a value outside them (for example `any_of: [medical]` on a sink field) SHALL fail the module load naming the rule and the value (quire-rs FR-096).
+- Over a seeded model in which a `connection` that carries a `health` classification delivers to a `data_sink` with `kind: llm_prompt` and `processor_agreement: not_covered`, `quire relations --flow --json` SHALL list that sink in `facts.data_sink` (the key is the archetype name, quire-rs FR-096), with the `kind` and `processor_agreement` the rules read under `fields`; and the feeding `delivers_to` edge and the `carries` edge to the classification SHALL appear in the `edges` of the `connection` entry in `facts.connection`.
+- Over the same model with `processor_agreement` changed to `covered`, the `facts.data_sink` entry SHALL show `covered`. With `unknown`, the entry SHALL differ only in that value.
 - `unknown` SHALL be the only way to state that the agreement is not known; an absent `processor_agreement` is a validation failure.
 - The module SHALL NOT derive a `kind`, a `processor_agreement`, a `region`, an edge or a classification for a sink, from a name, a body, a connection, a code symbol or a vendor; and SHALL NOT infer a sink from a connection that has no `delivers_to` edge.
-- A connection with no `delivers_to` edge SHALL contribute no sink to `facts.sinks` and be reported as such, not defaulted to a sink kind.
-- The module SHALL issue no denial itself; denial is the work of the `flow_rules` the security module ships and the engine evaluates.
+- A connection with no `delivers_to` edge SHALL have a `facts.connection` entry whose `edges` hold no `delivers_to`, and SHALL add no entry to `facts.data_sink`; it SHALL NOT be defaulted to a sink kind.
+- The module SHALL issue no denial itself; denial is the work of the `flow_rules` the security module ships (`agent-ix/spec-objects-security` FR-025) and the engine evaluates.
 
 ### Skeleton, schema and manifest consistency
 
@@ -148,8 +158,8 @@ module derives none. A connection that carries nothing and delivers to a sink is
 |----|------------|------|------------|
 | FR-015-CON-1 | The module SHALL use generic terms (regulated data, processor agreement, trust boundary). | Design | Inspection |
 | FR-015-CON-2 | The module SHALL name no paywalled standard in any heading, description, example, skeleton or fixture. | Design | Inspection |
-| FR-015-CON-3 | No file of the module computes, fills in or rewrites a `kind`, a `processor_agreement`, a region or a `delivers_to` edge. | Design | Inspection |
-| FR-015-CON-4 | `flow_rules` is the only new engine kind; the module adds no engine code, no Python rule and no hard-coded sink list. | Scope | Inspection |
+| FR-015-CON-3 | The module SHALL NOT compute, fill in or rewrite a `kind`, a `processor_agreement`, a region or a `delivers_to` edge in any file. | Design | Inspection |
+| FR-015-CON-4 | The module SHALL add no engine code, no Python rule and no hard-coded sink list, because `flow_rules` is the only new engine kind. | Scope | Inspection |
 
 ## Acceptance Criteria
 
@@ -157,34 +167,35 @@ These criteria carry the sink-side share of the ticket's draft criteria a to j; 
 
 | ID | Criteria | Verification |
 |----|----------|--------------|
-| FR-015-AC-1 | (Validation, typed record.) A `data_sink` document with each of the eight `SinkKind` values and each of the four `processor_agreement` values validates; a `kind` outside `SinkKind` (for example `medical`), a `processor_agreement` outside the enum, and a document missing either required field each fail validation naming the field; the emitted `DataSink.json` and `DataSinkFrontmatter.json` list exactly the eight and the four values, with no `default`, and `make schemas-check` passes. | Test |
-| FR-015-AC-2 | (Typed record.) The extracted `DataSink` record carries `kind` and `processorAgreement` as written, and carries `processor`, `region`, `purpose` and `audienceRoles` if and only if their frontmatter fields are present; `region`, `purpose` and `audience_roles` that are not lists of non-empty strings fail. | Test |
-| FR-015-AC-3 | (Sink from a connection.) A connection with a `delivers_to` edge to a `data_sink` validates with no `disallowed-edge-type` or `disallowed-edge-target` finding at any severity; a `delivers_to` to a non-`data_sink` target yields `disallowed-edge-target` naming source, target and kind, and one to an id no document has yields `dangling-reference` naming the file and id. | Test |
+| FR-015-AC-1 | (Validation, typed record.) A `data_sink` document with each of the eight `SinkKind` values and each of the four `processor_agreement` values validates; a `kind` outside `SinkKind` (for example `medical`), a `processor_agreement` outside the enum, and a document missing either required field each fail validation, the out-of-enum diagnostics naming the field and the offending value and the missing-field diagnostic naming the field; the emitted `DataSink.json` and `DataSinkFrontmatter.json` list exactly the eight and the four values, with no `default`, and `make schemas-check` passes. | Test |
+| FR-015-AC-2 | (Typed record.) The extracted `DataSink` record carries `kind` and `processorAgreement` as written, and carries `processor`, `region`, `purpose` and `audienceRoles` if and only if their frontmatter fields are present; `region`, `purpose` and `audience_roles` that are not lists of non-empty strings fail; `region: [DE, eu, eea]` validates, and `region: [Germany]`, `region: [de]` and `region: [xx-bad]` each fail naming the field and value, and both emitted schemas carry the `region` item `pattern`. `processor` and `audience_roles` values naming no document validate. | Test |
+| FR-015-AC-3 | (Sink from a connection.) A connection with a `delivers_to` edge to a `data_sink` validates with no `disallowed-edge-type` or `disallowed-edge-target` finding at any severity; a `delivers_to` to a non-`data_sink` target yields `disallowed-edge-target` naming source, target and kind, and one to a bare id no document has yields `dangling-reference` naming the file and id, while an `ix://` target under an authority no loaded member declares yields none when the source member declares its identity. | Test |
 | FR-015-AC-4 | (Sink from a part.) A part with a `delivers_to` edge to a `data_sink` validates, and a `data_sink` with a `carries` edge to a `data_classification` validates; a `data_sink` `carries` to any other kind yields `disallowed-edge-target`; a `port` or `allocation` with `delivers_to` yields `disallowed-edge-type`. | Test |
 | FR-015-AC-5 | (Allowed links.) `connection` and `part` list `delivers_to: [data_sink]`, `data_sink` lists `carries: [data_classification]`, and among the four systems kinds only `connection` admits `carries` and only `connection` and `part` admit `delivers_to`; `delivers_to` is declared once in `edge_types` with `category: dataflow`, `carries` is not redeclared, and `Connection.json` is unchanged. | Test |
-| FR-015-AC-6 | (Exact fact, draft criterion c.) Seeded model: a connection carrying a `health` classification delivers to a `data_sink` with `kind: llm_prompt` and `processor_agreement: not_covered`. `quire relations --flow --json` lists the sink in `facts.sinks` with `kind: llm_prompt`, `processor_agreement: not_covered` and the feeding connection and classification, and, with the security module loaded, one denial under the LLM-sink rule naming that sink. | Test |
-| FR-015-AC-7 | (Exact fact, draft criterion d.) The same model with `processor_agreement: covered` lists the sink with `covered` and no denial under the LLM-sink rule; with `unknown`, the sink lists `unknown` and one denial is reported; with `not_applicable`, the report lists `not_applicable` and the outcome is whatever the loaded rule states for it, never an engine default. | Test |
+| FR-015-AC-6 | (Exact fact, draft criterion c.) Seeded model: a connection carrying a `health` classification delivers to a `data_sink` with `kind: llm_prompt` and `processor_agreement: not_covered`. `quire relations --flow --json` lists the sink in `facts.data_sink` with `kind: llm_prompt` and `processor_agreement: not_covered` under `fields`, and the `facts.connection` entry for the feeding connection lists the `delivers_to` edge to the sink and the `carries` edge to the classification. With `agent-ix/spec-objects-security` FR-025 loaded, the report holds one denial under `health-in-llm-prompt-or-tool-call` and one under `regulated-data-to-uncovered-processor`, each naming that sink. | Test |
+| FR-015-AC-7 | (Exact fact, draft criterion d.) The same model with `processor_agreement: covered` lists the sink with `covered` and no denial under `health-in-llm-prompt-or-tool-call` or `regulated-data-to-uncovered-processor`; with `unknown`, the sink lists `unknown` and the report holds one denial under each of those two checks; with `not_applicable`, the sink lists `not_applicable` and the report holds no denial under either check, because FR-025 matches only `not_covered` and `unknown`. | Test |
 | FR-015-AC-8 | (Exact fact, draft criterion e.) A `flow_rules` entry whose `any_of` names a value outside the `SinkKind` or `processor_agreement` enum of this module's frontmatter schema (for example `any_of: [medical]` on `kind`) makes the module fail to load, naming the rule and the value. | Test |
-| FR-015-AC-9 | (No inference, draft criterion g.) A corpus with no `delivers_to` edge, and one whose connections carry no classification, yields no denial from any starter rule; a connection with no `delivers_to` edge adds no entry to `facts.sinks`, and no sink, kind, agreement, region or edge appears in the report that no document states. | Test |
+| FR-015-AC-9 | (No inference, draft criterion g.) A corpus with no `delivers_to` edge, and one in which no connection carries a classification and no `data_sink` carries one, each yield no denial from any FR-025 starter rule; the `facts.connection` entry of a connection with no `delivers_to` edge holds no `delivers_to` edge and adds no entry to `facts.data_sink`, and no sink, kind, agreement, region or edge appears in the report that no document states. | Test |
 | FR-015-AC-10 | (Report determinism and exit, draft criteria h and i, sink side.) `quire relations --flow --json` over the seeded sink model gives byte-identical output across two runs, and `--strict` exits 1 when the sink model yields a denial and 0 when it yields none. | Test |
-| FR-015-AC-11 | (Severity, draft criterion j, sink side.) With `--severity trace:<check>=warning` for the LLM-sink rule's check, the sink's denial is reported as a warning and `quire validate` exits 0. | Test |
+| FR-015-AC-11 | (Severity, draft criterion j, sink side.) On the AC-6 model with FR-025 loaded, `--severity trace:health-in-llm-prompt-or-tool-call=warning --severity trace:regulated-data-to-uncovered-processor=warning` reports both denials as warnings and `quire validate` exits 0; lowering only one of them leaves an error and a non-zero exit. | Test |
 | FR-015-AC-12 | (Skeleton and consistency.) `skeletons/data_sink.md` validates with zero errors, states `kind` and `processor_agreement` and no `covered` value, names the optional fields in its contract comment; the exports, manifest description, enums, both schemas, locators and skeleton state the same keys and the same two value lists; no file of the module lists a default region, purpose or role id. | Test |
 | FR-015-AC-13 | (Rights.) No heading, description, example, skeleton or fixture added by this requirement names a paywalled standard, and no file computes or defaults a `kind`, `processor_agreement`, region or `delivers_to` edge. | Inspection |
 
-Draft criteria a, b and f (the rule outcome, the protecting control and the load failures other than an out-of-enum value) are owned by quire-rs FR-096 and `agent-ix/spec-objects-security` FR-025. This requirement owns the sink-side share: c and d (AC-6, AC-7), e for sink enums (AC-8), g (AC-9), h and i (AC-10) and j (AC-11), beside the validation and typed-record criteria (AC-1 to AC-5, AC-12, AC-13).
+Draft criteria a, b and f (the rule outcome, the protecting control and the load failures other than an out-of-enum value) are owned by quire-rs FR-096 and `agent-ix/spec-objects-security` FR-025. `agent-ix/spec-objects-security` FR-025 owns the rules, and its AC-3, AC-4 and AC-6 hold the rule-level fixtures for draft criteria c, d and g. This requirement owns the sink-side share, which is the facts and edges of the sink model (AC-6, AC-7, AC-9) and the end-to-end report over it with FR-025 loaded, so FR-025 is a test-time `depends_on`: e for sink enums (AC-8), h and i (AC-10) and j (AC-11), beside the validation and typed-record criteria (AC-1 to AC-5, AC-12, AC-13).
 
 ## Out of scope
 
 - The `flow_rules` and `remediations` manifest kinds and their evaluation: quire-rs FR-096 and PLAT-1479.
 - The `control` `safeguards` field, `protects` onto `connection` and `data_sink`, and the starter rules: `agent-ix/spec-objects-security` FR-025 (PLAT-1540).
 - The trust-boundary crossing edge: PLAT-1532 (FR-014).
-- The report command: quire-cli FR-026. Solver lowering: PLAT-1541, which waits on QSL-1900 (the production contract-package step) and
+- The report command: quire-cli FR-044. Solver lowering: PLAT-1541, which waits on QSL-1900 (the production contract-package step) and
   needs, from quire-analyze, enum sorts, records and finite-collection quantifiers (FR-020, FR-031). This module writes no QSL.
 - Records of processing (PLAT-1657), threat-model artifacts (milestone M3), runtime monitors, Cedar, and any automatic derivation
   of a category, trust level, processor agreement or safeguard.
 
 ## Dependencies
 
-- **Upstream**: [FR-002](./FR-002-emitted-json-schemas.md), [FR-004](./FR-004-role-schemas.md), [FR-005](./FR-005-executable-skeletons.md), [FR-007](./FR-007-systems-model-kinds.md), [FR-009](./FR-009-optional-sections-optional-keys.md), [FR-013](./FR-013-connection-carries-data-classification.md); `agent-ix/spec-objects-security` FR-023; quire-rs FR-058 and FR-096; quire-cli FR-026
-- **Sibling**: PLAT-1532 (FR-014, the crossing edge); `agent-ix/spec-objects-security` FR-025
+- **Upstream**: [FR-002](./FR-002-emitted-json-schemas.md), [FR-004](./FR-004-role-schemas.md), [FR-005](./FR-005-executable-skeletons.md), [FR-007](./FR-007-systems-model-kinds.md), [FR-009](./FR-009-optional-sections-optional-keys.md), [FR-013](./FR-013-connection-carries-data-classification.md); `agent-ix/spec-objects-security` FR-023; quire-rs FR-058 and FR-096; quire-cli FR-044
+- **Test-time**: `agent-ix/spec-objects-security` FR-025, whose starter rules AC-6, AC-7, AC-9 and AC-11 load
+- **Sibling**: PLAT-1532 (FR-014, the crossing edge)
 - **Downstream**: PLAT-1535, PLAT-1537, PLAT-1538, PLAT-1540, PLAT-1541 (waits on QSL-1900), PLAT-1479
