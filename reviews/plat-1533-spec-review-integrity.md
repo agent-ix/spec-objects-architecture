@@ -1,46 +1,42 @@
-<!-- reviewer repo=agent-ix/spec-objects-architecture visibility=public quoin=0.30.0 module=spec-artifacts-process@unresolved id=SR-039 method=spec-review/integrity-analysis lang=spec pr=spec-objects-architecture#51 model=claude-opus-5-5 run=plat-1533-pr51-r1 -->
+---
+id: SR-039
+title: "Spec review (integrity) - PLAT-1533 FR-015 data_sink and delivers_to (PR #51)"
+type: SpecReview
+analysis: integrity
+scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md, spec/functional/index.md (origin/main...10414f7 review pass, d0927cb disposition pass 1, PR #51)"
+review_set: subset
+relationships:
+  - {target: "ix://agent-ix/spec-objects-architecture/FR-015", type: references}
+---
+# SR-039: Spec review (integrity) - FR-015 data_sink (PR #51)
 
-| FND | Severity | Check | Summary |
-| --- | --- | --- | --- |
-| FND-001 | medium | coverage | The `region` code-format SHALL (ISO 3166-1 alpha-2, `eu`, `eea`) states no case or schema form, and no AC tests it. |
-| FND-002 | low | coverage | Behavior says an out-of-enum value fails "naming the field and the value". AC-1 checks only "naming the field". |
+## Summary
 
-+++ [reviewer data]
+Ticket: PLAT-1533. Coverage of Behavior and Outputs by ACs, the index entry, frontmatter
+relationships, and constraint ids FR-015-CON-1 to CON-4. Examined AC-1, AC-2 and AC-12 for the
+enum, list-field and consistency clauses. The index entry is clean.
 
-```yaml
-clean: false
-scope:
-  - {id: FR-015, path: spec/functional/FR-015-data-sink.md, role: examined, excerpt: "Behavior-to-AC coverage, Outputs-to-AC coverage, index entry, frontmatter relationships, and constraint ids FR-015-CON-1..4."}
-  - {id: FR-015-AC-1, path: spec/functional/FR-015-data-sink.md, role: examined, excerpt: "a `kind` outside `SinkKind` (for example `medical`), a `processor_agreement` outside the enum, and a document missing either required field each fail validation naming the field"}
-  - {id: FR-015-AC-2, path: spec/functional/FR-015-data-sink.md, role: examined, excerpt: "`region`, `purpose` and `audience_roles` that are not lists of non-empty strings fail."}
-  - {id: FR-015-AC-12, path: spec/functional/FR-015-data-sink.md, role: examined, excerpt: "the exports, manifest description, enums, both schemas, locators and skeleton state the same keys and the same two value lists"}
-  - {id: spec/functional/index.md, path: spec/functional/index.md, role: examined, excerpt: "* [FR-015: A data_sink declares where data lands, ...](./FR-015-data-sink.md)"}
-findings:
-  - fnd: FND-001
-    severity: medium
-    confidence: high
-    method: spec-review/integrity-analysis
-    check: coverage
-    artifact_id: FR-015
-    related_ids: [FR-015-AC-2]
-    path: spec/functional/FR-015-data-sink.md
-    lines: "53, 112, 161"
-    excerpt: |-
-      - `region` SHALL be a list of strings, each an ISO 3166-1 alpha-2 code or `eu` or `eea`; `purpose` and `audience_roles` SHALL be lists of non-empty strings.
-    finding: "The statement fixes a code format but leaves open whether it is checked against the ISO list or a `^[A-Z]{2}$` pattern, and what case applies (`DE` vs `de`, beside lowercase `eu`/`eea`). Two implementers would emit different schemas. AC-2 checks only 'lists of non-empty strings', so a `region: [xx-bad]` passes every AC. State the schema form (pattern or enum, and case), and add an AC case such as `region: [Germany]` failing."
-  - fnd: FND-002
-    severity: low
-    confidence: high
-    method: spec-review/integrity-analysis
-    check: coverage
-    artifact_id: FR-015-AC-1
-    related_ids: [FR-015]
-    path: spec/functional/FR-015-data-sink.md
-    lines: "110, 160"
-    excerpt: |-
-      a `kind` outside `SinkKind` (for example `medical`), a `processor_agreement` outside the enum, and a document missing either required field each fail validation naming the field
-    finding: "Behavior line 110 requires the out-of-enum diagnostic to name the field and the value. AC-1 asserts only the field, so the value half of that SHALL has no AC."
-bindings: []
-```
+## Verdict
 
-+++
+**FAIL at 10414f7**: one medium and one low finding. **Disposition pass 1 at d0927cb: both fixed.**
+Disposition pass 1 adds one new low finding (FND-003) that the FND-001 fix introduced.
+
+## Findings
+
+| ID | Severity | Summary | Refs |
+|---|---|---|---|
+| FND-001 | medium | The `region` statement fixes a code format (ISO 3166-1 alpha-2, `eu`, `eea`), but leaves open whether it is checked against the ISO list or a `^[A-Z]{2}$` pattern, and what case applies (`DE` vs `de`, beside lowercase `eu`/`eea`). Two implementers would emit different schemas. AC-2 checks only 'lists of non-empty strings', so a `region: [xx-bad]` passes every AC. State the schema form (pattern or enum, and case), and add an AC case such as `region: [Germany]` failing. | spec/functional/FR-015-data-sink.md:53,112,161 |
+| FND-002 | low | Behavior line 110 requires the out-of-enum diagnostic to name the field and the value. AC-1 asserts only the field, so the value half of that SHALL has no AC. | spec/functional/FR-015-data-sink.md:110,160 |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | d0927cb: Behavior line 121 says `region` items match `^([A-Z]{2}\|eu\|eea)$`, emitted as that `pattern` in both schemas. The Keys prose says the check is by pattern alone and not against the ISO list. AC-2 adds `region: [DE, eu, eea]` validating, `[Germany]`, `[de]` and `[xx-bad]` failing, and both schemas carrying the item `pattern`. |
+| FND-002 | fixed | d0927cb AC-1: "the out-of-enum diagnostics naming the field and the offending value and the missing-field diagnostic naming the field". |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs |
+|---|---|---|---|
+| FND-003 | low | The Keys-table row for `region` puts the pattern `^([A-Z]{2}\|eu\|eea)$` in a code span with unescaped pipes. In a GFM table an unescaped `\|` splits the cell even inside backticks. The row then has five cells, and the renderer shows the Values cell as a broken `^([A-Z]{2}` and drops the rest of the row. The Behavior line 121 copy, outside a table, is unaffected, so the normative text survives. Fix: escape the pipes in the table cell (`\|`), or move the pattern out of the table. | spec/functional/FR-015-data-sink.md:55 |
