@@ -66,8 +66,10 @@ report. M1 reports this and denies nothing; denial is M2.
 - The `connection` construct SHALL keep `fields` forbidden.
 - A `carries` edge from a connection to a target in the loaded bundle that is not a `data_classification` SHALL yield
   `disallowed-edge-target` naming the source, the target and its kind (quire-rs FR-040).
-- A `carries` edge to an id that no document in the loaded bundle has SHALL yield `dangling-reference` naming the file and the
-  id (quire-rs FR-026).
+- A `carries` edge to a bare id, or to an `ix://` target under a loaded member's authority, that no document in the loaded
+  bundle has SHALL yield `dangling-reference` naming the file and the id (quire-rs FR-026). An `ix://` target under an authority
+  that no loaded member declares SHALL NOT yield `dangling-reference` when the source member declares its identity (quire-rs
+  FR-085).
 - The module SHALL declare the `required_relations` entry `{name: connection-carries-classification, from: connection,
   edges: [carries], to: [data_classification], direction: outgoing, check: connection-without-classification}`.
 - The module SHALL declare the reverse `required_relations` entry `{name: classification-carried-by-connection, from:
