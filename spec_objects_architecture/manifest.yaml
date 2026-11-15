@@ -68,6 +68,20 @@ traceability:
     to: [part, connection, ADR]
     direction: incoming
     check: nfr-without-design
+  - name: connection-carries-classification
+    from: connection
+    edges: [carries]
+    to: [data_classification]
+    direction: outgoing
+    check: connection-without-classification
+    record_keys: [regulatedCategories]
+  - name: classification-carried-by-connection
+    from: data_classification
+    edges: [carries]
+    to: [connection]
+    direction: incoming
+    check: classification-without-connection
+    record_keys: [regulatedCategories]
   design_relations: [fr-has-design-element, nfr-has-design-element]
   # FR-012: a requirement must not state a class below the part it is
   # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
@@ -98,6 +112,8 @@ traceability:
     check: unassigned-class
 grammar_severity:
   trace:unassigned-class: "off"
+  trace:connection-without-classification: "off"
+  trace:classification-without-connection: "off"
 artifact_types: []
 lint_rules: []
 object_types:
@@ -530,6 +546,7 @@ object_types:
 - name: connection
   allowed_links:
     connects: [systems-port]
+    carries: [data_classification]
     realizes_requirement: [FR, NFR]
   construct:
     identity: none

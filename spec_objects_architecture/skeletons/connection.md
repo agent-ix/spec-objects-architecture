@@ -3,6 +3,9 @@ id: planner_to_scoring
 title: "PlannerToScoringConnection"
 type: connection
 object: connection
+relationships:
+  - target: "CLASS-PHI"
+    type: "carries"
 ---
 <!-- connection authoring skeleton (spec-objects-architecture). Fill every
      section with substantive content. Contract (manifest body_extraction
@@ -20,6 +23,10 @@ object: connection
        multiplicity.
      - A connection declares structure, not data or calls: Connection.json
        forbids `fields` and `operations`.
+     - `relationships` states the data the connection carries: each
+       `type: carries` target MUST be a `data_classification` document (by id
+       or `ix://` uri). The edge is optional and may repeat; delete the
+       example when the connection carries no classified data.
      - Every cell that names another declaration names it by its artifact
        `id` (its identity), never by title (QSpec FR-152: display names are
        not identities). Owners and ends are references, never part of this
