@@ -53,8 +53,10 @@ report. M1 reports this and denies nothing; denial is M2.
 ## Outputs
 
 - `carries: [data_classification]` in the `connection` `allowed_links`.
-- A `traceability.required_relations` entry `connection-carries-classification` (the per-connection view).
-- A `traceability.required_relations` entry `classification-carried-by-connection` (the per-classification view).
+- A `traceability.required_relations` entry `connection-carries-classification` (the per-connection view) with
+  `record_keys: [regulatedCategories]`.
+- A `traceability.required_relations` entry `classification-carried-by-connection` (the per-classification view) with
+  `record_keys: [regulatedCategories]`.
 - `grammar_severity` keys `trace:connection-without-classification` and `trace:classification-without-connection`, both set
   to `off`.
 
@@ -75,6 +77,13 @@ report. M1 reports this and denies nothing; denial is M2.
 - The module SHALL declare the reverse `required_relations` entry `{name: classification-carried-by-connection, from:
   data_classification, edges: [carries], to: [connection], direction: incoming, check: classification-without-connection}`,
   so the per-classification view is a declared relation and not an engine side effect.
+- Both `required_relations` entries SHALL set `record_keys: [regulatedCategories]`, the generic FR-058/FR-084 projection
+  allow-list. The selection is module-declared: the engine holds no category names and projects only the keys the entry
+  lists.
+- With `record_keys` set, the relation report SHALL contain `regulatedCategories` on the document and linked entries when the
+  target has it.
+- With `record_keys` set, the relation report SHALL omit `regulatedCategories` when the target has not.
+- With `record_keys` set, the relation report SHALL NOT expose the confidentiality `level` or any unselected key.
 - The module SHALL set `grammar_severity` `trace:connection-without-classification` and
   `trace:classification-without-connection` to `"off"`, following the `trace:unassigned-class` precedent of
   [FR-012](./FR-012-software-safety-class-assignment.md), so a corpus without data-flow modelling draws no finding. A project
@@ -118,10 +127,10 @@ row the engine does not extract and the report does not show it. FR-013-AC-5 and
 | FR-013-AC-2 | In a loaded bundle, a connection with `carries` to a `part` yields `disallowed-edge-target` naming the source, the target and its kind, and `carries` to an id no document has yields `dangling-reference` naming the file and the id. | Test |
 | FR-013-AC-3 | With `trace:connection-without-classification` turned on, a connection with no `carries` edge yields that finding, and a connection with a `carries` edge to a `data_classification` yields none. With `trace:classification-without-connection` turned on, a `data_classification` that no connection carries yields that finding, and one that a connection carries yields none. | Test |
 | FR-013-AC-4 | With the default severities, in a corpus that loads `spec-objects-security`, an unclassified connection yields no `trace:connection-without-classification` finding and an uncarried classification yields no `trace:classification-without-connection` finding. | Test |
-| FR-013-AC-5 | After the FR-084 change routed through PLAT-1441, `quire relations --json` over a fixture lists each connection with its carried classifications and their `regulated_categories`, lists a gap row for an unclassified connection, lists per classification the connections that carry it, and contains no `level` value. | Test |
+| FR-013-AC-5 | After the FR-084 change routed through PLAT-1441, `quire relations --json` over a fixture lists each connection with its carried classifications and their `regulatedCategories`, lists a gap row for an unclassified connection, lists per classification the connections that carry it, and contains no `level` value. Where the classification's record has `regulatedCategories`, that value appears in both the per-connection and per-classification views, and no `level` or other unselected key appears in either. | Test |
 | FR-013-AC-6 | Integration criterion, verified once PLAT-1532 (the crossing edge) and the FR-084 change in PLAT-1441 have both landed: in a fixture where a connection carries a `health` classification and, through the PLAT-1532 crossing edge, crosses a boundary whose `trust_level` is `untrusted`, one `quire relations --json` report shows both facts and the run issues no denial. PLAT-1440 alone does not satisfy it. | Test |
 | FR-013-AC-7 | `Connection.json` is unchanged, a connection record carrying `fields` still fails, and the architecture manifest does not redeclare `carries` in its own `edge_types`, and among the four systems kinds (`part`, `port`, `connection`, `allocation`) only `connection` admits `carries` to `data_classification`. This criterion does not cover the existing `queue` kind: its `carries` links to `data_schema` and `event` remain valid and unchanged. | Test |
-| FR-013-AC-8 | The `connection-carries-classification` and `classification-carried-by-connection` entries have exactly the fields stated above and `grammar_severity` maps `trace:connection-without-classification` and `trace:classification-without-connection` to `off`. | Test |
+| FR-013-AC-8 | The `connection-carries-classification` and `classification-carried-by-connection` entries have exactly the fields stated above, including `record_keys` equal to exactly `[regulatedCategories]` on both, and `grammar_severity` maps `trace:connection-without-classification` and `trace:classification-without-connection` to `off`. | Test |
 
 ## Dependencies
 
