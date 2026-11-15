@@ -3,7 +3,7 @@ id: SR-041
 title: "Spec review (dependency) - PLAT-1533 FR-015 data_sink and delivers_to (PR #51)"
 type: SpecReview
 analysis: dependency
-scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md relationships, Inputs, Out of scope, Dependencies (origin/main...10414f7 review pass, d0927cb disposition pass 1, PR #51)"
+scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md relationships, Inputs, Out of scope, Dependencies (origin/main...10414f7 review pass, d0927cb disposition pass 1, 2280b19 disposition pass 2, PR #51)"
 review_set: subset
 relationships:
   - {target: "ix://agent-ix/spec-objects-architecture/FR-015", type: references}
@@ -22,7 +22,8 @@ FR-014 not yet authored) is correctly a non-blocking sibling, because no FR-015 
 
 **FAIL at 10414f7**: one high and one medium finding. **Disposition pass 1 at d0927cb: both fixed.**
 Disposition pass 1 adds one new medium finding (FND-003) and one new low finding (FND-004), both
-introduced by the FND-002 fix.
+introduced by the FND-002 fix. **Disposition pass 2 at 2280b19: FND-003 and FND-004 fixed.** FR-015
+no longer declares FR-025 at all, so the only edge between the two is FR-025 `depends_on` FR-015.
 
 ## Findings
 
@@ -37,6 +38,8 @@ introduced by the FND-002 fix.
 |---|---|---|
 | FND-001 | fixed | d0927cb replaces all four: frontmatter `depends_on` `ix://agent-ix/quire-cli/spec/functional/FR-044`, the Inputs link, Out of scope ("The report command: quire-cli FR-044") and Dependencies Upstream ("quire-cli FR-044"). The remaining `FR-026` at line 131 is quire-rs FR-026 (`dangling-reference`), which is correct. |
 | FND-002 | fixed | d0927cb adds `ix://agent-ix/spec-objects-security/FR-025` as `depends_on` and a "Test-time" Dependencies line. AC-6, AC-7 and AC-11 name both FR-025 checks, and AC-9 names "FR-025 starter rule". The ownership paragraph credits FR-025-AC-3, AC-4 and AC-6 with the rule-level c, d and g fixtures, and keeps FR-015 to facts, edges and the end-to-end report. |
+| FND-003 | fixed | 2280b19 removes the `ix://agent-ix/spec-objects-security/FR-025` `depends_on` entry from the frontmatter and the "Test-time" Dependencies line. FR-015 now names FR-025 only in prose (Behavior, ownership paragraph, Out of scope), so the cross-repo `depends_on` cycle is gone; FR-025 on PR #61 (5628e8c) keeps `depends_on` FR-015, which is the correct direction. The ACs that needed FR-025 loaded were rewritten; see SR-037 FND-008 and FND-009 for the facts-without-rules defect that rewrite introduced. |
+| FND-004 | fixed | 2280b19 rewrites the ownership paragraph: FR-025 "also owns the starter rules and every rule-level denial outcome, including the fixtures for draft criteria c, d and g. This requirement does not depend on FR-025. It owns the structural sink and fact criteria: ... (AC-6, AC-7, AC-9, the sink-side share of c, d and g) ... It also owns draft criteria e for sink enums (AC-8), h and i (AC-10) and j (AC-11)". The list is now clearly FR-015's own, and c, d and g are back in its share. FR-025-AC-3, AC-4, AC-6 and AC-13 on PR #61 carry the rule-level c, d and g fixtures. |
 
 ## New findings (disposition pass 1)
 

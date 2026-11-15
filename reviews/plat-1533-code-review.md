@@ -3,7 +3,7 @@ id: SR-036
 title: "Code review - PLAT-1533 FR-015 data_sink and delivers_to (PR #51)"
 type: SpecReview
 analysis: code-review
-scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md, spec/functional/index.md, reviews/plat-1533-*.md (origin/main...d0927cb, PR #51)"
+scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md, spec/functional/index.md, reviews/plat-1533-*.md (origin/main...d0927cb disposition pass 1, 2280b19 disposition pass 2, PR #51)"
 review_set: subset
 relationships:
   - {target: "ix://agent-ix/spec-objects-architecture/FR-015", type: references}
@@ -23,7 +23,8 @@ Disposition pass 1 ran at d0927cb. The fix commit changes FR-015 and adds five f
 ## Verdict
 
 **PASS at 10414f7.** Disposition pass 1 adds one new medium finding: the five review files the fix
-commit added are not SpecReview documents and fail `quire validate`.
+commit added are not SpecReview documents and fail `quire validate`. **Disposition pass 2 at
+2280b19: FND-002 fixed**, no new findings in this method.
 
 ## Findings
 
@@ -36,3 +37,9 @@ commit added are not SpecReview documents and fail `quire validate`.
 | ID | Severity | Summary | Refs |
 |---|---|---|---|
 | FND-002 | medium | d0927cb adds `reviews/plat-1533-spec-review-{base,dependency,ears,integrity,object}.md`. Each is a pasted copy of a Linear review comment: it starts with the `<!-- reviewer ... -->` marker, has no frontmatter, and has no `## Findings` table or `## Dispositions` section. `quire validate --scope . reviews/plat-1533-spec-review-base.md` fails with "required 'type' is missing from frontmatter". The code-review artifact (SR-036) is missing. Fix: replace all five with the reviewer-authored SpecReview files from disposition pass 1, and add this file. | reviews/plat-1533-spec-review-base.md:1, reviews/plat-1533-spec-review-dependency.md:1, reviews/plat-1533-spec-review-ears.md:1, reviews/plat-1533-spec-review-integrity.md:1, reviews/plat-1533-spec-review-object.md:1 |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-002 | fixed | 2280b19 replaces the five pasted comments with the reviewer-authored SpecReview files (SR-037 to SR-041, each with frontmatter `type: SpecReview`, a `## Findings` table and `## Dispositions`) and adds `reviews/plat-1533-code-review.md` (SR-036). `quire validate --scope .` over all six files and FR-015 reports no error. The diff still changes no code, schema or build file. |

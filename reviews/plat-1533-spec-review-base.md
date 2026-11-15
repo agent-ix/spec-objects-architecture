@@ -3,7 +3,7 @@ id: SR-037
 title: "Spec review (base) - PLAT-1533 FR-015 data_sink and delivers_to (PR #51)"
 type: SpecReview
 analysis: base
-scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md (origin/main...10414f7 review pass, d0927cb disposition pass 1, PR #51)"
+scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md (origin/main...10414f7 review pass, d0927cb disposition pass 1, 2280b19 disposition pass 2, PR #51)"
 review_set: subset
 relationships:
   - {target: "ix://agent-ix/spec-objects-architecture/FR-015", type: references}
@@ -22,7 +22,12 @@ Clean on the review pass: AC-1, AC-2, AC-4, AC-5, AC-8, AC-10, AC-12 and AC-13.
 ## Verdict
 
 **FAIL at 10414f7**: three high and four medium findings. **Disposition pass 1 at d0927cb: all seven
-fixed**, no new findings in this method.
+fixed**, no new findings in this method. **Disposition pass 2 at 2280b19: one new high and two new
+medium findings.** The fix for SR-041 FND-003 removed every FR-025 clause from AC-6, AC-7, AC-9 and
+AC-11. FND-002, FND-003, FND-004 and FND-006 above were about those denial clauses. Their defects
+are gone with the text, and FR-025-AC-3, AC-4, AC-6 and AC-13 (PR #61) now carry the denial outcomes.
+AC-10 and AC-11 now state fixture `flow_rules` in their own corpus and are clean. AC-6, AC-7 and AC-9
+state no rule at all, so they no longer hold under quire-rs FR-096 (PR #691, 33a95e3).
 
 ## Findings
 
@@ -47,3 +52,11 @@ fixed**, no new findings in this method.
 | FND-005 | fixed | d0927cb: Behavior line 145 names the output: the connection's `facts.connection` entry "whose `edges` hold no `delivers_to`", with no entry added to `facts.data_sink`. AC-9 asserts the same. |
 | FND-006 | fixed | d0927cb: the AC-9 second corpus is now one "in which no connection carries a classification and no `data_sink` carries one". |
 | FND-007 | fixed | d0927cb: Behavior line 131 and AC-3 scope `dangling-reference` to a bare id or an `ix://` target under a loaded member's authority. Both exempt an unloaded authority when the source member declares its identity (quire-rs FR-085). |
+
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs |
+|---|---|---|---|
+| FND-008 | high | AC-6 and AC-7 (and the two seeded-model Behavior lines) expect `quire relations --flow --json` to list the sink in `facts.data_sink` with `kind` and `processor_agreement` under `fields`, and the `delivers_to` and `carries` edges on the `facts.connection` entry. Since 2280b19 they load no rule: FR-025 is gone and, unlike AC-10 and AC-11, no fixture `flow_rules` is stated. quire-rs FR-096-AC-16 keys `facts` by exactly the archetypes the loaded rules declare, with only the fields a condition reads and the edges a step follows, and FR-096-AC-18 says a corpus with no `flow_rules` yields empty `facts`. So no `facts.data_sink` or `facts.connection` entry exists and AC-6 and AC-7 can never pass. Fix: state, as AC-10 does, a fixture `flow_rules` rule in the test corpus whose path follows `delivers_to` from a `connection` to a `data_sink` and `carries` to a `data_classification`, with conditions that read `kind` and `processor_agreement`. Put the same in Behavior. | spec/functional/FR-015-data-sink.md:139-140,173-174 |
+| FND-009 | medium | AC-9 now expects each corpus to "yield an empty `facts.data_sink`" with no rule loaded. Under FR-096-AC-18, a corpus with no `flow_rules` yields empty `facts` whatever it holds, so the clause passes even if the module inferred a sink. As an AC for "no inference" it cannot fail. Its "no ... edge appears in the report" clause is vacuous in the same way. Fix: load the FND-008 fixture rule, then assert that a sink, kind, agreement, region or edge appears in `facts` only where a document states it. | spec/functional/FR-015-data-sink.md:176 |
+| FND-010 | medium | Behavior line 143 says a connection with no `delivers_to` edge "SHALL have a `facts.connection` entry whose `edges` hold no `delivers_to`". FR-096-AC-16 creates a `facts.connection` entry only when a loaded rule declares the `connection` archetype, and FR-096-AC-18 says a corpus with no `flow_rules` yields empty `facts`. The Behavior section states no rule, so the entry this SHALL requires never exists. AC-9 carries the same clause. FND-008 cites only Behavior lines 139-140, so its fix can miss this line. Fix: give line 143 the same fixture rule as FND-008, one whose path starts at `connection`. | spec/functional/FR-015-data-sink.md:143,176 |

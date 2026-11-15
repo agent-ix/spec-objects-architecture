@@ -3,7 +3,7 @@ id: SR-039
 title: "Spec review (integrity) - PLAT-1533 FR-015 data_sink and delivers_to (PR #51)"
 type: SpecReview
 analysis: integrity
-scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md, spec/functional/index.md (origin/main...10414f7 review pass, d0927cb disposition pass 1, PR #51)"
+scope: "agent-ix/spec-objects-architecture; spec/functional/FR-015-data-sink.md, spec/functional/index.md (origin/main...10414f7 review pass, d0927cb disposition pass 1, 2280b19 disposition pass 2, PR #51)"
 review_set: subset
 relationships:
   - {target: "ix://agent-ix/spec-objects-architecture/FR-015", type: references}
@@ -19,7 +19,7 @@ enum, list-field and consistency clauses. The index entry is clean.
 ## Verdict
 
 **FAIL at 10414f7**: one medium and one low finding. **Disposition pass 1 at d0927cb: both fixed.**
-Disposition pass 1 adds one new low finding (FND-003) that the FND-001 fix introduced.
+Disposition pass 1 adds one new low finding (FND-003) that the FND-001 fix introduced. **Disposition pass 2 at 2280b19: FND-003 fixed**, no new findings.
 
 ## Findings
 
@@ -34,6 +34,7 @@ Disposition pass 1 adds one new low finding (FND-003) that the FND-001 fix intro
 |---|---|---|
 | FND-001 | fixed | d0927cb: Behavior line 121 says `region` items match `^([A-Z]{2}\|eu\|eea)$`, emitted as that `pattern` in both schemas. The Keys prose says the check is by pattern alone and not against the ISO list. AC-2 adds `region: [DE, eu, eea]` validating, `[Germany]`, `[de]` and `[xx-bad]` failing, and both schemas carrying the item `pattern`. |
 | FND-002 | fixed | d0927cb AC-1: "the out-of-enum diagnostics naming the field and the offending value and the missing-field diagnostic naming the field". |
+| FND-003 | fixed | 2280b19 line 53 escapes both pipes inside the table cell: `^([A-Z]{2}\|eu\|eea)$`. GFM treats `\|` in a table cell, code span included, as a literal pipe, so the row has three cells and renders the full pattern. The Behavior copy (line 119) is unchanged and outside a table. |
 
 ## New findings (disposition pass 1)
 
