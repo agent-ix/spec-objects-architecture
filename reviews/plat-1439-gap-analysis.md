@@ -42,3 +42,9 @@ verb set.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | medium | TC-104 is tagged to FR-007-AC-5 and asserts `used_verbs == EDGE_VERBS \| {DESIGN_VERB}`, so it requires `carries` to be absent. The amended AC-5 requires `carries` on `connection` only. Once this merges, the matrix shows AC-5 as tagged by a test that asserts the opposite of the new clause. Fix: in PLAT-1440, update TC-104 to require `carries: [data_classification]` on `connection` and on no other kind, or say in this PR that the binding is stale until PLAT-1440. | tests/test_systems_kinds.py:246-262; FR-007-AC-5 | correct-requirement-no-evidence |
+
+## Dispositions
+
+| FND | Outcome | Reason |
+|---|---|---|
+| FND-001 | deferred | PLAT-1440. TC-104 no longer asserts the opposite of the amended FR-007-AC-5: it now asserts `used_verbs - {"carries"} == EDGE_VERBS \| {DESIGN_VERB}` and that no systems kind other than `connection` declares `carries`. It does not yet require `carries: [data_classification]` on `connection`, because the manifest does not declare it until PLAT-1440 lands, so the positive clause of AC-5 still has no evidence. PLAT-1440 implements the FR-007 amendment and adds the edge; it owns adding that positive assertion to TC-104. |

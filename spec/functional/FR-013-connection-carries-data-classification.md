@@ -68,8 +68,6 @@ report. M1 reports this and denies nothing; denial is M2.
   `disallowed-edge-target` naming the source, the target and its kind (quire-rs FR-040).
 - A `carries` edge to an id that no document in the loaded bundle has SHALL yield `dangling-reference` naming the file and the
   id (quire-rs FR-026).
-- A `carries` edge to a cross-repository `ix://` target outside the loaded bundle is not kind-checked and not reported as
-  dangling by this module; quire-rs FR-040 skips both checks for it.
 - The module SHALL declare the `required_relations` entry `{name: connection-carries-classification, from: connection,
   edges: [carries], to: [data_classification], direction: outgoing, check: connection-without-classification}`.
 - The module SHALL declare the reverse `required_relations` entry `{name: classification-carried-by-connection, from:
@@ -79,9 +77,9 @@ report. M1 reports this and denies nothing; denial is M2.
   `trace:classification-without-connection` to `"off"`, following the `trace:unassigned-class` precedent of
   [FR-012](./FR-012-software-safety-class-assignment.md), so a corpus without data-flow modelling draws no finding. A project
   turns either check on.
-- The module SHALL name `agent-ix/spec-objects-security` as the owner of the `data_classification` vocabulary, which is to be
-  loaded alongside it. The no-finding claim above holds for a corpus that loads it; with it absent and no `data_classification`
-  document, quire-rs reports `trace:undeclared-relation-vocabulary`, which is separate from the `off` keys.
+- The no-finding claim above holds for a corpus that loads `agent-ix/spec-objects-security`, the owner of the
+  `data_classification` vocabulary; with it absent and no `data_classification` document, quire-rs reports
+  `trace:undeclared-relation-vocabulary`, which is separate from the `off` keys.
 - With the quire-rs FR-084 change routed through PLAT-1441, `quire relations --json` SHALL list, for each connection, its
   `carries` targets together with each target's `regulated_categories`, and a gap row for each connection with no `carries`
   edge.
@@ -115,7 +113,7 @@ row the engine does not extract and the report does not show it. FR-013-AC-5 and
 | ID | Criteria | Verification |
 |----|----------|--------------|
 | FR-013-AC-1 | A connection with a `carries` relationship to a `data_classification` validates with no `disallowed-edge-type` or `disallowed-edge-target` finding at any severity. | Test |
-| FR-013-AC-2 | In a loaded bundle, a connection with `carries` to a `part` yields `disallowed-edge-target` naming the source, the target and its kind, and `carries` to an id no document has yields `dangling-reference` naming the file and the id. A `carries` edge to a cross-repository `ix://` target outside the bundle yields neither. | Test |
+| FR-013-AC-2 | In a loaded bundle, a connection with `carries` to a `part` yields `disallowed-edge-target` naming the source, the target and its kind, and `carries` to an id no document has yields `dangling-reference` naming the file and the id. | Test |
 | FR-013-AC-3 | With `trace:connection-without-classification` turned on, a connection with no `carries` edge yields that finding, and a connection with a `carries` edge to a `data_classification` yields none. With `trace:classification-without-connection` turned on, a `data_classification` that no connection carries yields that finding, and one that a connection carries yields none. | Test |
 | FR-013-AC-4 | With the default severities, in a corpus that loads `spec-objects-security`, an unclassified connection yields no `trace:connection-without-classification` finding and an uncarried classification yields no `trace:classification-without-connection` finding. | Test |
 | FR-013-AC-5 | After the FR-084 change routed through PLAT-1441, `quire relations --json` over a fixture lists each connection with its carried classifications and their `regulated_categories`, lists a gap row for an unclassified connection, lists per classification the connections that carry it, and contains no `level` value. | Test |
