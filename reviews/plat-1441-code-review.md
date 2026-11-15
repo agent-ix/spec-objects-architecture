@@ -38,15 +38,22 @@ file.
 |---|---|---|---|
 | FND-001 | low | FR-013-AC-5 says "no `level` or other unselected key appears in either" view, but the report rows hold many keys that are not record keys (`id`, `path`, `verification`, ...), so a literal test cannot pass. The first sentence says "no `level` value", which reads as the value, not the key. FR-084-AC-22/23 say "no `level` key at any depth". Fix: "no record key outside `record_keys` (in particular no `level` key) appears in either view, at any depth". | spec/functional/FR-013-connection-carries-data-classification.md:130 |
 
-## Disposition pass 1
-
-| FND | Outcome | Reason |
-| --- | --- | --- |
-| FND-001 | fixed | AC-5 makes category presence conditional on a valid record and asserts no unselected record key unconditionally. |
-| FND-002 | still-open | New low finding: AC-5 dropped `and` between its report assertions. |
-
-### New findings (disposition pass 1)
+## New findings (disposition pass 1)
 
 | ID | Severity | Summary | Refs |
-| --- | --- | --- | --- |
-| FND-002 | low | FR-013-AC-5 dropped `and` between the first sentence's report assertions. | spec/functional/FR-013-connection-carries-data-classification.md:130 |
+|---|---|---|---|
+| FND-002 | low | Fix commit 5b5bcba dropped AC-5's unconditional "contains no `level` value" clause. The no-`level` assertion now sits inside "Where the classification's valid record has `regulatedCategories`", so AC-5 no longer checks `level` absence for a classification without categories, although Behavior line 86 forbids it at any depth unconditionally; AC-9 checks only `regulatedCategories` absence there. The first sentence also lost its "and" ("lists ..., lists ..., lists per classification ..."). Fix: make the no-key clause its own sentence covering every entry in both views, and restore "and". | spec/functional/FR-013-connection-carries-data-classification.md:130 |
+
+## New findings (disposition pass 2)
+
+| ID | Severity | Summary | Refs |
+|---|---|---|---|
+| FND-003 | medium | The committed review records in this PR are coder-written paraphrases, not the reviewer's SR files. `reviews/plat-1441-spec-review-ears.md` records SR-035 FND-002 as "the first AC's clauses need a complete unconditional no-unselected-record-key assertion". That is SR-031 FND-002's defect. The posted SR-035 FND-002 is the "SHALL contain ... only when" necessary-condition finding, and the file has no `## New findings` row for it. `reviews/plat-1441-code-review.md` cuts SR-031 FND-002 down to the missing "and" and drops the unconditional no-`level` part. `reviews/plat-1441-gap-analysis.md` adds a "Pass-1 verdict: approved" line the reviewer never wrote. The repo record therefore disagrees with the Linear record. Fix: copy the reviewer's round-2 scratchpad SR files over `reviews/plat-1441-{code-review,gap-analysis,spec-review-base,spec-review-ears}.md` verbatim. | reviews/plat-1441-spec-review-ears.md:29-34; reviews/plat-1441-code-review.md:41-52; reviews/plat-1441-gap-analysis.md:40-47 |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | AC-5 now reads "no record key outside `record_keys`, including `level`, appears at any depth in either" (5b5bcba). |
+| FND-002 | fixed | 689267c restores "and" before "lists per classification", and makes the no-key clause its own unconditional sentence: "Whether or not `regulatedCategories` is present, no record key outside `record_keys`, including `level`, appears at any depth in either view." |
+| FND-003 | still-open | New this round. No fix round has run for it. Copy the reviewer's scratchpad SR files over the committed `reviews/plat-1441-*.md` files. |

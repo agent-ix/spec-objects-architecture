@@ -46,11 +46,12 @@ Behavior line now contradict the new lines.
 | FND-003 | medium | The older Behavior line still says `quire relations --json` SHALL list each `carries` target "together with each target's `regulated_categories`". The report key is the record key `regulatedCategories`, which AC-5 and the new lines now use; `regulated_categories` is the frontmatter key and never appears in the report. Two SHALLs name different keys for one output, so a test written from line 95 fails against the engine. Fix: `regulatedCategories`. | spec/functional/FR-013-connection-carries-data-classification.md:94-96 |
 | FND-004 | low | The no-`level` rationale is now wrong and unneeded. Both the Behavior line and Engine impact say `level` is excluded because it "is a `## Properties` table row that the engine does not extract". `DataClassification.json` declares `level` as a record property, and the module enables `record-sections`, so the record can hold `level`. That was the premise of the #688 base-review finding that introduced `record_keys`. The exclusion now holds by declaration. Fix: ground the SHALL NOT in `record_keys` ("`level` is not in `record_keys`"), and delete the extraction claim. | spec/functional/FR-013-connection-carries-data-classification.md:98-99,112-113 |
 
-## Disposition pass 1
+## Dispositions
 
-| FND | Outcome | Reason |
-| --- | --- | --- |
-| FND-001 | fixed | FR-013 behavior and AC-5 condition category presence on a valid FR-084 record. |
-| FND-002 | still-open | The sentence saying both relations need no engine change contradicts their `record_keys` configuration. |
-| FND-003 | fixed | The report key spelling is `regulatedCategories`. |
-| FND-004 | fixed | `level` is excluded by the `record_keys` allow-list. |
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Line 82 now conditions presence on "a valid FR-084 `record` for that entry", per entry (document or linked), and AC-5 says "the classification's valid record" (5b5bcba). |
+| FND-002 | still-open | The second paragraph now names the FR-058/FR-084 `record_keys` change and drops the `linked`-only snake_case text, but lines 105-106 still say "The edge, both relations and both `off` keys need no engine change", while both relations now set `record_keys`, which needs that engine change. Fix: "need no engine change beyond the `record_keys` key below", or drop "both relations" from that sentence. |
+| FND-003 | fixed | Line 96 now reads "each target's `regulatedCategories` where the report contains it" (5b5bcba). |
+| FND-004 | fixed | The extraction-based `level` line is deleted; line 86 grounds exclusion in `record_keys`, and Engine impact says "`level` is excluded by this module's `record_keys` allow-list, not because the engine fails to extract it" (5b5bcba). |
+| FND-002 | fixed | 689267c changes lines 105-106 to "The edge, the relation routing, both `off` keys and the severities need no engine change beyond the `record_keys` projection below", so Engine impact no longer contradicts the `record_keys` configuration. |

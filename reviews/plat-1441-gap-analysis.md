@@ -37,11 +37,9 @@ ticket that implements these entries does not carry `record_keys`.
 | FND-001 | medium | The Behavior line "the relation report SHALL omit `regulatedCategories` when the target has not" has no FR-013 criterion. AC-5 asserts presence, and absence of `level`, but no fixture classification without categories. A report that emitted `"regulatedCategories": []` or `"record": {}` for it would pass every FR-013 AC. quire-rs FR-084-AC-21/23 cover the engine, not this module's declared relations. Fix: add to AC-5 "a classification whose record states no `regulatedCategories` has no `record` key in either view". | spec/functional/FR-013-connection-carries-data-classification.md:85,130 |
 | FND-002 | low | PLAT-1440, which implements the two `required_relations` entries, gives their shape in Design notes without `record_keys`. Its AC 6 asserts the connection/classification pairs but not `regulatedCategories` or the absence of `level`. An implementer following the ticket would fail FR-013-AC-8 as amended here. Fix (owner or code lead, not this PR): add `record_keys: [regulatedCategories]` to both relations in PLAT-1440, and add the AC-5 assertions to its AC 6. FR-013 is the authority. | PLAT-1440; FR-013-AC-5; FR-013-AC-8 |
 
-## Disposition pass 1
+## Dispositions
 
-| FND | Outcome | Reason |
-| --- | --- | --- |
-| FND-001 | fixed | FR-013-AC-9 covers omission when FR-084 omits the record or selected key. |
-| FND-002 | fixed | PLAT-1440 now includes exact `record_keys`, selected-key behavior, no `level`, and omission cases. |
-
-Pass-1 verdict: approved; no new findings.
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | New FR-013-AC-9 asserts no `regulatedCategories` in either view when FR-084 omits `record` or the record lacks the key (5b5bcba). |
+| FND-002 | fixed | PLAT-1440 Design notes now set `record_keys: [regulatedCategories]` on both relations, and its AC 9 and AC 10 assert the selection, omission and `level` exclusion (measured on the Linear ticket). |
