@@ -73,8 +73,7 @@ def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets()
     assert "carries" in wrong_carries[0] and "'queue'" in wrong_carries[0]
     dangling = diagnostic_lines(invalid, "dangling-reference")
     assert any(
-        "CONN-DANGLING-DELIVERY" in line and "SINK-MISSING" in line
-        for line in dangling
+        "CONN-DANGLING-DELIVERY" in line and "SINK-MISSING" in line for line in dangling
     )
 
 
@@ -103,9 +102,7 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
     }
     for relation, (source_id, sinks) in expected.items():
         rows = reports[relation]["rows"]
-        row = next(
-            (row for row in rows if row["document"]["id"] == source_id), None
-        )
+        row = next((row for row in rows if row["document"]["id"] == source_id), None)
         assert row is not None, rows
         linked = {entry["id"]: entry for entry in row["linked"]}
         assert set(linked) == set(sinks)
@@ -171,4 +168,3 @@ def test_data_sink_is_exported_and_declares_only_the_supported_links():
     assert object_type("connection")["allowed_links"]["delivers_to"] == ["data_sink"]
     assert object_type("part")["allowed_links"]["delivers_to"] == ["data_sink"]
     assert manifest["edge_types"]["delivers_to"]["category"] == "dataflow"
-
