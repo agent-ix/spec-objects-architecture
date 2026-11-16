@@ -72,7 +72,10 @@ def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets()
     assert len(wrong_carries) == 1, invalid.stderr
     assert "carries" in wrong_carries[0] and "'queue'" in wrong_carries[0]
     dangling = diagnostic_lines(invalid, "dangling-reference")
-    assert any("CONN-DANGLING-DELIVERY" in line and "SINK-MISSING" in line for line in dangling)
+    assert any(
+        "CONN-DANGLING-DELIVERY" in line and "SINK-MISSING" in line
+        for line in dangling
+    )
 
 
 @pytest.mark.trace("TC-163", "FR-015-AC-6", "FR-015-AC-8")
