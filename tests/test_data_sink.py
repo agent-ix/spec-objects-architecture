@@ -97,7 +97,6 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
                 "SINK-DATASTORE": "datastore",
             },
         ),
-        ),
     }
     for relation, (source_id, sinks) in expected.items():
         rows = reports[relation]["rows"]
