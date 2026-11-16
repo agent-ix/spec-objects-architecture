@@ -38,3 +38,17 @@ Observed finding: The changed allowed_links adds connection -> trust_boundary, b
 - `FR-007-AC-5` (examined): “The declared systems edge verbs and three roles are present, interface carries systems-interface, and the systems kinds allowed_links use those verbs plus realizes_requirement; connection additionally admits carries and crosses. The verbs take declared roles or *, and realizes_requirement takes only FR and NFR.”
 - `tests/test_trust_crossings.py` (examined): “The new crossing test module defines _validate, _relations, and _lines helpers.”
 - `tests/test_data_flow_edges.py` (context_only): “Existing data-flow test module already defines _validate, _relations, and _lines helpers.”
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | TC-104 now explicitly accepts and asserts `connection crosses trust_boundary`, and its focused run passed. |
+| FND-002 | fixed | The duplicated helpers are removed from both test modules; both now use shared `validate_data_flow`, `data_flow_relations`, and `diagnostic_lines` helpers in `tests/conftest.py`. |
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | TC-104 now asserts that connection `crosses` may target `trust_boundary`, and coder-posted focused evidence reports the test passing. |
+| FND-002 | fixed | The duplicated helpers were removed from both test modules and replaced by shared helpers in `tests/conftest.py`. |
