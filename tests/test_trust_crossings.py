@@ -12,7 +12,6 @@ from tests.conftest import (
     PACKAGE_ROOT,
     load_manifest,
     module_args,
-    object_type,
     run_quire,
     validate_bundle,
 )
@@ -37,7 +36,10 @@ def _relations(root: pathlib.Path) -> dict[str, dict]:
         f"{MEMBER}={root}",
     )
     assert result.returncode == 0, result.stderr
-    return {relation["name"]: relation for relation in json.loads(result.stdout)["relations"]}
+    return {
+        relation["name"]: relation
+        for relation in json.loads(result.stdout)["relations"]
+    }
 
 
 def _lines(result, check: str) -> list[str]:
@@ -99,7 +101,9 @@ def test_relation_report_includes_trust_level_beside_carried_categories():
     carried_row = next(
         row for row in carried["rows"] if row["document"]["id"] == "CONN-PORTAL-LAB"
     )
-    health = next(entry for entry in carried_row["linked"] if entry["id"] == "CLASS-PHI")
+    health = next(
+        entry for entry in carried_row["linked"] if entry["id"] == "CLASS-PHI"
+    )
     assert health["record"] == {"regulatedCategories": ["health"]}
 
     result = _validate(VALID)
