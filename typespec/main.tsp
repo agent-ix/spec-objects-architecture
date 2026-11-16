@@ -183,7 +183,7 @@ enum ProcessorAgreement {
   covered,
   not_covered,
   not_applicable,
-  unknown,
+  `unknown`: "unknown",
 }
 
 /** A country or region code used to describe a data sink's location. */
