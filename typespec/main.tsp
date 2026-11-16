@@ -476,6 +476,21 @@ model DataSink {
   ...Record<never>;
 }
 
+/** Open frontmatter fields used by data-sink flow-rule conditions. */
+model DataSinkFrontmatter {
+  kind:
+    | "ui_screen"
+    | "log"
+    | "export_file"
+    | "analytics_event"
+    | "llm_prompt"
+    | "tool_call"
+    | "outbound_message"
+    | "datastore";
+  processor_agreement: "covered" | "not_covered" | "not_applicable" | "unknown";
+  ...Record<unknown>;
+}
+
 // ---------------------------------------------------------------------------
 // Systems-model declaration records (FR-007; QSpec FR-152)
 // ---------------------------------------------------------------------------
