@@ -243,10 +243,11 @@ def test_construct_references_name_only_declared_members_and_roles():
             assert set(targets) <= roles, (kind, member, targets)
 
 
-@pytest.mark.trace("TC-104", "FR-007-AC-5")
+@pytest.mark.trace("TC-104", "FR-007-AC-5", "FR-014-AC-1")
 def test_edge_verbs_and_roles_are_declared_and_used():
     manifest = load_manifest()
-    assert EDGE_VERBS | {DESIGN_VERB} <= set(manifest["edge_types"])
+    crossing_verb = "crosses"
+    assert EDGE_VERBS | {DESIGN_VERB, crossing_verb} <= set(manifest["edge_types"])
     assert SYSTEMS_ROLES <= set(manifest["roles"])
     assert "systems-interface" in object_type("interface")["roles"]
     used_verbs: set[str] = set()
@@ -258,16 +259,24 @@ def test_edge_verbs_and_roles_are_declared_and_used():
             for token in targets:
                 if verb == DESIGN_VERB:
                     assert token in REQUIREMENT_KINDS, (kind, token)
-                elif (kind, verb) != ("connection", "carries"):
+                elif (kind, verb) == ("connection", "carries"):
+                    assert targets == ["data_classification"]
+                elif (kind, verb) == ("connection", crossing_verb):
+                    assert targets == ["trust_boundary"]
+                else:
                     assert token == "*" or token in manifest["roles"], (kind, token)
-    # `carries` is allowed on `connection` only (FR-013); other kinds never use it.
+    # Both data-flow links are allowed on `connection` only.
     assert object_type("connection")["allowed_links"]["carries"] == [
         "data_classification"
     ]
-    assert used_verbs - {"carries"} == EDGE_VERBS | {DESIGN_VERB}
+    assert object_type("connection")["allowed_links"][crossing_verb] == [
+        "trust_boundary"
+    ]
+    assert used_verbs - {"carries", crossing_verb} == EDGE_VERBS | {DESIGN_VERB}
     for kind in SYSTEMS_TYPES:
         if kind != "connection":
             assert "carries" not in object_type(kind)["allowed_links"], kind
+            assert crossing_verb not in object_type(kind)["allowed_links"], kind
 
 
 @pytest.mark.trace("TC-105", "FR-007-AC-6")

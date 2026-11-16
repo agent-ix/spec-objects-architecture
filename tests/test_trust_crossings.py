@@ -3,47 +3,22 @@
 from __future__ import annotations
 
 import json
-import pathlib
 
 import pytest
 
 from tests.conftest import (
     FIXTURES_DIR,
     PACKAGE_ROOT,
+    data_flow_relations,
+    diagnostic_lines,
     load_manifest,
-    module_args,
-    run_quire,
-    validate_bundle,
+    validate_data_flow,
 )
 
 CORPUS = FIXTURES_DIR / "data_flow"
 VALID = CORPUS / "valid"
 INVALID = CORPUS / "invalid"
-MEMBER = "agent-ix/df"
 FORWARD = "connection-crosses-trust-boundary"
-
-
-def _validate(root: pathlib.Path, *extra: str):
-    return validate_bundle(MEMBER, root, *extra)
-
-
-def _relations(root: pathlib.Path) -> dict[str, dict]:
-    result = run_quire(
-        "relations",
-        "--json",
-        *module_args(),
-        "--repo",
-        f"{MEMBER}={root}",
-    )
-    assert result.returncode == 0, result.stderr
-    return {
-        relation["name"]: relation
-        for relation in json.loads(result.stdout)["relations"]
-    }
-
-
-def _lines(result, check: str) -> list[str]:
-    return [line for line in result.stderr.splitlines() if f"[{check}]" in line]
 
 
 @pytest.mark.trace("TC-163", "FR-014-AC-1", "FR-014-AC-6")
@@ -62,19 +37,19 @@ def test_manifest_and_skeleton_declare_optional_crosses_relationship():
 
 @pytest.mark.trace("TC-164", "FR-014-AC-2", "FR-014-AC-4")
 def test_valid_crossing_and_connection_without_crossing_validate():
-    result = _validate(VALID)
+    result = validate_data_flow(VALID)
     assert result.returncode == 0, result.stderr
-    assert not _lines(result, "connection-crosses-trust-boundary")
+    assert not diagnostic_lines(result, "connection-crosses-trust-boundary")
     assert "denial" not in result.stderr.lower()
 
 
 @pytest.mark.trace("TC-165", "FR-014-AC-3")
 def test_crossing_to_asset_and_missing_target_are_rejected():
-    result = _validate(INVALID, "--strict")
+    result = validate_data_flow(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
     (wrong_kind,) = [
         line
-        for line in _lines(result, "disallowed-edge-target")
+        for line in diagnostic_lines(result, "disallowed-edge-target")
         if "wrong_kind_crossing" in line
     ]
     assert "wrong_kind_crossing" in wrong_kind
@@ -82,7 +57,7 @@ def test_crossing_to_asset_and_missing_target_are_rejected():
     assert "'asset'" in wrong_kind
     (dangling,) = [
         line
-        for line in _lines(result, "dangling-reference")
+        for line in diagnostic_lines(result, "dangling-reference")
         if "dangling_crossing" in line
     ]
     assert "BOUND-MISSING" in dangling and "'crosses'" in dangling
@@ -92,7 +67,7 @@ def test_crossing_to_asset_and_missing_target_are_rejected():
 
 @pytest.mark.trace("TC-166", "FR-014-AC-5", "FR-014-AC-7")
 def test_relation_report_includes_trust_level_beside_carried_categories():
-    report = _relations(VALID)
+    report = data_flow_relations(VALID)
     crossings = report[FORWARD]
     row = next(
         row for row in crossings["rows"] if row["document"]["id"] == "CONN-PORTAL-LAB"
@@ -110,7 +85,7 @@ def test_relation_report_includes_trust_level_beside_carried_categories():
     )
     assert health["record"] == {"regulatedCategories": ["health"]}
 
-    result = _validate(VALID)
+    result = validate_data_flow(VALID)
     assert result.returncode == 0, result.stderr
     assert "denial" not in result.stderr.lower()
-    assert not _lines(result, "connection-crosses-trust-boundary")
+    assert not diagnostic_lines(result, "connection-crosses-trust-boundary")

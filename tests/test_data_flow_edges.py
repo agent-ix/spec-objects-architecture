@@ -13,42 +13,24 @@ spec-objects-security.
 from __future__ import annotations
 
 import json
-import pathlib
 
 import pytest
 
 from tests.conftest import (
     FIXTURES_DIR,
     PACKAGE_ROOT,
+    data_flow_relations,
+    diagnostic_lines,
     load_manifest,
-    module_args,
     object_type,
-    run_quire,
-    validate_bundle,
+    validate_data_flow,
 )
 
 CORPUS = FIXTURES_DIR / "data_flow"
 VALID = CORPUS / "valid"
 INVALID = CORPUS / "invalid"
-MEMBER = "agent-ix/df"
 FORWARD = "connection-carries-classification"
 REVERSE = "classification-carried-by-connection"
-
-
-def _validate(root: pathlib.Path, *extra: str):
-    return validate_bundle(MEMBER, root, *extra, safety=True)
-
-
-def _relations(root: pathlib.Path) -> dict[str, dict]:
-    result = run_quire(
-        "relations",
-        "--json",
-        *module_args(safety=True),
-        "--repo",
-        f"{MEMBER}={root}",
-    )
-    assert result.returncode == 0, result.stderr
-    return {r["name"]: r for r in json.loads(result.stdout)["relations"]}
 
 
 def _pairs(report: dict, name: str) -> set[tuple[str, str]]:
@@ -63,31 +45,27 @@ def _rows(report: dict, name: str) -> dict[str, dict]:
     return {row["document"]["id"]: row for row in report[name]["rows"]}
 
 
-def _lines(result, check: str) -> list[str]:
-    return [ln for ln in result.stderr.splitlines() if f"[{check}]" in ln]
-
-
 @pytest.mark.trace("TC-151", "FR-013-AC-1")
 def test_fr013_ac1_connection_carrying_a_classification_validates():
-    result = _validate(VALID)
+    result = validate_data_flow(VALID, safety=True)
     assert result.returncode == 0, result.stderr
     assert "disallowed-edge" not in result.stderr
 
 
 @pytest.mark.trace("TC-152", "FR-013-AC-2")
 def test_fr013_ac2_wrong_kind_and_dangling_targets_fail():
-    result = _validate(INVALID, "--strict")
+    result = validate_data_flow(INVALID, "--strict", safety=True)
     assert result.returncode == 3, result.stderr
     (wrong,) = [
         line
-        for line in _lines(result, "disallowed-edge-target")
+        for line in diagnostic_lines(result, "disallowed-edge-target")
         if "wrong_kind_link" in line
     ]
     assert "wrong_kind_link" in wrong and "'carries'" in wrong
     assert "scoring_engine" in wrong and "'part'" in wrong
     (dangling,) = [
         line
-        for line in _lines(result, "dangling-reference")
+        for line in diagnostic_lines(result, "dangling-reference")
         if "dangling_link.md" in line
     ]
     assert "dangling_link.md" in dangling
@@ -96,31 +74,32 @@ def test_fr013_ac2_wrong_kind_and_dangling_targets_fail():
 
 @pytest.mark.trace("TC-153", "FR-013-AC-3")
 def test_fr013_ac3_opted_in_checks_report_the_gaps():
-    result = _validate(
+    result = validate_data_flow(
         VALID,
         "--severity",
         "trace:connection-without-classification=warning",
         "--severity",
         "trace:classification-without-connection=warning",
+        safety=True,
     )
     assert result.returncode == 0, result.stderr
-    (conn,) = _lines(result, "connection-without-classification")
+    (conn,) = diagnostic_lines(result, "connection-without-classification")
     assert "bare_link" in conn
-    (cls,) = _lines(result, "classification-without-connection")
+    (cls,) = diagnostic_lines(result, "classification-without-connection")
     assert "CLASS-UNCARRIED" in cls
 
 
 @pytest.mark.trace("TC-154", "FR-013-AC-4")
 def test_fr013_ac4_default_severity_draws_no_finding():
-    result = _validate(VALID)
+    result = validate_data_flow(VALID, safety=True)
     assert result.returncode == 0, result.stderr
-    assert not _lines(result, "connection-without-classification")
-    assert not _lines(result, "classification-without-connection")
+    assert not diagnostic_lines(result, "connection-without-classification")
+    assert not diagnostic_lines(result, "classification-without-connection")
 
 
 @pytest.mark.trace("TC-155", "FR-013-AC-5")
 def test_fr013_ac5_relations_list_both_views():
-    report = _relations(VALID)
+    report = data_flow_relations(VALID, safety=True)
     assert _pairs(report, FORWARD) == {
         ("CONN-PORTAL-LAB", "CLASS-PHI"),
         ("CONN-PORTAL-LAB", "CLASS-PUBLIC"),
@@ -143,7 +122,7 @@ def _entries(report: dict, name: str):
 
 @pytest.mark.trace("TC-155", "FR-013-AC-5", "FR-013-AC-9")
 def test_fr013_ac5_ac9_selected_key_is_included_or_omitted_and_level_never_leaks():
-    report = _relations(VALID)
+    report = data_flow_relations(VALID, safety=True)
     for name in (FORWARD, REVERSE):
         by_id = {}
         for entry in _entries(report, name):
@@ -156,7 +135,7 @@ def test_fr013_ac5_ac9_selected_key_is_included_or_omitted_and_level_never_leaks
             assert set(entry.get("record", {})) <= {"regulatedCategories"}, entry
     assert '"level"' not in json.dumps(report)
 
-    invalid_report = _relations(INVALID)
+    invalid_report = data_flow_relations(INVALID, safety=True)
     for name in (FORWARD, REVERSE):
         bad_entries = [
             entry
@@ -171,15 +150,15 @@ def test_fr013_ac5_ac9_selected_key_is_included_or_omitted_and_level_never_leaks
 
 @pytest.mark.trace("TC-156", "FR-013-AC-4")
 def test_fr013_ac4_default_severities_draw_no_finding():
-    result = _validate(VALID)
+    result = validate_data_flow(VALID, safety=True)
     assert result.returncode == 0, result.stderr
-    assert not _lines(result, "connection-without-classification")
-    assert not _lines(result, "classification-without-connection")
+    assert not diagnostic_lines(result, "connection-without-classification")
+    assert not diagnostic_lines(result, "classification-without-connection")
 
 
 @pytest.mark.trace("TC-157", "FR-013-AC-6")
 def test_fr013_ac6_carried_classification_produces_no_rule_finding():
-    report = _relations(VALID)
+    report = data_flow_relations(VALID, safety=True)
     row = _rows(report, "connection-crosses-trust-boundary")["CONN-PORTAL-LAB"]
     (boundary,) = row["linked"]
     assert boundary["id"] == "BOUND-INTERNET"
@@ -189,10 +168,10 @@ def test_fr013_ac6_carried_classification_produces_no_rule_finding():
     health = next(entry for entry in carried if entry["id"] == "CLASS-PHI")
     assert health["record"] == {"regulatedCategories": ["health"]}
 
-    result = _validate(VALID)
+    result = validate_data_flow(VALID, safety=True)
     assert result.returncode == 0, result.stderr
     assert "denial" not in result.stderr.lower()
-    assert not _lines(result, "connection-crosses-trust-boundary")
+    assert not diagnostic_lines(result, "connection-crosses-trust-boundary")
 
 
 @pytest.mark.trace("TC-158", "FR-013-AC-7")
