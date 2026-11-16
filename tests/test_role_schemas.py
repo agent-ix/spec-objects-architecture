@@ -1,4 +1,4 @@
-"""Role-distinctness tests for the ten architecture schemas (FR-004).
+"""Role-distinctness tests for the eleven architecture schemas (FR-004).
 
 Every record below is **hand-built**, not extracted. These rows are therefore
 **schema evidence, not extraction evidence**, and say so. The extraction
@@ -286,10 +286,10 @@ def test_rate_limit_requires_a_clause_and_a_scoped_threshold(schema_registry):
 @pytest.mark.trace("TC-041", "FR-004-AC-12")
 def test_the_empty_record_fails_only_the_types_with_a_required_key(schema_registry):
     # FR-009: a type whose manifest locators are all optional for its record
-    # keys requires none; only `Interface` still requires `featureOrder`.
+    # keys requires none; `Interface` and `DataSink` still require their keys.
     for model in MODELS:
         assert valid(schema_registry, model, {}) == (
-            model != "Interface"
+            model not in ("Interface", "DataSink")
         ), f"{model} on `{{}}`"
 
 
@@ -459,7 +459,7 @@ def test_no_shipped_schema_declares_an_observation_key():
 
 
 @pytest.mark.trace("TC-046", "FR-004-AC-16")
-def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry):
+def test_relations_is_admitted_by_seven_types_and_refused_by_four(schema_registry):
     """FR-004 admits `relations` where a type is reached through an edge and
     refuses it on the four reached through what they carry, expose, serialize or
     throttle. Both halves are asserted, so the Behavior rule and the table
@@ -471,6 +471,7 @@ def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry)
         "UiComponent": {"fields": [FIELD]},
         "Interface": {"operations": [OP], "featureOrder": ["do_it"]},
         "ExternalContract": {"operations": [GUARANTEED_OP], "clauses": [CLAUSE]},
+        "DataSink": {"kind": "datastore", "processorAgreement": "unknown"},
     }
     refuses = {
         "Queue": {"fields": [IDENTITY_FIELD]},
@@ -512,7 +513,7 @@ def test_a_record_lacking_an_optional_section_key_validates_and_the_key_stays_ch
     """Hand-built: the record a document without the optional section yields."""
     for name in OBJECT_TYPES:
         model = MODEL_OF[name]
-        if name == "interface":
+        if name in ("interface", "data_sink"):
             continue
         assert valid(schema_registry, model, {}), model
     # A key still present is still checked: the item rules stand.

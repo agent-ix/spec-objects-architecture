@@ -1,13 +1,14 @@
 manifest_version: 1.0.0
 name: spec-objects-architecture
 version: 0.5.0
-description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
+description: 'Filament Module: tier-2 architecture ObjectTypes (api_endpoint, data_schema, data_sink, queue, action, ui_component, interface, external_contract, extension_point, binary_format, rate_limit) and the systems-model kinds (part, port, connection, allocation)'
 semantic:
   contract_version: 1.0.0
   package: agent-ix/spec-objects-architecture
   exports:
   - api_endpoint
   - data_schema
+  - data_sink
   - queue
   - action
   - ui_component
@@ -47,6 +48,7 @@ edge_types:
   # enterprise-capability verb spec-artifacts-iso declares.
   realizes_requirement: { description: "A design element (part, connection or decision record) realizes the requirement at the target.", category: traceability, inverse: requirement_realized_by }
   crosses: { description: "A connection crosses the trust boundary at the target.", category: dataflow }
+  delivers_to: { description: "A connection or part delivers data to the sink at the target.", category: dataflow }
 roles:
   systems-part: { description: "A systems-model part (QSpec FR-152 Part)." }
   systems-port: { description: "A systems-model port owned by a part (QSpec FR-152 Port)." }
@@ -90,6 +92,20 @@ traceability:
     direction: outgoing
     check: connection-crosses-trust-boundary
     record_keys: [trust_level]
+  - name: connection-delivers-to-sink
+    from: connection
+    edges: [delivers_to]
+    to: [data_sink]
+    direction: outgoing
+    check: connection-delivers-to-sink
+    record_keys: [kind, processorAgreement, processor]
+  - name: part-delivers-to-sink
+    from: part
+    edges: [delivers_to]
+    to: [data_sink]
+    direction: outgoing
+    check: part-delivers-to-sink
+    record_keys: [kind, processorAgreement, processor]
   design_relations: [fr-has-design-element, nfr-has-design-element]
   # FR-012: a requirement must not state a class below the part it is
   # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
@@ -123,6 +139,8 @@ grammar_severity:
   trace:connection-without-classification: "off"
   trace:classification-without-connection: "off"
   trace:connection-crosses-trust-boundary: "off"
+  trace:connection-delivers-to-sink: "off"
+  trace:part-delivers-to-sink: "off"
 artifact_types: []
 lint_rules: []
 object_types:
@@ -202,6 +220,42 @@ object_types:
         properties:
           from: section_body
           after_heading: Properties
+          required: false
+- name: data_sink
+  allowed_links:
+    carries: [data_classification]
+    references: [part, external_contract, role]
+  data_schema:
+    schema: schemas/DataSink.json
+  body_extraction:
+    yield_pattern:
+      match:
+        id: *id001
+        title: *id002
+        type: *id003
+        kind:
+          from: frontmatter_field
+          path: [kind]
+          required: true
+        processorAgreement:
+          from: frontmatter_field
+          path: [processor_agreement]
+          required: true
+        processor:
+          from: frontmatter_field
+          path: [processor]
+          required: false
+        region:
+          from: frontmatter_field
+          path: [region]
+          required: false
+        purpose:
+          from: frontmatter_field
+          path: [purpose]
+          required: false
+        audienceRoles:
+          from: frontmatter_field
+          path: [audience_roles]
           required: false
 - name: queue
   roles: [externally-exposed, deployable, configurable]
@@ -477,6 +531,7 @@ object_types:
   allowed_links:
     owned_by: ["*"]
     typed_by: ["*"]
+    delivers_to: [data_sink]
     realizes_requirement: [FR, NFR]
   construct:
     identity: none
@@ -557,6 +612,7 @@ object_types:
     connects: [systems-port]
     carries: [data_classification]
     crosses: [trust_boundary]
+    delivers_to: [data_sink]
     realizes_requirement: [FR, NFR]
   construct:
     identity: none

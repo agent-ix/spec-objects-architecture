@@ -106,6 +106,8 @@ def test_fr010_ac3_manifest_declares_exactly_the_two_relations():
         "connection-carries-classification",
         "classification-carried-by-connection",
         "connection-crosses-trust-boundary",
+        "connection-delivers-to-sink",
+        "part-delivers-to-sink",
     ]
     fields = {
         "fr-has-design-element": ("FR", "requirement-without-design"),

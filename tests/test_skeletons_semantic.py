@@ -81,7 +81,7 @@ def extract(quire_engine, module, bundle, path):
 @pytest.mark.trace("TC-050", "FR-005-AC-1")
 @pytest.mark.parametrize("path", declaration_skeletons(), ids=lambda p: p.name)
 def test_every_skeleton_validates_with_no_error(quire_engine, skeletons, path):
-    assert len(skeletons) == 13
+    assert len(skeletons) == 14
     text = path.read_text()
     result = quire_engine.validate_document(
         frontmatter(text)["type"], str(PACKAGE_ROOT), text
@@ -398,7 +398,7 @@ def test_the_repository_carries_no_corpus_or_vendored_fixture():
 def test_skeleton_titles_are_distinct_identifiers_and_object_equals_type():
     """One title per object type. The three `*.sysml.md` alternates share their
     table skeleton's `id` and `title` by intent (FR-005), so uniqueness is
-    measured over the fourteen object types, not over the seventeen files."""
+    measured over the fifteen object types, not over the eighteen files."""
     titles: dict[str, str] = {}
     for path in all_skeletons():
         front = frontmatter(path.read_text())

@@ -52,7 +52,7 @@ def module_copy(tmp_path, mutate=None):
 
 
 @pytest.mark.trace("TC-020", "FR-003-AC-1", "FR-003-CON-1")
-def test_the_semantic_block_carries_the_eight_admitted_keys_and_ten_exports(
+def test_the_semantic_block_carries_the_eight_admitted_keys_and_eleven_exports(
     semantic_block,
 ):
     assert set(semantic_block) == ADMITTED_KEYS
@@ -74,7 +74,7 @@ def test_the_semantic_block_carries_the_eight_admitted_keys_and_ten_exports(
 
 
 @pytest.mark.trace("TC-024", "FR-003-AC-4")
-def test_the_registry_loads_all_fourteen_archetypes(quire_engine):
+def test_the_registry_loads_all_fifteen_archetypes(quire_engine):
     registry = quire_engine.Registry.load_from([str(REPO_ROOT)])
     names = set(registry.archetype_names())
     for name in EXPORTS:
@@ -161,7 +161,7 @@ def test_the_id_pattern_is_stated_once_and_carried_by_every_id_locator(
     assert set(base["required"]) == {"id", "title", "type"}
     assert OBJECT_ID_LOCATOR_REGEX == f"^({OBJECT_ID_PATTERN[1:-1]})$"
     for ot in object_types():
-        if ot["name"] != "part":
+        if ot["name"] not in ("part", "data_sink"):
             assert "frontmatter_schema_ref" not in ot, ot["name"]
         loc = locators(ot)["id"]
         assert loc["from"] == "frontmatter_field", ot["name"]
