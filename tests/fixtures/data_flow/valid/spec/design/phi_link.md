@@ -1,6 +1,6 @@
 ---
-id: phi_link
-title: "phi_linkConnection"
+id: CONN-PORTAL-LAB
+title: "PortalLabConnection"
 type: connection
 object: connection
 relationships:
@@ -8,8 +8,10 @@ relationships:
     type: "carries"
   - target: "CLASS-PUBLIC"
     type: "carries"
+  - target: "BOUND-INTERNET"
+    type: "crosses"
 ---
-# [phi_link] phi_linkConnection
+# [CONN-PORTAL-LAB] PortalLabConnection
 
 ## Connection
 

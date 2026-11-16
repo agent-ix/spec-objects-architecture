@@ -454,3 +454,34 @@ def validate_bundle(
         "--repo",
         f"{member}={root}",
     )
+
+
+DATA_FLOW_MEMBER = "agent-ix/df"
+
+
+def validate_data_flow(
+    root: pathlib.Path, *extra: str, safety: bool = False
+) -> subprocess.CompletedProcess:
+    """Validate a data-flow fixture with optional safety-role declarations."""
+    return validate_bundle(DATA_FLOW_MEMBER, root, *extra, safety=safety)
+
+
+def data_flow_relations(root: pathlib.Path, *, safety: bool = False) -> dict[str, dict]:
+    """Render declared data-flow relations with the selected module set."""
+    result = run_quire(
+        "relations",
+        "--json",
+        *module_args(safety=safety),
+        "--repo",
+        f"{DATA_FLOW_MEMBER}={root}",
+    )
+    assert result.returncode == 0, result.stderr
+    return {
+        relation["name"]: relation
+        for relation in json.loads(result.stdout)["relations"]
+    }
+
+
+def diagnostic_lines(result: subprocess.CompletedProcess, check: str) -> list[str]:
+    """Return diagnostics for one check from a Quire subprocess result."""
+    return [line for line in result.stderr.splitlines() if f"[{check}]" in line]

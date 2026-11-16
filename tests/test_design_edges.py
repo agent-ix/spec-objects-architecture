@@ -105,6 +105,7 @@ def test_fr010_ac3_manifest_declares_exactly_the_two_relations():
         "nfr-has-design-element",
         "connection-carries-classification",
         "classification-carried-by-connection",
+        "connection-crosses-trust-boundary",
     ]
     fields = {
         "fr-has-design-element": ("FR", "requirement-without-design"),

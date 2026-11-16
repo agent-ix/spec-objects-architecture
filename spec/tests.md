@@ -78,7 +78,8 @@ skipped.
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
 | FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | ✅ |
 | FR-010 | FR-010-AC-1..11, FR-010-CON-1 | TC-140..TC-150 | ✅ except the `realized_criteria` clause of AC-10, an expected failure until quire-cli ships `relations --design` |
-| FR-013 | FR-013-AC-1..9 | TC-151..TC-159 | ✅ AC-6 is a strict expected failure pending PLAT-1532 and PLAT-1441 |
+| FR-013 | FR-013-AC-1..9 | TC-151..TC-159 | ✅ |
+| FR-014 | FR-014-AC-1..7 | TC-163..TC-166 | ✅ |
 | FR-012 | FR-012-AC-1..15, FR-012-CON-1..2 | TC-160..TC-162 | ✅ AC-9, AC-10 and AC-12..AC-15 need spec-artifacts-iso `carried_fields` loaded |
 
 ### Integration Test Coverage
@@ -159,7 +160,7 @@ skipped.
 | TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; a connection end admits a multiplicity and refuses a missing port or unknown key; direction enums are closed | Unit | P0 | FR-007-AC-2 | ✅ |
 | TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3 | ✅ |
 | TC-103 | FR-035 violations name no `construct` path; a `*` reference and an unknown member state are refused; each construct binds its FR-208 meaning; references name declared members and roles only | Integration | P0 | FR-007-AC-4 | ✅ |
-| TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5 | ✅ |
+| TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5, FR-014-AC-1 | ✅ |
 | TC-105 | Each systems skeleton has an underscore id and extracts one row with one cell per column, each reference cell an artifact id or `<artifact id>/<member>` | Integration | P1 | FR-007-AC-6 | ✅ |
 | TC-106 | Each systems skeleton validates with zero errors, its record carrying every FR-152 member | Integration | P1 | FR-007-AC-7 | ✅ |
 | TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
@@ -195,9 +196,13 @@ skipped.
 | TC-154 | Shipped default severities produce no forward or reverse completeness finding (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4 | ✅ |
 | TC-155 | Relations report both views and selected record values, omit invalid or unselected values, and never expose `level` (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-5, FR-013-AC-9 | ✅ |
 | TC-156 | Default severities produce no finding for an unclassified connection or an uncarried classification (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4 | ✅ |
-| TC-157 | A carried health classification crossing an untrusted boundary appears in relations without a denial (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-6 | ✅ strict xfail until PLAT-1532 and PLAT-1441 land |
+| TC-157 | A carried health classification crossing an untrusted boundary appears in relations without a denial (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-6 | ✅ |
 | TC-158 | Only connection among systems kinds admits `carries`; connection schema and skeleton are consistent (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-7 | ✅ |
 | TC-159 | Both required relations and default severities match the exact declarations (`test_data_flow_edges.py`) | Unit | P0 | FR-013-AC-8 | ✅ |
+| TC-163 | The architecture manifest declares the `crosses` edge and target kind, and the connection skeleton documents the optional relationship (`test_trust_crossings.py`) | Unit | P0 | FR-014-AC-1, FR-014-AC-6 | ✅ |
+| TC-164 | A valid crossing to a trust boundary passes, while a connection with no crossing passes without a crossing finding (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-2, FR-014-AC-4 | ✅ |
+| TC-165 | A crossing to an asset is refused as wrong-kind and a crossing to a missing id is dangling (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-3 | ✅ |
+| TC-166 | The JSON relation report includes the crossing trust level beside the carried regulated categories for `CONN-PORTAL-LAB`, with no finding or denial (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-5, FR-014-AC-7 | ✅ |
 | TC-160 | `Part.json` and `PartFrontmatter.json` carry the three plain optional class fields; the `part` locators read them; an assigned part validates and extracts, an unassigned one extracts no key, an incomplete assignment fails naming the key (`test_software_safety_class.py`) | Integration | P0 | FR-012-AC-1..8, FR-012-AC-11 | ✅ |
 | TC-161 | The `vocabulary` entry is declared and lists no class value; an out-of-vocabulary or wrong-case part value yields one `trace:undeclared-class-value` naming part and value; an all-unassigned corpus draws no `undeclared-relation-vocabulary` for the three entries, and `PartFrontmatter` is self-contained and open (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-9, FR-012-AC-10, FR-012-AC-12 | ✅ |
 | TC-162 | A requirement stating a lower class than its allocated part yields `trace:class-below-part`, a higher one nothing; an unassigned part yields `trace:unassigned-class` only when the key is enabled; the module loads on its own (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-13..15 | ✅ |

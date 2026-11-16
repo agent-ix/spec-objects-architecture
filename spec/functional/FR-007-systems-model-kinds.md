@@ -62,6 +62,8 @@ data rather than a hard-coded kind list.
 - Edge verbs `owned_by`, `typed_by`, `connects`, `allocates`, `allocated_to`
   and roles `systems-part`, `systems-port`, `systems-interface`; the verb
   `specializes` on `interface`.
+- The `crosses` edge verb for a connection's optional trust-boundary targets,
+  specified by [FR-014](./FR-014-connection-crosses-trust-boundary.md).
 - The `interface` `features` locator and a `## Features` table in
   `skeletons/interface.md`.
 
@@ -88,9 +90,10 @@ data rather than a hard-coded kind list.
 - Each of `part`, `port`, `connection` and `allocation` SHALL author its members as one row of one table under an H2 named for the kind, extracted by one required `table_row` locator asserting the column header and `min_rows: 1`.
 - The `connection` table SHALL carry `Source`, `Source Multiplicity`, `Target`, `Target Multiplicity` and `Direction` columns.
 - A systems table's first column SHALL NOT be a quire-rs FR-075 model-table key.
-- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`, and skeleton ids SHALL be word ids per [FR-003](./FR-003-semantic-manifest-contract.md) (QSpec #86 TC-197).
+- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`.
+- Every systems skeleton id SHALL be a word id per [FR-003](./FR-003-semantic-manifest-contract.md) (QSpec #86 TC-197).
 - Each systems skeleton SHALL validate with zero errors, its record carrying every FR-152 member of its kind.
-- The `connection` object type SHALL admit `carries: [data_classification]` in `allowed_links`, beside `connects` and `realizes_requirement`; [FR-013](./FR-013-connection-carries-data-classification.md) specifies the edge. The edge is a relationship and not a record key, so `fields` stays forbidden and `Connection.json` is unchanged.
+- The `connection` object type SHALL admit `carries: [data_classification]` and `crosses: [trust_boundary]` in `allowed_links`, beside `connects` and `realizes_requirement`; [FR-013](./FR-013-connection-carries-data-classification.md) and [FR-014](./FR-014-connection-crosses-trust-boundary.md) specify the edges. Both are relationships and not record keys, so `fields` stays forbidden and `Connection.json` is unchanged.
 
 ## Constraints
 
@@ -106,7 +109,7 @@ data rather than a hard-coded kind list.
 | FR-007-AC-2 | Each of the `part`, `port`, `connection` and `allocation` schemas accepts a record carrying exactly its FR-152 members, refuses the record missing any one, refuses `fields`, `operations` and `identityFields`, and refuses `{}`; a connection end with a multiplicity validates, an end without its port or with an unknown key fails; the direction enums refuse any value outside their three. | Test |
 | FR-007-AC-3 | Each of `part`, `port`, `connection` and `allocation` has exactly one body locator: a required `table_row` under its H2 asserting its columns and `min_rows: 1`, whose first column is not an FR-075 table key. | Test |
 | FR-007-AC-4 | The manifest's FR-035 violations name no `construct` path, a `*` reference or an unknown member state is refused, every construct binds its FR-208 meaning id, and every `references` entry names a declared member and only declared roles. | Test |
-| FR-007-AC-5 | The five edge verbs and three roles are declared, `interface` carries `systems-interface`, and the systems kinds' `allowed_links` use exactly those verbs plus the design-realization verb `realizes_requirement` ([FR-010](./FR-010-design-realization-edge.md)) and, on `connection` only, the data-flow verb `carries` ([FR-013](./FR-013-connection-carries-data-classification.md)); the five verbs take declared roles or `*`, and `realizes_requirement` takes only the requirement archetypes `FR` and `NFR`. | Test |
+| FR-007-AC-5 | The declared systems edge verbs and three roles are present, `interface` carries `systems-interface`, and the systems kinds' `allowed_links` use those verbs plus `realizes_requirement` ([FR-010](./FR-010-design-realization-edge.md)); `connection` additionally admits `carries` ([FR-013](./FR-013-connection-carries-data-classification.md)) and `crosses` ([FR-014](./FR-014-connection-crosses-trust-boundary.md)). The verbs take declared roles or `*`, and `realizes_requirement` takes only `FR` and `NFR`. | Test |
 | FR-007-AC-6 | Each systems skeleton carries its column header, has an underscore id, and `quire.extract` yields one row with one cell per column, each reference cell an artifact id or `<artifact id>/<member>`. | Test |
 | FR-007-AC-7 | `validate_document` on each systems skeleton reports zero errors, and its record carries every FR-152 member of its kind. | Test |
 | FR-007-AC-8 | Renaming a systems skeleton's H2 fails with the required locator missing, and reordering its columns fails with a column mismatch. | Test |

@@ -46,6 +46,7 @@ edge_types:
   # FR-010: a design element realizes a requirement. `realizes` stays the
   # enterprise-capability verb spec-artifacts-iso declares.
   realizes_requirement: { description: "A design element (part, connection or decision record) realizes the requirement at the target.", category: traceability, inverse: requirement_realized_by }
+  crosses: { description: "A connection crosses the trust boundary at the target.", category: dataflow }
 roles:
   systems-part: { description: "A systems-model part (QSpec FR-152 Part)." }
   systems-port: { description: "A systems-model port owned by a part (QSpec FR-152 Port)." }
@@ -82,6 +83,13 @@ traceability:
     direction: incoming
     check: classification-without-connection
     record_keys: [regulatedCategories]
+  - name: connection-crosses-trust-boundary
+    from: connection
+    edges: [crosses]
+    to: [trust_boundary]
+    direction: outgoing
+    check: connection-crosses-trust-boundary
+    record_keys: [trust_level]
   design_relations: [fr-has-design-element, nfr-has-design-element]
   # FR-012: a requirement must not state a class below the part it is
   # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
@@ -114,6 +122,7 @@ grammar_severity:
   trace:unassigned-class: "off"
   trace:connection-without-classification: "off"
   trace:classification-without-connection: "off"
+  trace:connection-crosses-trust-boundary: "off"
 artifact_types: []
 lint_rules: []
 object_types:
@@ -547,6 +556,7 @@ object_types:
   allowed_links:
     connects: [systems-port]
     carries: [data_classification]
+    crosses: [trust_boundary]
     realizes_requirement: [FR, NFR]
   construct:
     identity: none
