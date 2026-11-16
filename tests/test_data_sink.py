@@ -16,9 +16,8 @@ from tests.conftest import (
     validate_data_flow,
 )
 
-CORPUS = FIXTURES_DIR / "data_flow"
+CORPUS = FIXTURES_DIR / "data_flow_sinks"
 VALID = CORPUS / "valid"
-INVALID_SINKS = CORPUS / "invalid/spec/design/sinks"
 INVALID = CORPUS / "invalid"
 SINK_KINDS = (
     "ui_screen",
