@@ -474,17 +474,6 @@ model DataSink {
   ...Record<never>;
 }
 
-/** The additional frontmatter a data-sink artifact may declare. */
-model DataSinkFrontmatter {
-  kind: SinkKind;
-  processor_agreement: ProcessorAgreement;
-  processor?: ObjectId;
-  region?: RegionCode[];
-  purpose?: PurposeToken[];
-  audience_roles?: ObjectId[];
-  ...Record<unknown>;
-}
-
 // ---------------------------------------------------------------------------
 // Systems-model declaration records (FR-007; QSpec FR-152)
 // ---------------------------------------------------------------------------

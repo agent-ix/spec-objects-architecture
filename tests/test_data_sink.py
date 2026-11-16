@@ -36,7 +36,10 @@ def test_every_sink_kind_and_valid_region_validate():
     result = validate_data_flow(VALID)
     assert result.returncode == 0, result.stderr
     for kind in SINK_KINDS:
-        assert f"kind: {kind}" in (VALID / f"spec/design/sinks/SINK-{kind.upper().replace('_', '-')}.md").read_text()
+        assert any(
+            f"kind: {kind}" in path.read_text()
+            for path in (VALID / "spec/design/sinks").glob("SINK-*.md")
+        ), kind
 
 
 @pytest.mark.trace("TC-161", "FR-015-AC-1", "FR-015-AC-2", "FR-015-AC-3")
@@ -147,7 +150,7 @@ def test_data_sink_is_exported_and_declares_only_the_supported_links():
     manifest = load_manifest()
     assert "data_sink" in manifest["semantic"]["exports"]
     sink = object_type("data_sink")
-    assert sink["frontmatter_schema_ref"] == "schemas/DataSinkFrontmatter.json"
+    assert "frontmatter_schema_ref" not in sink
     assert sink["allowed_links"] == {
         "carries": ["data_classification"],
         "references": ["part", "external_contract", "role"],

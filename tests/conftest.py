@@ -147,7 +147,6 @@ SUPPORT_MODELS = (
     "ObjectId",
     "ObjectFrontmatter",
     "PartFrontmatter",
-    "DataSinkFrontmatter",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.

@@ -222,7 +222,6 @@ object_types:
           after_heading: Properties
           required: false
 - name: data_sink
-  frontmatter_schema_ref: schemas/DataSinkFrontmatter.json
   allowed_links:
     carries: [data_classification]
     references: [part, external_contract, role]

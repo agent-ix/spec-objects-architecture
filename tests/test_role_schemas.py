@@ -459,7 +459,7 @@ def test_no_shipped_schema_declares_an_observation_key():
 
 
 @pytest.mark.trace("TC-046", "FR-004-AC-16")
-def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry):
+def test_relations_is_admitted_by_seven_types_and_refused_by_four(schema_registry):
     """FR-004 admits `relations` where a type is reached through an edge and
     refuses it on the four reached through what they carry, expose, serialize or
     throttle. Both halves are asserted, so the Behavior rule and the table
@@ -471,6 +471,7 @@ def test_relations_is_admitted_by_six_types_and_refused_by_four(schema_registry)
         "UiComponent": {"fields": [FIELD]},
         "Interface": {"operations": [OP], "featureOrder": ["do_it"]},
         "ExternalContract": {"operations": [GUARANTEED_OP], "clauses": [CLAUSE]},
+        "DataSink": {"kind": "datastore", "processorAgreement": "unknown"},
     }
     refuses = {
         "Queue": {"fields": [IDENTITY_FIELD]},
