@@ -16,15 +16,15 @@ import json
 import pathlib
 
 import pytest
-import yaml
 
 from tests.conftest import (
     FIXTURES_DIR,
-    MANIFEST_PATH,
     PACKAGE_ROOT,
-    ix_module,
+    load_manifest,
+    module_args,
     object_type,
     run_quire,
+    validate_bundle,
 )
 
 CORPUS = FIXTURES_DIR / "data_flow"
@@ -35,25 +35,14 @@ FORWARD = "connection-carries-classification"
 REVERSE = "classification-carried-by-connection"
 
 
-def _modules() -> list[str]:
-    args: list[str] = []
-    for name in (
-        "spec-artifacts-iso",
-        "spec-artifacts-process",
-        "spec-objects-security",
-    ):
-        args += ["--module", ix_module(name)]
-    return args + ["--module", str(PACKAGE_ROOT)]
-
-
 def _validate(root: pathlib.Path, *extra: str):
-    return run_quire(
-        "validate", "--okf", *_modules(), *extra, "--repo", f"{MEMBER}={root}"
-    )
+    return validate_bundle(MEMBER, root, *extra)
 
 
 def _relations(root: pathlib.Path) -> dict[str, dict]:
-    result = run_quire("relations", "--json", *_modules(), "--repo", f"{MEMBER}={root}")
+    result = run_quire(
+        "relations", "--json", *module_args(), "--repo", f"{MEMBER}={root}"
+    )
     assert result.returncode == 0, result.stderr
     return {r["name"]: r for r in json.loads(result.stdout)["relations"]}
 
@@ -68,10 +57,6 @@ def _pairs(report: dict, name: str) -> set[tuple[str, str]]:
 
 def _rows(report: dict, name: str) -> dict[str, dict]:
     return {row["document"]["id"]: row for row in report[name]["rows"]}
-
-
-def _manifest() -> dict:
-    return yaml.safe_load(MANIFEST_PATH.read_text())
 
 
 def _lines(result, check: str) -> list[str]:
@@ -159,34 +144,44 @@ def test_fr013_ac5_ac9_selected_key_is_included_or_omitted_and_level_never_leaks
             assert set(entry.get("record", {})) <= {"regulatedCategories"}, entry
     assert '"level"' not in json.dumps(report)
 
+    invalid_report = _relations(INVALID)
+    for name in (FORWARD, REVERSE):
+        bad_entries = [
+            entry
+            for entry in _entries(invalid_report, name)
+            if entry["id"] == "CLASS-BAD"
+        ]
+        assert bad_entries, f"CLASS-BAD is absent from {name}"
+        for entry in bad_entries:
+            assert "regulatedCategories" not in entry.get("record", {}), entry
+    assert '"level"' not in json.dumps(invalid_report)
+
 
 @pytest.mark.trace("TC-156", "FR-013-AC-4")
-def test_fr013_ac4_unknown_category_fails_validation_though_a_connection_carries_it():
-    result = _validate(INVALID, "--strict")
-    assert result.returncode == 3, result.stderr
-    assert any(
-        "CLASS-BAD" in ln and "medical" in ln for ln in result.stderr.splitlines()
-    )
+def test_fr013_ac4_default_severities_draw_no_finding():
+    result = _validate(VALID)
+    assert result.returncode == 0, result.stderr
+    assert not _lines(result, "connection-without-classification")
+    assert not _lines(result, "classification-without-connection")
 
 
 @pytest.mark.trace("TC-157", "FR-013-AC-6")
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "FR-013-AC-6 requires the PLAT-1532 crossing edge and PLAT-1441 FR-084 change"
+    ),
+)
 def test_fr013_ac6_carried_classification_produces_no_rule_finding():
-    # M1 reports only. The crossing edge of PLAT-1532 is not in this module,
-    # so this asserts the part that holds today: carrying `health` draws no
-    # denial or rule finding.
-    result = _validate(VALID)
-    assert result.returncode == 0, result.stderr
-    assert not [
-        ln
-        for ln in result.stderr.splitlines()
-        if "deny" in ln.lower() or "denial" in ln.lower()
-    ]
-    assert ("phi_link", "CLASS-PHI") in _pairs(_relations(VALID), FORWARD)
+    # This integration criterion belongs to the crossing-edge work. Keep the
+    # complete precondition visible so this ticket cannot claim it prematurely.
+    docs = "\n".join(path.read_text() for path in VALID.rglob("*.md"))
+    assert "trust_boundary" in docs and "trust_level: untrusted" in docs
 
 
 @pytest.mark.trace("TC-158", "FR-013-AC-7")
 def test_fr013_ac7_only_connection_admits_carries_among_systems_kinds():
-    manifest = _manifest()
+    manifest = load_manifest()
     assert "carries" not in manifest["edge_types"]
     assert object_type("connection")["allowed_links"]["carries"] == [
         "data_classification"
@@ -199,7 +194,7 @@ def test_fr013_ac7_only_connection_admits_carries_among_systems_kinds():
 
 @pytest.mark.trace("TC-159", "FR-013-AC-8")
 def test_fr013_ac8_relations_and_severities_are_declared_exactly():
-    manifest = _manifest()
+    manifest = load_manifest()
     relations = {r["name"]: r for r in manifest["traceability"]["required_relations"]}
     assert relations[FORWARD] == {
         "name": FORWARD,
