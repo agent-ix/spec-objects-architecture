@@ -21,6 +21,8 @@ relationships:
     type: covers
   - target: "ix://agent-ix/spec-objects-architecture/FR-010"
     type: covers
+  - target: "ix://agent-ix/spec-objects-architecture/FR-015"
+    type: covers
 ---
 # Test Matrix
 
@@ -81,6 +83,7 @@ skipped.
 | FR-013 | FR-013-AC-1..9 | TC-151..TC-159 | ✅ |
 | FR-014 | FR-014-AC-1..7 | TC-163..TC-166 | ✅ |
 | FR-012 | FR-012-AC-1..15, FR-012-CON-1..2 | TC-160..TC-162 | ✅ AC-9, AC-10 and AC-12..AC-15 need spec-artifacts-iso `carried_fields` loaded |
+| FR-015 | FR-015-AC-1..6, FR-015-AC-12 | TC-167..TC-172 | 🚧 AC-6 is only partially exercised; AC-7..AC-11 and AC-13 remain outside PLAT-1535 scope |
 
 ### Integration Test Coverage
 
@@ -206,6 +209,12 @@ skipped.
 | TC-160 | `Part.json` and `PartFrontmatter.json` carry the three plain optional class fields; the `part` locators read them; an assigned part validates and extracts, an unassigned one extracts no key, an incomplete assignment fails naming the key (`test_software_safety_class.py`) | Integration | P0 | FR-012-AC-1..8, FR-012-AC-11 | ✅ |
 | TC-161 | The `vocabulary` entry is declared and lists no class value; an out-of-vocabulary or wrong-case part value yields one `trace:undeclared-class-value` naming part and value; an all-unassigned corpus draws no `undeclared-relation-vocabulary` for the three entries, and `PartFrontmatter` is self-contained and open (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-9, FR-012-AC-10, FR-012-AC-12 | ✅ |
 | TC-162 | A requirement stating a lower class than its allocated part yields `trace:class-below-part`, a higher one nothing; an unassigned part yields `trace:unassigned-class` only when the key is enabled; the module loads on its own (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-13..15 | ✅ |
+| TC-167 | Every sink kind validates, including authored agreement and valid region examples (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
+| TC-168 | Invalid sink kind, missing or invalid agreement, and invalid region are refused with diagnostics naming the field/value (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
+| TC-169 | Connection and part delivery edges and sink classification links validate; wrong-kind and dangling targets fail (`test_data_sink.py`) | Integration | P0 | FR-015-AC-3..5 | ✅ |
+| TC-170 | The JSON relation report includes every delivered sink and its kind and agreement, including authored processors (`test_data_sink.py`) | Integration | P0 | FR-015-AC-6 | 🚧 Does not cover the flow-rule fact fixture in full |
+| TC-171 | The data sink record schema is closed and validates declared optional values while refusing invalid values (`test_data_sink.py`) | Unit | P0 | FR-015-AC-2, FR-015-AC-12 | ✅ |
+| TC-172 | The sink export and allowed-link declarations match the supported edge vocabulary (`test_data_sink.py`) | Unit | P0 | FR-015-AC-5, FR-015-AC-12 | ✅ |
 
 ## Test Environment
 

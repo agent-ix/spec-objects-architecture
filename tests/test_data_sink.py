@@ -32,7 +32,7 @@ SINK_KINDS = (
 )
 
 
-@pytest.mark.trace("TC-160", "FR-015-AC-1", "FR-015-AC-2", "FR-015-AC-3")
+@pytest.mark.trace("TC-167", "FR-015-AC-1", "FR-015-AC-2")
 def test_every_sink_kind_and_valid_region_validate():
     result = validate_data_flow(VALID)
     assert result.returncode == 0, result.stderr
@@ -43,7 +43,7 @@ def test_every_sink_kind_and_valid_region_validate():
         ), kind
 
 
-@pytest.mark.trace("TC-161", "FR-015-AC-1", "FR-015-AC-2", "FR-015-AC-3")
+@pytest.mark.trace("TC-168", "FR-015-AC-1", "FR-015-AC-2")
 def test_invalid_kind_agreement_and_region_name_the_bad_frontmatter():
     result = validate_data_flow(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
@@ -57,7 +57,7 @@ def test_invalid_kind_agreement_and_region_name_the_bad_frontmatter():
         assert value in result.stderr, result.stderr
 
 
-@pytest.mark.trace("TC-162", "FR-015-AC-4", "FR-015-AC-5")
+@pytest.mark.trace("TC-169", "FR-015-AC-3", "FR-015-AC-4", "FR-015-AC-5")
 def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets():
     valid = validate_data_flow(VALID)
     assert valid.returncode == 0, valid.stderr
@@ -77,7 +77,7 @@ def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets()
     )
 
 
-@pytest.mark.trace("TC-163", "FR-015-AC-6", "FR-015-AC-8")
+@pytest.mark.trace("TC-170", "FR-015-AC-6")
 def test_relation_report_includes_each_sink_kind_and_authored_processor():
     reports = data_flow_relations(VALID)
     expected = {
@@ -126,7 +126,7 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
     assert tool_call["record"]["processor"] == "PART-SINK-PROCESSOR"
 
 
-@pytest.mark.trace("TC-164", "FR-015-AC-7")
+@pytest.mark.trace("TC-171", "FR-015-AC-2", "FR-015-AC-12")
 def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
     schema_registry,
 ):
@@ -150,12 +150,13 @@ def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
         {**base, "processorAgreement": "yes"},
         {**base, "region": ["Germany"]},
         {**base, "purpose": [""]},
+        {**base, "purpose": ["   "]},
         {**base, "unknown": True},
     ):
         assert not validator.is_valid(invalid), invalid
 
 
-@pytest.mark.trace("TC-165", "FR-015-AC-7")
+@pytest.mark.trace("TC-172", "FR-015-AC-5", "FR-015-AC-12")
 def test_data_sink_is_exported_and_declares_only_the_supported_links():
     manifest = load_manifest()
     assert "data_sink" in manifest["semantic"]["exports"]

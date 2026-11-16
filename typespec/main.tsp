@@ -192,6 +192,7 @@ scalar RegionCode extends string;
 
 /** A non-blank purpose label for a data sink. */
 @minLength(1)
+@pattern(".*\\S.*")
 scalar PurposeToken extends string;
 
 // ---------------------------------------------------------------------------
