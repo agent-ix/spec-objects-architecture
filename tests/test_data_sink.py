@@ -87,7 +87,7 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
                 "SINK-EXPORT": "export_file",
                 "SINK-ANALYTICS": "analytics_event",
             },
-        },
+        ),
         "part-delivers-to-sink": (
             "PART-DELIVERS",
             {
@@ -96,6 +96,7 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
                 "SINK-MESSAGE": "outbound_message",
                 "SINK-DATASTORE": "datastore",
             },
+        ),
         ),
     }
     for relation, (source_id, sinks) in expected.items():
