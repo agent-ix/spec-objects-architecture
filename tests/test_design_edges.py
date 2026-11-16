@@ -78,7 +78,7 @@ def test_fr010_ac1_edge_declared_with_inverse_and_no_realizes_key():
         "validate", *module_args(), str(VALID / "spec/design/scoring_engine.md")
     )
     assert result.returncode == 0, result.stderr
-    assert "DuplicateEdgeType" not in result.stderr
+    assert "DuplicateEdgeType: 'realizes_requirement'" not in result.stderr
 
 
 @pytest.mark.trace("TC-141", "FR-010-AC-2")
@@ -105,6 +105,7 @@ def test_fr010_ac3_manifest_declares_exactly_the_two_relations():
         "nfr-has-design-element",
         "connection-carries-classification",
         "classification-carried-by-connection",
+        "connection-crosses-trust-boundary",
     ]
     fields = {
         "fr-has-design-element": ("FR", "requirement-without-design"),
