@@ -36,12 +36,16 @@ REVERSE = "classification-carried-by-connection"
 
 
 def _validate(root: pathlib.Path, *extra: str):
-    return validate_bundle(MEMBER, root, *extra)
+    return validate_bundle(MEMBER, root, *extra, safety=True)
 
 
 def _relations(root: pathlib.Path) -> dict[str, dict]:
     result = run_quire(
-        "relations", "--json", *module_args(), "--repo", f"{MEMBER}={root}"
+        "relations",
+        "--json",
+        *module_args(safety=True),
+        "--repo",
+        f"{MEMBER}={root}",
     )
     assert result.returncode == 0, result.stderr
     return {r["name"]: r for r in json.loads(result.stdout)["relations"]}
