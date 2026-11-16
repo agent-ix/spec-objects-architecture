@@ -78,7 +78,7 @@ skipped.
 | FR-009 | FR-009-AC-1..3, FR-009-CON-1 | TC-130, TC-131 | ✅ |
 | FR-008 | FR-008-AC-1..7 | TC-120..TC-126 | ✅ |
 | FR-010 | FR-010-AC-1..11, FR-010-CON-1 | TC-140..TC-150 | ✅ except the `realized_criteria` clause of AC-10, an expected failure until quire-cli ships `relations --design` |
-| FR-013 | FR-013-AC-1..9 | TC-151..TC-159 | ✅ AC-6 is a strict expected failure pending PLAT-1532 and PLAT-1441 |
+| FR-013 | FR-013-AC-1..9 | TC-151..TC-159 | ✅ |
 | FR-014 | FR-014-AC-1..7 | TC-163..TC-166 | ✅ |
 | FR-012 | FR-012-AC-1..15, FR-012-CON-1..2 | TC-160..TC-162 | ✅ AC-9, AC-10 and AC-12..AC-15 need spec-artifacts-iso `carried_fields` loaded |
 
