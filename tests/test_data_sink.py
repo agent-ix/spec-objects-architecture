@@ -79,23 +79,32 @@ def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets()
 def test_relation_report_includes_each_sink_kind_and_authored_processor():
     reports = data_flow_relations(VALID)
     expected = {
-        "connection-delivers-to-sink": {
-            "SINK-UI-SCREEN": "ui_screen",
-            "SINK-LOG": "log",
-            "SINK-EXPORT": "export_file",
-            "SINK-ANALYTICS": "analytics_event",
+        "connection-delivers-to-sink": (
+            "CONN-DELIVERS",
+            {
+                "SINK-UI-SCREEN": "ui_screen",
+                "SINK-LOG": "log",
+                "SINK-EXPORT": "export_file",
+                "SINK-ANALYTICS": "analytics_event",
+            },
         },
-        "part-delivers-to-sink": {
-            "SINK-LLM-PROMPT": "llm_prompt",
-            "SINK-TOOL-CALL": "tool_call",
-            "SINK-MESSAGE": "outbound_message",
-            "SINK-DATASTORE": "datastore",
-        },
+        "part-delivers-to-sink": (
+            "PART-DELIVERS",
+            {
+                "SINK-LLM-PROMPT": "llm_prompt",
+                "SINK-TOOL-CALL": "tool_call",
+                "SINK-MESSAGE": "outbound_message",
+                "SINK-DATASTORE": "datastore",
+            },
+        ),
     }
-    for relation, sinks in expected.items():
+    for relation, (source_id, sinks) in expected.items():
         rows = reports[relation]["rows"]
-        assert len(rows) == 1, rows
-        linked = {entry["id"]: entry for entry in rows[0]["linked"]}
+        row = next(
+            (row for row in rows if row["document"]["id"] == source_id), None
+        )
+        assert row is not None, rows
+        linked = {entry["id"]: entry for entry in row["linked"]}
         assert set(linked) == set(sinks)
         for sink_id, kind in sinks.items():
             assert linked[sink_id]["record"]["kind"] == kind
