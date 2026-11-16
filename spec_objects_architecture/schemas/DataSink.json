@@ -29,6 +29,12 @@
       "items": {
         "$ref": "https://schemas.agent-ix.org/agent-ix/spec-objects-architecture/ObjectId.json"
       }
+    },
+    "relations": {
+      "type": "array",
+      "items": {
+        "$ref": "https://schemas.agent-ix.org/semantic-core/0.4.1/RelationDecl.json"
+      }
     }
   },
   "required": [
