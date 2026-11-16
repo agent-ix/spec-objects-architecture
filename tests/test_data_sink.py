@@ -159,7 +159,7 @@ def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
         assert not validator.is_valid(invalid), invalid
 
 
-@pytest.mark.trace("TC-171", "FR-015-AC-1", "FR-015-AC-2")
+@pytest.mark.trace("TC-173", "FR-015-AC-1")
 def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     schema_registry,
 ):
@@ -197,7 +197,7 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     assert not validator.is_valid({"kind": "llm_prompt", "processor_agreement": "yes"})
 
 
-@pytest.mark.trace("TC-171", "FR-015-AC-1", "FR-015-AC-2")
+@pytest.mark.trace("TC-174", "FR-015-AC-8")
 def test_flow_rule_loader_resolves_sink_frontmatter_enums(tmp_path):
     """Flow-rule conditions load against sink enums and reject unknown values.
 
