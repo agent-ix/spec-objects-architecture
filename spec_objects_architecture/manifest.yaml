@@ -225,6 +225,7 @@ object_types:
   allowed_links:
     carries: [data_classification]
     references: [part, external_contract, role]
+  frontmatter_schema_ref: schemas/DataSinkFrontmatter.json
   data_schema:
     schema: schemas/DataSink.json
   body_extraction:

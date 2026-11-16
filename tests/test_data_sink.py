@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import shutil
 
 import pytest
+import yaml
 
 from tests.conftest import (
     FIXTURES_DIR,
@@ -13,6 +15,7 @@ from tests.conftest import (
     diagnostic_lines,
     load_manifest,
     object_type,
+    run_quire,
     validate_data_flow,
 )
 
@@ -29,6 +32,7 @@ SINK_KINDS = (
     "outbound_message",
     "datastore",
 )
+PROCESSOR_AGREEMENTS = ("covered", "not_covered", "not_applicable", "unknown")
 
 
 @pytest.mark.trace("TC-167", "FR-015-AC-1", "FR-015-AC-2")
@@ -155,12 +159,141 @@ def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
         assert not validator.is_valid(invalid), invalid
 
 
+@pytest.mark.trace("TC-171", "FR-015-AC-1", "FR-015-AC-2")
+def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
+    schema_registry,
+):
+    """Flow-rule frontmatter exposes both sink vocabularies as inline enums.
+
+    Assumptions:
+        - The schemas were generated from the TypeSpec source.
+        - The schema registry resolves module-local enum references.
+
+    Criteria:
+        - Every declared sink kind and agreement value validates.
+        - Values outside either enum fail validation.
+        - Additional frontmatter fields remain allowed.
+    """
+    schema = json.loads((SCHEMAS_DIR / "DataSinkFrontmatter.json").read_text())
+    assert schema["unevaluatedProperties"] == {}
+    assert (
+        schema["properties"]["kind"]["enum"]
+        == json.loads((SCHEMAS_DIR / "SinkKind.json").read_text())["enum"]
+    )
+    assert (
+        schema["properties"]["processor_agreement"]["enum"]
+        == json.loads((SCHEMAS_DIR / "ProcessorAgreement.json").read_text())["enum"]
+    )
+    validator = schema_registry("DataSinkFrontmatter")
+    for kind in SINK_KINDS:
+        assert validator.is_valid(
+            {"kind": kind, "processor_agreement": "covered", "id": "SINK-1"}
+        ), kind
+    for agreement in PROCESSOR_AGREEMENTS:
+        assert validator.is_valid(
+            {"kind": "llm_prompt", "processor_agreement": agreement}
+        ), agreement
+    assert not validator.is_valid({"kind": "chatbot", "processor_agreement": "covered"})
+    assert not validator.is_valid({"kind": "llm_prompt", "processor_agreement": "yes"})
+
+
+@pytest.mark.trace("TC-171", "FR-015-AC-1", "FR-015-AC-2")
+def test_flow_rule_loader_resolves_sink_frontmatter_enums(tmp_path):
+    """Flow-rule conditions load against sink enums and reject unknown values.
+
+    Assumptions:
+        - The installed Quire engine validates flow-rule declarations at load.
+        - A module test root reuses the generated frontmatter schema.
+
+    Criteria:
+        - Conditions covering every sink kind and agreement value load.
+        - An out-of-enum condition value rejects the module and names its value.
+    """
+    corpus = tmp_path / "corpus"
+    documents = corpus / "spec"
+    documents.mkdir(parents=True)
+    (documents / "sink.md").write_text(
+        "---\nid: SINK-1\ntitle: Sink\ntype: data_sink\n"
+        "kind: llm_prompt\nprocessor_agreement: covered\n---\n# Sink\n"
+    )
+
+    valid_module = tmp_path / "valid-module"
+    invalid_module = tmp_path / "invalid-module"
+    for root, invalid in ((valid_module, False), (invalid_module, True)):
+        schemas = root / "schemas"
+        schemas.mkdir(parents=True)
+        shutil.copyfile(
+            SCHEMAS_DIR / "DataSinkFrontmatter.json",
+            schemas / "DataSinkFrontmatter.json",
+        )
+        agreements = list(PROCESSOR_AGREEMENTS)
+        if invalid:
+            agreements[-1] = "medical"
+        manifest = {
+            "name": "data-sink-flow-rule-test",
+            "version": "0.1.0",
+            "description": "Test the sink frontmatter vocabularies.",
+            "archetypes": [
+                {
+                    "name": "data_sink",
+                    "frontmatter_schema_ref": "schemas/DataSinkFrontmatter.json",
+                }
+            ],
+            "traceability": {
+                "flow_rules": [
+                    {
+                        "name": "data-sink-frontmatter-enum-test",
+                        "subject": ["data_sink"],
+                        "match": [
+                            {
+                                "path": [],
+                                "field": "kind",
+                                "any_of": list(SINK_KINDS),
+                            },
+                            {
+                                "path": [],
+                                "field": "processor_agreement",
+                                "any_of": agreements,
+                            },
+                        ],
+                        "check": "data-sink-frontmatter-enum-test",
+                        "rationale": "The test checks the declared sink vocabularies.",
+                    }
+                ]
+            },
+        }
+        (root / "manifest.yaml").write_text(yaml.safe_dump(manifest, sort_keys=False))
+
+    valid = run_quire(
+        "relations",
+        "--flow",
+        "--json",
+        "--module",
+        str(valid_module),
+        "--repo",
+        f"agent-ix/df={corpus}",
+    )
+    assert valid.returncode == 0, valid.stderr
+
+    invalid = run_quire(
+        "relations",
+        "--flow",
+        "--json",
+        "--module",
+        str(invalid_module),
+        "--repo",
+        f"agent-ix/df={corpus}",
+    )
+    assert invalid.returncode != 0, invalid.stderr
+    assert "flow_rules" in invalid.stderr, invalid.stderr
+
+
 @pytest.mark.trace("TC-172", "FR-015-AC-5", "FR-015-AC-12")
 def test_data_sink_is_exported_and_declares_only_the_supported_links():
     manifest = load_manifest()
     assert "data_sink" in manifest["semantic"]["exports"]
     sink = object_type("data_sink")
-    assert "frontmatter_schema_ref" not in sink
+    assert sink["frontmatter_schema_ref"] == "schemas/DataSinkFrontmatter.json"
     assert sink["allowed_links"] == {
         "carries": ["data_classification"],
         "references": ["part", "external_contract", "role"],

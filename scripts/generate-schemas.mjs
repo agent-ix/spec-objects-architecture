@@ -144,6 +144,35 @@ function render(schema) {
   return `${JSON.stringify(schema, null, 2)}\n`;
 }
 
+/**
+ * Quire's flow-rule enum reader consumes JSON Schema `enum` arrays on a
+ * top-level frontmatter property. TypeSpec emits a union of string literals
+ * as `anyOf` branches with `const` facets, which is equivalent JSON Schema
+ * but is not that reader's supported enum shape. Emit the two data-sink rule
+ * vocabularies as inline enum arrays; their source values stay in TypeSpec and
+ * tests assert parity with the module's canonical enum schemas.
+ */
+function normalizeDataSinkFrontmatterEnum(schemas) {
+  const entry = schemas.find(([name]) => name === "DataSinkFrontmatter.json");
+  if (!entry) fail("DataSinkFrontmatter.json was not emitted");
+  const schema = entry[1];
+  for (const field of ["kind", "processor_agreement"]) {
+    const property = schema.properties?.[field];
+    const branches = property?.anyOf;
+    if (
+      !Array.isArray(branches) ||
+      branches.length === 0 ||
+      branches.some((branch) => branch.type !== "string" || typeof branch.const !== "string")
+    ) {
+      fail(`DataSinkFrontmatter.${field} is not an inline string-literal union`);
+    }
+    schema.properties[field] = {
+      type: "string",
+      enum: branches.map((branch) => branch.const),
+    };
+  }
+}
+
 function emit() {
   requireNode();
   const base = moduleBase();
@@ -166,6 +195,7 @@ function emit() {
     }
     const moduleFiles = new Set(mine.map(([name]) => name));
     normalize(mine, base, moduleFiles);
+    normalizeDataSinkFrontmatterEnum(mine);
     const rendered = new Map(mine.map(([name, schema]) => [name, render(schema)]));
 
     return rendered;
