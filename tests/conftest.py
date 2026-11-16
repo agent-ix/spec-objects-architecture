@@ -476,7 +476,10 @@ def data_flow_relations(root: pathlib.Path, *, safety: bool = False) -> dict[str
         f"{DATA_FLOW_MEMBER}={root}",
     )
     assert result.returncode == 0, result.stderr
-    return {relation["name"]: relation for relation in json.loads(result.stdout)["relations"]}
+    return {
+        relation["name"]: relation
+        for relation in json.loads(result.stdout)["relations"]
+    }
 
 
 def diagnostic_lines(result: subprocess.CompletedProcess, check: str) -> list[str]:
