@@ -19,3 +19,4 @@ description: "Index of artifacts in this directory."
 * [FR-010: Declare the design-realization edge and the design relations](./FR-010-design-realization-edge.md)
 * [FR-012: A part carries an optional human-assigned software safety class with assigner and rationale as frontmatter](./FR-012-software-safety-class-assignment.md)
 * [FR-013: A connection states the data classifications it carries, and an unclassified connection is reported by an opt-in check](./FR-013-connection-carries-data-classification.md)
+* [FR-014: A connection states the trust boundaries it crosses](./FR-014-connection-crosses-trust-boundary.md)

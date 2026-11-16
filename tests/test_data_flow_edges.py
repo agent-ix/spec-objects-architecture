@@ -114,14 +114,14 @@ def test_fr013_ac4_default_severity_draws_no_finding():
 def test_fr013_ac5_relations_list_both_views():
     report = _relations(VALID)
     assert _pairs(report, FORWARD) == {
-        ("phi_link", "CLASS-PHI"),
-        ("phi_link", "CLASS-PUBLIC"),
+        ("CONN-PORTAL-LAB", "CLASS-PHI"),
+        ("CONN-PORTAL-LAB", "CLASS-PUBLIC"),
         ("public_link", "CLASS-PUBLIC"),
     }
     assert _rows(report, FORWARD)["bare_link"]["state"] == "uncovered"
     assert _pairs(report, REVERSE) == {
-        ("CLASS-PHI", "phi_link"),
-        ("CLASS-PUBLIC", "phi_link"),
+        ("CLASS-PHI", "CONN-PORTAL-LAB"),
+        ("CLASS-PUBLIC", "CONN-PORTAL-LAB"),
         ("CLASS-PUBLIC", "public_link"),
     }
     assert _rows(report, REVERSE)["CLASS-UNCARRIED"]["state"] == "uncovered"
@@ -170,17 +170,21 @@ def test_fr013_ac4_default_severities_draw_no_finding():
 
 
 @pytest.mark.trace("TC-157", "FR-013-AC-6")
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "FR-013-AC-6 requires the PLAT-1532 crossing edge and PLAT-1441 FR-084 change"
-    ),
-)
 def test_fr013_ac6_carried_classification_produces_no_rule_finding():
-    # This integration criterion belongs to the crossing-edge work. Keep the
-    # complete precondition visible so this ticket cannot claim it prematurely.
-    docs = "\n".join(path.read_text() for path in VALID.rglob("*.md"))
-    assert "trust_boundary" in docs and "trust_level: untrusted" in docs
+    report = _relations(VALID)
+    row = _rows(report, "connection-crosses-trust-boundary")["CONN-PORTAL-LAB"]
+    (boundary,) = row["linked"]
+    assert boundary["id"] == "BOUND-INTERNET"
+    assert boundary["record"] == {"trust_level": "untrusted"}
+
+    carried = _rows(report, FORWARD)["CONN-PORTAL-LAB"]["linked"]
+    health = next(entry for entry in carried if entry["id"] == "CLASS-PHI")
+    assert health["record"] == {"regulatedCategories": ["health"]}
+
+    result = _validate(VALID)
+    assert result.returncode == 0, result.stderr
+    assert "denial" not in result.stderr.lower()
+    assert not _lines(result, "connection-crosses-trust-boundary")
 
 
 @pytest.mark.trace("TC-158", "FR-013-AC-7")
