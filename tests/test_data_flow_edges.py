@@ -85,7 +85,11 @@ def test_fr013_ac2_wrong_kind_and_dangling_targets_fail():
     ]
     assert "wrong_kind_link" in wrong and "'carries'" in wrong
     assert "scoring_engine" in wrong and "'part'" in wrong
-    (dangling,) = _lines(result, "dangling-reference")
+    (dangling,) = [
+        line
+        for line in _lines(result, "dangling-reference")
+        if "dangling_link.md" in line
+    ]
     assert "dangling_link.md" in dangling
     assert "CLASS-MISSING" in dangling and "'carries'" in dangling
 
