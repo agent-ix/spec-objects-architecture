@@ -36,3 +36,9 @@ Observed finding: The test matrix tags all new FR-014 criteria, but changed FR-0
 
 - `FR-007-AC-5` (examined): “The declared systems edge verbs and three roles are present, interface carries systems-interface, and the systems kinds allowed_links use those verbs plus realizes_requirement; connection additionally admits carries and crosses.”
 - `FR-014-AC-1..7` (examined): “Valid crossing, wrong-kind and dangling links, required trust_level, typed extraction, combined relation report, and updated fixtures are tested.”
+
+## Dispositions
+
+| FND | outcome | reason |
+| --- | --- | --- |
+| FND-001 | fixed | TC-104 now covers the crosses verb and trust_boundary target in its allowed-link assertions; coder-posted focused evidence reports the test passing. |
