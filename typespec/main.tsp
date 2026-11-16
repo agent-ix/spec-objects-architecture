@@ -471,6 +471,7 @@ model DataSink {
   region?: RegionCode[];
   purpose?: PurposeToken[];
   audienceRoles?: ObjectId[];
+  relations?: RelationDecl[];
   ...Record<never>;
 }
 

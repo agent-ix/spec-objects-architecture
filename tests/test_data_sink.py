@@ -19,6 +19,7 @@ from tests.conftest import (
 CORPUS = FIXTURES_DIR / "data_flow"
 VALID = CORPUS / "valid"
 INVALID_SINKS = CORPUS / "invalid/spec/design/sinks"
+INVALID = CORPUS / "invalid"
 SINK_KINDS = (
     "ui_screen",
     "log",
@@ -44,7 +45,7 @@ def test_every_sink_kind_and_valid_region_validate():
 
 @pytest.mark.trace("TC-161", "FR-015-AC-1", "FR-015-AC-2", "FR-015-AC-3")
 def test_invalid_kind_agreement_and_region_name_the_bad_frontmatter():
-    result = validate_data_flow(INVALID_SINKS, "--strict")
+    result = validate_data_flow(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
     for name, value in (
         ("SINK-BAD-KIND", "chatbot"),
@@ -61,7 +62,7 @@ def test_delivers_to_and_carries_validate_and_refuse_wrong_or_dangling_targets()
     valid = validate_data_flow(VALID)
     assert valid.returncode == 0, valid.stderr
 
-    invalid = validate_data_flow(INVALID_SINKS, "--strict")
+    invalid = validate_data_flow(INVALID, "--strict")
     assert invalid.returncode == 3, invalid.stderr
     edge_errors = diagnostic_lines(invalid, "disallowed-edge-target")
     wrong_delivery = [line for line in edge_errors if "CONN-WRONG-DELIVERY" in line]
