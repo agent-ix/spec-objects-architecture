@@ -24,11 +24,13 @@ A connection states which trust boundaries it crosses. This edge is independent 
 
 - The architecture module SHALL declare `crosses` as a `dataflow` edge verb and allow `connection` to link through `crosses` to `trust_boundary`.
 - A `crosses` edge from a connection to a trust boundary SHALL validate. A target of any other kind SHALL yield `disallowed-edge-target` naming `crosses`, the target id, and target kind. A missing target SHALL yield a dangling-reference diagnostic naming the target id.
-- `crosses` SHALL be represented as a relationship edge, never as a `Connection` or `TrustBoundary` record key.
+- The architecture manifest SHALL represent `crosses` as a relationship edge, never as a `Connection` or `TrustBoundary` record key.
 - `quire relations --json` SHALL report each connection's crossing targets and include the target boundary's selected `trust_level` record key, alongside the `carries` relation and its selected `regulatedCategories` key.
-- A connection without a `crosses` edge SHALL validate without a crossing finding at default severities. The crossing relation report SHALL not require any connection to cross a boundary; the check is off by default.
+- A connection without a `crosses` edge SHALL validate without a crossing finding at default severities.
+- The crossing relation report SHALL not require any connection to cross a boundary; its check is off by default.
 - The connection skeleton SHALL show a `type: crosses` relationship whose target is a `trust_boundary`.
-- A combined fixture with connection `CONN-PORTAL-LAB`, a `carries` edge to `CLASS-PHI` with `regulated_categories: [health]`, and a `crosses` edge to `BOUND-INTERNET` with `trust_level: untrusted` SHALL report both targets. The report SHALL contain no rule finding or denial.
+- A combined fixture with connection `CONN-PORTAL-LAB`, a `carries` edge to `CLASS-PHI` with `regulated_categories: [health]`, and a `crosses` edge to `BOUND-INTERNET` with `trust_level: untrusted` SHALL report both targets.
+- The combined fixture's report SHALL contain no rule finding or denial.
 - No classification, crossing, or trust level is inferred.
 
 ## Acceptance Criteria

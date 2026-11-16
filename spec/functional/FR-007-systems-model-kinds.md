@@ -90,7 +90,8 @@ data rather than a hard-coded kind list.
 - Each of `part`, `port`, `connection` and `allocation` SHALL author its members as one row of one table under an H2 named for the kind, extracted by one required `table_row` locator asserting the column header and `min_rows: 1`.
 - The `connection` table SHALL carry `Source`, `Source Multiplicity`, `Target`, `Target Multiplicity` and `Direction` columns.
 - A systems table's first column SHALL NOT be a quire-rs FR-075 model-table key.
-- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`, and skeleton ids SHALL be word ids per [FR-003](./FR-003-semantic-manifest-contract.md) (QSpec #86 TC-197).
+- Every skeleton cell that names a declaration SHALL name it by artifact `id`, or name a member of one as `<artifact id>/<member>`.
+- Every systems skeleton id SHALL be a word id per [FR-003](./FR-003-semantic-manifest-contract.md) (QSpec #86 TC-197).
 - Each systems skeleton SHALL validate with zero errors, its record carrying every FR-152 member of its kind.
 - The `connection` object type SHALL admit `carries: [data_classification]` and `crosses: [trust_boundary]` in `allowed_links`, beside `connects` and `realizes_requirement`; [FR-013](./FR-013-connection-carries-data-classification.md) and [FR-014](./FR-014-connection-crosses-trust-boundary.md) specify the edges. Both are relationships and not record keys, so `fields` stays forbidden and `Connection.json` is unchanged.
 
