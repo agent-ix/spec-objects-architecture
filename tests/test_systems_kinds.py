@@ -277,7 +277,10 @@ def test_edge_verbs_and_roles_are_declared_and_used():
     assert object_type("connection")["allowed_links"][crossing_verb] == [
         "trust_boundary"
     ]
-    assert used_verbs - {"carries", crossing_verb} == EDGE_VERBS | {DESIGN_VERB}
+    assert used_verbs - {"carries", crossing_verb} == EDGE_VERBS | {
+        DESIGN_VERB,
+        "delivers_to",
+    }
     for kind in SYSTEMS_TYPES:
         if kind != "connection":
             assert "carries" not in object_type(kind)["allowed_links"], kind
