@@ -258,9 +258,12 @@ def test_edge_verbs_and_roles_are_declared_and_used():
             for token in targets:
                 if verb == DESIGN_VERB:
                     assert token in REQUIREMENT_KINDS, (kind, token)
-                else:
+                elif (kind, verb) != ("connection", "carries"):
                     assert token == "*" or token in manifest["roles"], (kind, token)
     # `carries` is allowed on `connection` only (FR-013); other kinds never use it.
+    assert object_type("connection")["allowed_links"]["carries"] == [
+        "data_classification"
+    ]
     assert used_verbs - {"carries"} == EDGE_VERBS | {DESIGN_VERB}
     for kind in SYSTEMS_TYPES:
         if kind != "connection":

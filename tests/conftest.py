@@ -41,9 +41,11 @@ SEMANTIC_CORE_DIR = (
     / "json-schema"
 )
 
+SEMANTIC_CORE_VERSION = json.loads((REPO_ROOT / "package.json").read_text())[
+    "devDependencies"
+]["@agent-ix/semantic-core"]
 SEMANTIC_CORE_BASE = (
-    "https://schemas.agent-ix.org/semantic-core/"
-    f"{json.loads((REPO_ROOT / 'package.json').read_text())['devDependencies']['@agent-ix/semantic-core']}/"
+    f"https://schemas.agent-ix.org/semantic-core/{SEMANTIC_CORE_VERSION}/"
 )
 
 QUIRE_MISSING = (
@@ -414,9 +416,17 @@ def ix_module(name: str) -> str:
     return str(path)
 
 
-def module_args(*extra: str, process: bool = True) -> list[str]:
-    """`--module` roots: iso, optionally process, then this module."""
+def module_args(
+    *extra: str, process: bool = True, safety: bool = False, security: bool = True
+) -> list[str]:
+    """`--module` roots: iso, optionally process and safety, optionally the
+    security module, business, then this module."""
     names = ["spec-artifacts-iso"] + (["spec-artifacts-process"] if process else [])
+    if safety:
+        names.append("spec-objects-safety")
+    if security:
+        names.append("spec-objects-security")
+    names.append("spec-objects-business")
     args: list[str] = []
     for name in names:
         args += ["--module", ix_module(name)]
@@ -429,13 +439,18 @@ def run_quire(*args: str) -> subprocess.CompletedProcess:
 
 
 def validate_bundle(
-    member: str, root: pathlib.Path, *extra: str, process: bool = True
+    member: str,
+    root: pathlib.Path,
+    *extra: str,
+    process: bool = True,
+    safety: bool = False,
+    security: bool = True,
 ) -> subprocess.CompletedProcess:
     """`quire validate --okf` over `root` loaded as corpus member `member`."""
     return run_quire(
         "validate",
         "--okf",
-        *module_args(*extra, process=process),
+        *module_args(*extra, process=process, safety=safety, security=security),
         "--repo",
         f"{member}={root}",
     )
