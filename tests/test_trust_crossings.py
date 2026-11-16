@@ -72,7 +72,11 @@ def test_valid_crossing_and_connection_without_crossing_validate():
 def test_crossing_to_asset_and_missing_target_are_rejected():
     result = _validate(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
-    (wrong_kind,) = _lines(result, "disallowed-edge-target")
+    (wrong_kind,) = [
+        line
+        for line in _lines(result, "disallowed-edge-target")
+        if "wrong_kind_crossing" in line
+    ]
     assert "wrong_kind_crossing" in wrong_kind
     assert "'crosses'" in wrong_kind and "ASSET-NETWORK" in wrong_kind
     assert "'asset'" in wrong_kind

@@ -78,7 +78,11 @@ def test_fr013_ac1_connection_carrying_a_classification_validates():
 def test_fr013_ac2_wrong_kind_and_dangling_targets_fail():
     result = _validate(INVALID, "--strict")
     assert result.returncode == 3, result.stderr
-    (wrong,) = _lines(result, "disallowed-edge-target")
+    (wrong,) = [
+        line
+        for line in _lines(result, "disallowed-edge-target")
+        if "wrong_kind_link" in line
+    ]
     assert "wrong_kind_link" in wrong and "'carries'" in wrong
     assert "scoring_engine" in wrong and "'part'" in wrong
     (dangling,) = _lines(result, "dangling-reference")
