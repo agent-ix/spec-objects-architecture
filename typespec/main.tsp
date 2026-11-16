@@ -166,6 +166,34 @@ enum LimitScope {
   global,
 }
 
+/** Where classified data is persisted, displayed or sent. */
+enum SinkKind {
+  ui_screen,
+  log,
+  export_file,
+  analytics_event,
+  llm_prompt,
+  tool_call,
+  outbound_message,
+  datastore,
+}
+
+/** Whether the processor agreement covers this sink's processor. */
+enum ProcessorAgreement {
+  covered,
+  not_covered,
+  not_applicable,
+  unknown,
+}
+
+/** A country or region code used to describe a data sink's location. */
+@pattern("^([A-Z]{2}|eu|eea)$")
+scalar RegionCode extends string;
+
+/** A non-blank purpose label for a data sink. */
+@minLength(1)
+scalar PurposeToken extends string;
+
 // ---------------------------------------------------------------------------
 // Architecture value models
 // ---------------------------------------------------------------------------
@@ -433,6 +461,28 @@ model RateLimit {
   thresholds?: Threshold[];
   throttles?: SemanticId[];
   ...Record<never>;
+}
+
+/** A place where classified data is rendered, stored, logged or transmitted. */
+model DataSink {
+  kind: SinkKind;
+  processorAgreement: ProcessorAgreement;
+  processor?: ObjectId;
+  region?: RegionCode[];
+  purpose?: PurposeToken[];
+  audienceRoles?: ObjectId[];
+  ...Record<never>;
+}
+
+/** The additional frontmatter a data-sink artifact may declare. */
+model DataSinkFrontmatter {
+  kind: SinkKind;
+  processor_agreement: ProcessorAgreement;
+  processor?: ObjectId;
+  region?: RegionCode[];
+  purpose?: PurposeToken[];
+  audience_roles?: ObjectId[];
+  ...Record<unknown>;
 }
 
 // ---------------------------------------------------------------------------

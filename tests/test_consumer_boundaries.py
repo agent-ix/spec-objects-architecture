@@ -65,9 +65,9 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
     quire_engine,
 ):
     """What this row counts: `semantic.data-schema-unresolved-reference`
-    diagnostics from `extract_filament_core` when the manifest's fourteen
+    diagnostics from `extract_filament_core` when the manifest's fifteen
     reference-form `data_schema` values are handed to it verbatim. The count is
-    fourteen — one per exported object type — and no object-type snapshot node is
+    fifteen — one per exported object type — and no object-type snapshot node is
     produced for any of them.
 
     This is quire-rs FR-069 behaving as specified ("the registry owner resolves
@@ -92,7 +92,7 @@ def test_the_filament_snapshot_path_refuses_the_reference_form_it_is_handed(
 def test_the_same_schemas_resolved_into_snapshots_are_accepted(quire_engine):
     """The counterpart measurement: once the reference is resolved into the
     shipped schema bytes — what `filament-core-service#23` will do — the same
-    ten snapshots are accepted with no unresolved-reference diagnostic."""
+    eleven snapshots are accepted with no unresolved-reference diagnostic."""
     result = filament(quire_engine, snapshots(resolve=True))
     assert not [
         d
@@ -115,9 +115,9 @@ def test_the_bundle_index_is_keyed_by_declaration_id(bundle_index):
         frontmatter(path.read_text())["id"]
         for path in sorted(SKELETONS_DIR.glob("*.md"))
     ]
-    # Seventeen files: the ten FR-005 declarations, their three alternates,
+    # Eighteen files: the eleven FR-005 declarations, their three alternates,
     # and the four FR-007 systems skeletons.
-    assert len(per_file) == 17, per_file
+    assert len(per_file) == 18, per_file
     assert len(set(per_file)) == len(EXPORTS)
 
     ids = [entry["id"] for entry in bundle_index["objects"]]

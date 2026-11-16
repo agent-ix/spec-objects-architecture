@@ -58,6 +58,7 @@ QUIRE_MISSING = (
 OBJECT_TYPES = (
     "api_endpoint",
     "data_schema",
+    "data_sink",
     "queue",
     "action",
     "ui_component",
@@ -99,6 +100,7 @@ OBJECT_ID_LOCATOR_REGEX = "^([A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*)$"
 MODEL_OF = {
     "api_endpoint": "ApiEndpoint",
     "data_schema": "DataSchema",
+    "data_sink": "DataSink",
     "queue": "Queue",
     "action": "Action",
     "ui_component": "UiComponent",
@@ -134,6 +136,10 @@ SUPPORT_MODELS = (
     "Endianness",
     "Threshold",
     "LimitScope",
+    "SinkKind",
+    "ProcessorAgreement",
+    "RegionCode",
+    "PurposeToken",
     "ExceedResponse",
     "PortDirection",
     "ConnectionDirection",
@@ -141,6 +147,7 @@ SUPPORT_MODELS = (
     "ObjectId",
     "ObjectFrontmatter",
     "PartFrontmatter",
+    "DataSinkFrontmatter",
 )
 
 #: The optional protocol-profile keys that must stay out of every required list.
