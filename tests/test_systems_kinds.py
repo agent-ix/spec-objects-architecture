@@ -263,6 +263,11 @@ def test_edge_verbs_and_roles_are_declared_and_used():
                     assert targets == ["data_classification"]
                 elif (kind, verb) == ("connection", crossing_verb):
                     assert targets == ["trust_boundary"]
+                elif (kind, verb) in {
+                    ("part", "delivers_to"),
+                    ("connection", "delivers_to"),
+                }:
+                    assert targets == ["data_sink"]
                 else:
                     assert token == "*" or token in manifest["roles"], (kind, token)
     # Both data-flow links are allowed on `connection` only.
