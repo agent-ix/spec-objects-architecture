@@ -176,6 +176,8 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     """
     schema = json.loads((SCHEMAS_DIR / "DataSinkFrontmatter.json").read_text())
     assert schema["unevaluatedProperties"] == {}
+    for field in ("processor", "audience_roles", "region", "purpose"):
+        assert "$ref" not in schema["properties"][field], field
     assert (
         schema["properties"]["kind"]["enum"]
         == json.loads((SCHEMAS_DIR / "SinkKind.json").read_text())["enum"]
@@ -195,6 +197,26 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
         ), agreement
     assert not validator.is_valid({"kind": "chatbot", "processor_agreement": "covered"})
     assert not validator.is_valid({"kind": "llm_prompt", "processor_agreement": "yes"})
+
+    sink_facts = {
+        "kind": "llm_prompt",
+        "processor_agreement": "not_covered",
+        "processor": "EXT-MODEL-PROVIDER",
+        "audience_roles": ["triage-agent"],
+        "region": ["US", "eea"],
+        "purpose": ["triage-summary"],
+    }
+    assert validator.is_valid(sink_facts)
+    assert validator.is_valid({"kind": "log", "processor_agreement": "not_applicable"})
+    for invalid in (
+        {**sink_facts, "processor": "bad id"},
+        {**sink_facts, "audience_roles": [""]},
+        {**sink_facts, "region": ["Germany"]},
+        {**sink_facts, "purpose": ["   "]},
+        {"processor": "EXT-MODEL-PROVIDER", "processor_agreement": "covered"},
+        {"kind": "llm_prompt"},
+    ):
+        assert not validator.is_valid(invalid), invalid
 
 
 @pytest.mark.trace("TC-174", "FR-015-AC-8")

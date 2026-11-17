@@ -24,6 +24,32 @@
         "not_applicable",
         "unknown"
       ]
+    },
+    "processor": {
+      "type": "string",
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$"
+    },
+    "audience_roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$"
+      }
+    },
+    "region": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^([A-Z]{2}|eu|eea)$"
+      }
+    },
+    "purpose": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "pattern": ".*\\S.*"
+      }
     }
   },
   "required": [
@@ -31,5 +57,5 @@
     "processor_agreement"
   ],
   "unevaluatedProperties": {},
-  "description": "Open frontmatter fields used by data-sink flow-rule conditions."
+  "description": "Open frontmatter fields used by data-sink flow-rule conditions. Keep these\nfields inline: the flow-rule loader resolves this schema offline, so it\ncannot follow external scalar `$ref`s. Their scalar and item constraints\nmirror ObjectId, RegionCode and PurposeToken without external references."
 }
