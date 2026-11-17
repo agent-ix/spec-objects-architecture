@@ -476,7 +476,12 @@ model DataSink {
   ...Record<never>;
 }
 
-/** Open frontmatter fields used by data-sink flow-rule conditions. */
+/**
+ * Open frontmatter fields used by data-sink flow-rule conditions. Keep these
+ * fields inline: the flow-rule loader resolves this schema offline, so it
+ * cannot follow external scalar `$ref`s. Their scalar and item constraints
+ * mirror ObjectId, RegionCode and PurposeToken without external references.
+ */
 model DataSinkFrontmatter {
   kind:
     | "ui_screen"
@@ -488,6 +493,23 @@ model DataSinkFrontmatter {
     | "outbound_message"
     | "datastore";
   processor_agreement: "covered" | "not_covered" | "not_applicable" | "unknown";
+  @pattern("^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$")
+  processor?: string;
+  @TypeSpec.JsonSchema.extension(
+    "items",
+    #{ type: "string", pattern: "^[A-Za-z][A-Za-z0-9_]*(?:-[A-Za-z0-9_]+)*$" },
+  )
+  audience_roles?: string[];
+  @TypeSpec.JsonSchema.extension(
+    "items",
+    #{ type: "string", pattern: "^([A-Z]{2}|eu|eea)$" },
+  )
+  region?: string[];
+  @TypeSpec.JsonSchema.extension(
+    "items",
+    #{ type: "string", minLength: 1, pattern: ".*\\S.*" },
+  )
+  purpose?: string[];
   ...Record<unknown>;
 }
 

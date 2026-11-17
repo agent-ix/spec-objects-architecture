@@ -159,11 +159,11 @@ def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
         assert not validator.is_valid(invalid), invalid
 
 
-@pytest.mark.trace("TC-173", "FR-015-AC-1")
+@pytest.mark.trace("TC-173", "FR-015-AC-1", "FR-015-AC-2")
 def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     schema_registry,
 ):
-    """Flow-rule frontmatter exposes both sink vocabularies as inline enums.
+    """Frontmatter keeps optional typed fields open and exposes closed enums.
 
     Assumptions:
         - The schemas were generated from the TypeSpec source.
@@ -172,10 +172,14 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     Criteria:
         - Every declared sink kind and agreement value validates.
         - Values outside either enum fail validation.
+        - Optional processor, audience_roles, region, and purpose fields accept
+          authored values without requiring referenced documents.
         - Additional frontmatter fields remain allowed.
     """
     schema = json.loads((SCHEMAS_DIR / "DataSinkFrontmatter.json").read_text())
     assert schema["unevaluatedProperties"] == {}
+    for field in ("processor", "audience_roles", "region", "purpose"):
+        assert "$ref" not in schema["properties"][field], field
     assert (
         schema["properties"]["kind"]["enum"]
         == json.loads((SCHEMAS_DIR / "SinkKind.json").read_text())["enum"]
@@ -195,6 +199,26 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
         ), agreement
     assert not validator.is_valid({"kind": "chatbot", "processor_agreement": "covered"})
     assert not validator.is_valid({"kind": "llm_prompt", "processor_agreement": "yes"})
+
+    sink_facts = {
+        "kind": "llm_prompt",
+        "processor_agreement": "not_covered",
+        "processor": "EXT-MODEL-PROVIDER",
+        "audience_roles": ["triage-agent"],
+        "region": ["US", "eea"],
+        "purpose": ["triage-summary"],
+    }
+    assert validator.is_valid(sink_facts)
+    assert validator.is_valid({"kind": "log", "processor_agreement": "not_applicable"})
+    for invalid in (
+        {**sink_facts, "processor": "bad id"},
+        {**sink_facts, "audience_roles": [""]},
+        {**sink_facts, "region": ["Germany"]},
+        {**sink_facts, "purpose": ["   "]},
+        {"processor": "EXT-MODEL-PROVIDER", "processor_agreement": "covered"},
+        {"kind": "llm_prompt"},
+    ):
+        assert not validator.is_valid(invalid), invalid
 
 
 @pytest.mark.trace("TC-174", "FR-015-AC-8")
