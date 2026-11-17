@@ -215,7 +215,7 @@ skipped.
 | TC-170 | The JSON relation report includes every delivered sink and its kind and agreement, including authored processors (`test_data_sink.py`) | Integration | P0 | FR-015-AC-6 | 🚧 Does not cover the flow-rule fact fixture in full |
 | TC-171 | The data sink record schema is closed and validates declared optional values while refusing invalid values (`test_data_sink.py`) | Unit | P0 | FR-015-AC-2, FR-015-AC-12 | ✅ |
 | TC-172 | The sink export and allowed-link declarations match the supported edge vocabulary (`test_data_sink.py`) | Unit | P0 | FR-015-AC-5, FR-015-AC-12 | ✅ |
-| TC-173 | DataSinkFrontmatter is open and its kind and agreement fields use the declared closed vocabularies (`test_data_sink.py`) | Unit | P0 | FR-015-AC-1 | ✅ |
+| TC-173 | DataSinkFrontmatter is open, accepts authored optional processor/audience/region/purpose fields, and uses the declared closed kind and agreement vocabularies (`test_data_sink.py`) | Unit | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
 | TC-174 | The flow-rule loader accepts declared sink enum values and rejects an out-of-enum condition (`test_data_sink.py`) | Integration | P0 | FR-015-AC-8 | ✅ |
 
 ## Test Environment

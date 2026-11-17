@@ -159,11 +159,11 @@ def test_data_sink_record_schema_is_closed_and_uses_the_declared_vocabularies(
         assert not validator.is_valid(invalid), invalid
 
 
-@pytest.mark.trace("TC-173", "FR-015-AC-1")
+@pytest.mark.trace("TC-173", "FR-015-AC-1", "FR-015-AC-2")
 def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     schema_registry,
 ):
-    """Flow-rule frontmatter exposes both sink vocabularies as inline enums.
+    """Frontmatter keeps optional typed fields open and exposes closed enums.
 
     Assumptions:
         - The schemas were generated from the TypeSpec source.
@@ -172,6 +172,8 @@ def test_data_sink_frontmatter_schema_is_open_and_uses_closed_rule_vocabularies(
     Criteria:
         - Every declared sink kind and agreement value validates.
         - Values outside either enum fail validation.
+        - Optional processor, audience_roles, region, and purpose fields accept
+          authored values without requiring referenced documents.
         - Additional frontmatter fields remain allowed.
     """
     schema = json.loads((SCHEMAS_DIR / "DataSinkFrontmatter.json").read_text())
