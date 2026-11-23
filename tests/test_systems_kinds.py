@@ -384,7 +384,9 @@ def test_an_interface_declares_supertypes_by_specializes(quire_engine):
     closed `references` member vocabulary FCD FR-142 states, so naming it
     there makes FCD's reader refuse the whole module (FCD#173)."""
     manifest = load_manifest()
-    assert "specializes" in manifest["edge_types"]
+    specializes = manifest["edge_types"]["specializes"]
+    assert specializes["category"] == "structural"
+    assert specializes["inverse"] == "generalizes"
     interface = object_type("interface")
     assert interface["allowed_links"]["specializes"] == ["interface"]
     construct = interface["construct"]

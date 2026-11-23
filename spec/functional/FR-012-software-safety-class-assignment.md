@@ -65,17 +65,38 @@ history of the file, not of this module.
 This module declares, in its manifest `traceability` block (the block that
 [FR-010](./FR-010-design-realization-edge.md) introduces for the design relations; these entries are added to it):
 
-- a `field_consistency` entry named `requirement-class-below-allocated-part` with `check: class-below-part`, `from: FR`,
+- a `field_consistency` entry named `requirement-class-below-allocated-part` with `check: class-below-part`, `from: [FR, NFR]`,
   `field: software_safety_class`, `via: {archetype: allocation, edges: [allocates], direction: incoming}`,
   `edges: [allocated_to]`, `direction: outgoing`, `to: [part]`, `to_field: software_safety_class`,
   `order_from: {archetype: FR, field: software_safety_class}`, `rule: not_below`
   ([quire-rs FR-091](ix://agent-ix/quire-rs/FR-091)); it names the ISO module's archetype `FR`, which is checked when the corpus is
-  merged, not at this module's load;
+  merged, not at this module's load; a non-functional requirement is compared exactly as a functional one, so an `NFR` that states a
+  lower class than the part it is allocated to is reported;
+- a `field_consistency` entry named `part-class-below-owner` with `check: class-below-owner`, `from: [part]`,
+  `field: software_safety_class`, `edges: [owned_by]`, `direction: outgoing`, `to: [part]`, `to_field: software_safety_class`,
+  `order_from: {archetype: FR, field: software_safety_class}`, `rule: not_below`;
 - a `vocabulary` entry named `part-class-in-vocabulary` with `check: undeclared-class-value`, `from: [part]`,
   `field: software_safety_class`, `carried: software_safety_class` (the name the ISO module's `carried_fields` entry declares);
 - a `required_fields` entry named `part-needs-class` with `check: unassigned-class`, `from: [part]`, `field: software_safety_class`,
   with the severity key `trace:unassigned-class` set to `off` in the module's `grammar_severity`, so a project that enables it declares
   that classes are required.
+
+The module **SHALL** report `trace:class-below-part` for a requirement of archetype `FR` or `NFR` that states a software safety class
+lower than the part it is allocated to, naming the requirement, the allocation, the part and both values as written.
+
+The module **SHALL** report `trace:class-below-owner` for a part that states a software safety class lower than the part that owns it,
+naming both parts and both values as written.
+
+The owner is read from the part's authored `owned_by` frontmatter relationship, and only from it. A part's `## Part` table `Owner`
+cell ([FR-007](./FR-007-systems-model-kinds.md)) is a record member; the engine derives no edge from it and the part skeleton writes
+no `owned_by` relationship, so a part that states its owner only in the table is not compared. A project that wants the check authors
+the `owned_by` relationship beside the table, naming the same owner.
+
+The two reports are deliberately report-only. The module **SHALL NOT** set, raise or default any class: a part that states no class
+is not compared by `trace:class-below-owner` and inherits nothing from its owner, and the class a person states on a child, with the
+rationale that goes with it (the three fields are required together), is how they record why the child is segregated from its owner.
+A child that states no class under a classed owner is visible through `trace:unassigned-class`, which a project enables as stated
+above; nothing else surfaces it, because people decide a class.
 
 These entries land after the engine accepts them (quire-rs FR-090 and FR-091).
 
@@ -98,6 +119,9 @@ These entries land after the engine accepts them (quire-rs FR-090 and FR-091).
 | FR-012-AC-13 | The manifest declares the `field_consistency` entry `requirement-class-below-allocated-part` with `check: class-below-part` and the path stated above; over a fixture corpus with the ISO module loaded, a requirement stating a lower class than the part it reaches through an `allocation` yields `trace:class-below-part`, and a matching or higher requirement yields nothing. | Test |
 | FR-012-AC-14 | The manifest declares the `required_fields` entry `part-needs-class` with `check: unassigned-class` and `grammar_severity` key `trace:unassigned-class` set to `off`; with the key enabled an unassigned part yields `trace:unassigned-class`, and by default it yields nothing. | Test |
 | FR-012-AC-15 | The module loads on its own without error, compiling the `PartFrontmatter` reference without a resolver, although its `field_consistency` and `vocabulary` entries name the ISO module's `FR` and carried name. | Test |
+| FR-012-AC-16 | The `requirement-class-below-allocated-part` entry names `from: [FR, NFR]`; over a fixture corpus with the ISO module loaded, an `NFR` stating `class-1` allocated to a part stating `class-2` yields one `trace:class-below-part` finding naming the `NFR`, the allocation, the part and both values, and an `NFR` stating `class-2` yields none. | Test |
+| FR-012-AC-17 | The manifest declares the `field_consistency` entry `part-class-below-owner` with `check: class-below-owner` and the path stated above; over a fixture corpus with the ISO module loaded, a part stating `class-1` that is `owned_by` a part stating `class-2` yields one `trace:class-below-owner` finding naming both parts and both values, and a part of the same class and a part stating no class each yield none. | Test |
+| FR-012-AC-18 | With the ISO module loaded and `trace:unassigned-class` enabled, a part stating no class that is `owned_by` a part stating a class yields `trace:unassigned-class` naming it, and yields no `trace:class-below-owner`; by default it yields neither. A part that states its owner only in the `## Part` table, with no `owned_by` relationship, yields no `trace:class-below-owner`. | Test |
 
 ## Constraints
 

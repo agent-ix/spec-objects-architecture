@@ -132,3 +132,55 @@ def test_fr012_ac15_module_loads_on_its_own(tmp_path):
     result = run_quire("validate", "--module", str(PACKAGE_ROOT), str(part))
     assert result.returncode == 0, result.stderr
     assert "ManifestError" not in result.stderr
+
+
+INHERITANCE = FIXTURES_DIR / "class_inheritance"
+
+
+@pytest.mark.trace("FR-012-AC-16")
+def test_fr012_ac16_nfr_class_below_allocated_part_is_reported():
+    entry = _entry("field_consistency", "requirement-class-below-allocated-part")
+    assert entry["from"] == ["FR", "NFR"] and entry["check"] == "class-below-part"
+    result = _bundle(INHERITANCE)
+    found = _findings(result, "class-below-part")
+    assert len(found) == 1, result.stderr
+    assert "NFR-001" in found[0] and "alloc_nfr1" in found[0]
+    assert "owner_high" in found[0]
+    assert "'class-1'" in found[0] and "'class-2'" in found[0]
+    assert not any("NFR-002" in ln for ln in found)
+
+
+@pytest.mark.trace("FR-012-AC-17")
+def test_fr012_ac17_part_class_below_its_owner_is_reported_and_none_is_assigned():
+    entry = _entry("field_consistency", "part-class-below-owner")
+    assert entry["from"] == ["part"] and entry["edges"] == ["owned_by"]
+    assert entry["to"] == ["part"] and entry["check"] == "class-below-owner"
+    assert entry["rule"] == "not_below" and entry["direction"] == "outgoing"
+    result = _bundle(INHERITANCE)
+    found = _findings(result, "class-below-owner")
+    assert len(found) == 1, result.stderr
+    assert "child_low" in found[0] and "owner_high" in found[0]
+    assert "'class-1'" in found[0] and "'class-2'" in found[0]
+    # A child of the same class, and a child stating none, draw no finding:
+    # nothing here inherits a class on a part's behalf.
+    assert not any("child_same" in ln or "child_none" in ln for ln in found)
+
+
+@pytest.mark.trace("FR-012-AC-18")
+def test_fr012_ac18_classless_child_is_visible_only_when_unassigned_class_is_enabled(
+    tmp_path,
+):
+    assert _findings(_bundle(INHERITANCE), "unassigned-class") == []
+    enabled = _bundle(INHERITANCE, "--severity", "trace:unassigned-class=warning")
+    found = _findings(enabled, "unassigned-class")
+    assert len(found) == 1 and "child_none" in found[0], enabled.stderr
+    assert not any("child_none" in ln for ln in _findings(enabled, "class-below-owner"))
+    # An owner stated only in the `## Part` table is not an edge: not compared.
+    corpus = tmp_path / "table-only"
+    shutil.copytree(INHERITANCE, corpus)
+    child = corpus / "spec/design/child_low.md"
+    text = child.read_text()
+    child.write_text(
+        text[: text.index("relationships:")] + text[text.index("---\n#") :]
+    )
+    assert _findings(_bundle(corpus), "class-below-owner") == []

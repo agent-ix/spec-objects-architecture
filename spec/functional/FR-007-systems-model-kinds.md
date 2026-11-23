@@ -43,9 +43,8 @@ data rather than a hard-coded kind list.
   `interfaceType`, `sourceEnd`, `targetEnd`, `flowDirection`,
   `sourceElement`, `targetElement`, `fields`, `operations`, `featureOrder`,
   `supertypes`, `clauses` and `relationships`.
-- The `specializes` edge verb as spec-objects-business declares it
-  (structural, inverse `generalizes`), copied in
-  `tests/fixtures/spec-objects-business-specializes.json`.
+- The `specializes` edge verb, which this manifest declares (structural, inverse `generalizes`) with the same category and inverse as
+  spec-objects-business, so a registry that loads both merges one definition.
 - The quire-rs FR-075 `Features` table (`agent-ix/quire-rs#448`, PR #450),
   which reads `Feature | Kind` rows into the record's `featureOrder`.
 
@@ -81,9 +80,9 @@ data rather than a hard-coded kind list.
 - An interface's features SHALL be its fields and operations, ordered as one sequence across both by `featureOrder`, which lists the interface's own field and operation names.
 - An interface SHALL author its feature order as one table under `## Features` with the columns `Feature | Kind`: one row per declared field (`Kind` `field`) and operation (`Kind` `operation`), row order being the feature order.
 - The `interface` object type SHALL extract that table with `features: {from: table_row, under_section: Features, required: true, assert: {columns: [Feature, Kind], min_rows: 1}}`; quire-rs FR-075 lowers the rows into the declaration record's `featureOrder` as the names in row order, which `Interface.json` validates.
-- An interface SHALL declare its supertypes as `specializes` relationships to other interfaces: the verb is declared exactly as spec-objects-business declares it, `interface` admits `specializes: [interface]`, and the construct declares `supertypes` optional. [FR-141](ix://agent-ix/filament-core-data/FR-141) constrains a supertype reference to the same kind as the type declaring it, raising `CONSTRUCT_TARGET_KIND` otherwise. Every `references` entry a construct in this module declares SHALL name one of [FR-142](ix://agent-ix/filament-core-data/FR-142)'s reference members.
+- An interface SHALL declare its supertypes as `specializes` relationships to other interfaces: the verb is declared with the same category and inverse as spec-objects-business, `interface` admits `specializes: [interface]`, and the construct declares `supertypes` optional. [FR-141](ix://agent-ix/filament-core-data/FR-141) constrains a supertype reference to the same kind as the type declaring it, raising `CONSTRUCT_TARGET_KIND` otherwise. Every `references` entry a construct in this module declares SHALL name one of [FR-142](ix://agent-ix/filament-core-data/FR-142)'s reference members.
 - An interface's `specializes` relationships SHALL lower to the IR member `supertypes`; the filament-core-data extraction frontend owns that lowering, not this module or Quire.
-- The `specializes` declaration here SHALL equal spec-objects-business's, as copied in `tests/fixtures/spec-objects-business-specializes.json`. The two modules declare it independently, so a change on either side drifts silently until the fixture is refreshed against spec-objects-business and this declaration follows it.
+- This manifest declares `specializes` with the same category (structural) and inverse (`generalizes`) as spec-objects-business, so a registry loading both merges one definition. No dependency on that module is declared and no file of it is committed here; nothing checks that the two declarations agree.
 - The manifest `semantic.mappings` SHALL declare `generalization`, the quire-rs FR-075 `ModelFeature::Generalization` token: without it, `quire.validate_document` refuses an interface's `specializes` relationship with `semantic.feature-not-extractable` naming `generalization` instead of lowering it.
 - Every construct SHALL bind `meaning` to `filament.meaning.systems.<kind>/v1`.
 - Every construct `references` entry SHALL name only roles the manifest declares, never `*`.
@@ -114,7 +113,7 @@ data rather than a hard-coded kind list.
 | FR-007-AC-7 | `validate_document` on each systems skeleton reports zero errors, and its record carries every FR-152 member of its kind. | Test |
 | FR-007-AC-8 | Renaming a systems skeleton's H2 fails with the required locator missing, and reordering its columns fails with a column mismatch. | Test |
 | FR-007-AC-9 | An interface record with only fields, one with only operations, and one with both validates against `Interface.json` with its `featureOrder`; one without `featureOrder` fails; the construct declares `fields` and `operations` optional, `featureOrder` required, and no rule. | Test |
-| FR-007-AC-10 | `specializes` equals the spec-objects-business declaration copied in `tests/fixtures/spec-objects-business-specializes.json`; `interface` admits `specializes: [interface]`; the construct declares `supertypes` optional; every construct's `references` entry in this module names one of filament-core-data FR-142's reference members; an interface document with a `specializes` relationship extracts that edge with no `disallowed-edge-type` warning, while an `owned_by` relationship draws one. | Test |
+| FR-007-AC-10 | The manifest declares the `specializes` edge type (structural, inverse `generalizes`); `interface` admits `specializes: [interface]`; the construct declares `supertypes` optional; every construct's `references` entry in this module names one of filament-core-data FR-142's reference members; an interface document with a `specializes` relationship extracts that edge with no `disallowed-edge-type` warning, while an `owned_by` relationship draws one. | Test |
 | FR-007-AC-11 | The `interface` object type declares the required `features` locator under `Features` asserting `Feature \| Kind` and `min_rows: 1`; the interface skeleton's `## Features` table has one row per operation it declares, in declaration order, each of `Kind` `operation`; `validate_document` on it reports zero errors and its record's `featureOrder` lists those names in row order; removing the section fails with the required locator missing. | Test |
 | FR-007-AC-12 | `semantic.mappings` declares `generalization`; extracting an interface skeleton carrying a `specializes` relationship raises no `semantic.feature-not-extractable` diagnostic and yields the `specializes` edge; a manifest copy with `generalization` dropped from `mappings` makes that same extraction raise `semantic.feature-not-extractable` naming `generalization`. | Test |
 
