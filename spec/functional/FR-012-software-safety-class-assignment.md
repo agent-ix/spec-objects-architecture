@@ -96,7 +96,7 @@ The two reports are deliberately report-only. The module **SHALL NOT** set, rais
 is not compared by `trace:class-below-owner` and inherits nothing from its owner, and the class a person states on a child, with the
 rationale that goes with it (the three fields are required together), is how they record why the child is segregated from its owner.
 A child that states no class under a classed owner is visible through `trace:unassigned-class`, which a project enables as stated
-below; nothing else surfaces it, because people decide a class.
+above; nothing else surfaces it, because people decide a class.
 
 These entries land after the engine accepts them (quire-rs FR-090 and FR-091).
 

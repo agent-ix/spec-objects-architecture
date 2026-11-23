@@ -43,8 +43,8 @@ data rather than a hard-coded kind list.
   `interfaceType`, `sourceEnd`, `targetEnd`, `flowDirection`,
   `sourceElement`, `targetElement`, `fields`, `operations`, `featureOrder`,
   `supertypes`, `clauses` and `relationships`.
-- The `specializes` edge verb (structural, inverse `generalizes`), whose relation spec-objects-business owns; this module depends on
-  it by reference and holds no copy of that module's declaration.
+- The `specializes` edge verb, which this manifest declares (structural, inverse `generalizes`) with the same category and inverse as
+  spec-objects-business, so a registry that loads both merges one definition.
 - The quire-rs FR-075 `Features` table (`agent-ix/quire-rs#448`, PR #450),
   which reads `Feature | Kind` rows into the record's `featureOrder`.
 
@@ -80,9 +80,9 @@ data rather than a hard-coded kind list.
 - An interface's features SHALL be its fields and operations, ordered as one sequence across both by `featureOrder`, which lists the interface's own field and operation names.
 - An interface SHALL author its feature order as one table under `## Features` with the columns `Feature | Kind`: one row per declared field (`Kind` `field`) and operation (`Kind` `operation`), row order being the feature order.
 - The `interface` object type SHALL extract that table with `features: {from: table_row, under_section: Features, required: true, assert: {columns: [Feature, Kind], min_rows: 1}}`; quire-rs FR-075 lowers the rows into the declaration record's `featureOrder` as the names in row order, which `Interface.json` validates.
-- An interface SHALL declare its supertypes as `specializes` relationships to other interfaces: the verb is declared exactly as spec-objects-business declares it, `interface` admits `specializes: [interface]`, and the construct declares `supertypes` optional. [FR-141](ix://agent-ix/filament-core-data/FR-141) constrains a supertype reference to the same kind as the type declaring it, raising `CONSTRUCT_TARGET_KIND` otherwise. Every `references` entry a construct in this module declares SHALL name one of [FR-142](ix://agent-ix/filament-core-data/FR-142)'s reference members.
+- An interface SHALL declare its supertypes as `specializes` relationships to other interfaces: the verb is declared with the same category and inverse as spec-objects-business, `interface` admits `specializes: [interface]`, and the construct declares `supertypes` optional. [FR-141](ix://agent-ix/filament-core-data/FR-141) constrains a supertype reference to the same kind as the type declaring it, raising `CONSTRUCT_TARGET_KIND` otherwise. Every `references` entry a construct in this module declares SHALL name one of [FR-142](ix://agent-ix/filament-core-data/FR-142)'s reference members.
 - An interface's `specializes` relationships SHALL lower to the IR member `supertypes`; the filament-core-data extraction frontend owns that lowering, not this module or Quire.
-- The `specializes` relation is owned by spec-objects-business. This module declares the verb for its own `interface` links and depends on that module by reference; no file of spec-objects-business is committed here, so there is nothing to refresh and no copy to drift.
+- This manifest declares `specializes` with the same category (structural) and inverse (`generalizes`) as spec-objects-business, so a registry loading both merges one definition. No dependency on that module is declared and no file of it is committed here; nothing checks that the two declarations agree.
 - The manifest `semantic.mappings` SHALL declare `generalization`, the quire-rs FR-075 `ModelFeature::Generalization` token: without it, `quire.validate_document` refuses an interface's `specializes` relationship with `semantic.feature-not-extractable` naming `generalization` instead of lowering it.
 - Every construct SHALL bind `meaning` to `filament.meaning.systems.<kind>/v1`.
 - Every construct `references` entry SHALL name only roles the manifest declares, never `*`.
