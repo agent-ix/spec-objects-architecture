@@ -29,3 +29,9 @@ confirmed that both can fail.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | low | The new obligation is written in the passive voice, with no actor and no SHALL: "A part that states a class lower than the part that owns it is reported". It sits in a declaration bullet, so the FR's `**SHALL**` statements and its title ("A part carries an optional human-assigned software safety class ...") still do not cover the owner comparison or NFR allocation. Add one EARS statement to the Description, for example "When a part states a class lower than the part it is `owned_by`, the module SHALL declare a finding naming both parts and both values". | spec/functional/FR-012-software-safety-class-assignment.md:75-81 | wrong-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (dcb76e2). FR-012 now has three single-response statements: **SHALL** report `trace:class-below-part` for an `FR` or `NFR` below its allocated part; **SHALL** report `trace:class-below-owner` for a part below its owner, naming both parts and both values; **SHALL NOT** set, raise or default any class. Each statement names the module as the actor and one observable output. |

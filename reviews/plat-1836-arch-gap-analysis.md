@@ -47,3 +47,9 @@ the ticket's "inheritance" wording was resolved.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | medium | Inheritance matters most for a child part that states **no** class under a classed owner. Here that part draws nothing by default: FR-091 skips any pair with a missing side, and `trace:unassigned-class` ships `off`. FR-012 says that the child "inherits nothing", but it does not say how a project catches this case. The route is to enable `trace:unassigned-class` (`part-needs-class`), since `field_consistency` cannot compare a missing value and a `where` selector cannot see the owner's class. FR-012 also does not record that the ticket's "part-class inheritance" was deliberately built as report-only. Add a short spec note on both points, and add a criterion (or extend AC-17) stating that with `trace:unassigned-class` enabled, `child_none` yields `trace:unassigned-class`. | spec/functional/FR-012-software-safety-class-assignment.md:74-81, 110 | missing-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (dcb76e2). FR-012 now states that the two reports are deliberately report-only (**SHALL NOT** set, raise or default any class), and that a classless child under a classed owner is visible only through `trace:unassigned-class`, which a project enables. New FR-012-AC-18 is bound to `test_fr012_ac18_classless_child_is_visible_only_when_unassigned_class_is_enabled`, and the test passes with iso `origin/main` 9342304. Each of the four mutations makes it fail: shipping `trace:unassigned-class` as `warning`; deleting the `part-needs-class` entry; giving child_none a class; and keeping the `owned_by` edge in the table-only copy. |

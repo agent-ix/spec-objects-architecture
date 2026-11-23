@@ -73,3 +73,9 @@ engine semantics, and the tests can fail.
 | ID | Severity | Summary | Refs | Escape Cause |
 |---|---|---|---|---|
 | FND-001 | low | Every `class_inheritance` part fixture states `Owner: search_service` in its `## Part` table, while its `owned_by` edge names `owner_high`. So the fixture records two different owners for the same part. The check reads only the edge, so the test passes, but the fixture shows a contradictory model as if it were valid. Make each child's Owner cell agree with its edge (or state in the fixture that the edge, not the Owner member, is what the check reads; see SR-048 FND-001). | tests/fixtures/class_inheritance/spec/design/child_low.md:15-19, child_same.md:15-19, child_none.md:13-17 | implementation-bug-despite-evidence |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (dcb76e2). The `## Part` Owner cell in child_low, child_same and child_none now reads `owner_high`, the same part their `owned_by` edge names. |

@@ -74,7 +74,12 @@ This module declares, in its manifest `traceability` block (the block that
   lower class than the part it is allocated to is reported;
 - a `field_consistency` entry named `part-class-below-owner` with `check: class-below-owner`, `from: [part]`,
   `field: software_safety_class`, `edges: [owned_by]`, `direction: outgoing`, `to: [part]`, `to_field: software_safety_class`,
-  `order_from: {archetype: FR, field: software_safety_class}`, `rule: not_below`.
+  `order_from: {archetype: FR, field: software_safety_class}`, `rule: not_below`;
+- a `vocabulary` entry named `part-class-in-vocabulary` with `check: undeclared-class-value`, `from: [part]`,
+  `field: software_safety_class`, `carried: software_safety_class` (the name the ISO module's `carried_fields` entry declares);
+- a `required_fields` entry named `part-needs-class` with `check: unassigned-class`, `from: [part]`, `field: software_safety_class`,
+  with the severity key `trace:unassigned-class` set to `off` in the module's `grammar_severity`, so a project that enables it declares
+  that classes are required.
 
 The module **SHALL** report `trace:class-below-part` for a requirement of archetype `FR` or `NFR` that states a software safety class
 lower than the part it is allocated to, naming the requirement, the allocation, the part and both values as written.
@@ -92,11 +97,6 @@ is not compared by `trace:class-below-owner` and inherits nothing from its owner
 rationale that goes with it (the three fields are required together), is how they record why the child is segregated from its owner.
 A child that states no class under a classed owner is visible through `trace:unassigned-class`, which a project enables as stated
 below; nothing else surfaces it, because people decide a class.
-- a `vocabulary` entry named `part-class-in-vocabulary` with `check: undeclared-class-value`, `from: [part]`,
-  `field: software_safety_class`, `carried: software_safety_class` (the name the ISO module's `carried_fields` entry declares);
-- a `required_fields` entry named `part-needs-class` with `check: unassigned-class`, `from: [part]`, `field: software_safety_class`,
-  with the severity key `trace:unassigned-class` set to `off` in the module's `grammar_severity`, so a project that enables it declares
-  that classes are required.
 
 These entries land after the engine accepts them (quire-rs FR-090 and FR-091).
 
