@@ -54,6 +54,9 @@ edge and the part's `owner` member, and two low findings.
 | FND-003 | fixed | Round 1 (dcb76e2). PLAT-1836 is no longer on the "Tracked by" line. The line itself predates this PR. |
 | FND-004 | fixed | Round 2 (19a7655). FR-007 no longer cites the deleted fixture in any of the three places: the Inputs bullet, the former "keep and refresh a copy" SHALL (now "owned by spec-objects-business ... no copy to drift") and FR-007-AC-10. TC-110 in `spec/tests.md` drops "equals the spec-objects-business declaration". `git grep -i "copy\|vendor" spec/ tests/` shows no other copied-file wording about `specializes`. The remaining AC-10 clause is only partly tested (FND-006). |
 | FND-005 | fixed | Round 2 (19a7655). The `vocabulary` and `required_fields` bullets now follow the two `field_consistency` bullets as one unbroken list, and the SHALL paragraphs come after it. |
+| FND-006 | fixed | Round 3 (70385d2). TC-110 now asserts `specializes["category"] == "structural"` and `specializes["inverse"] == "generalizes"`. Each mutation in a scratch copy fails the test: `category: dataflow` fails `'dataflow' == 'structural'`, and `inverse: specialized_by` fails `'specialized_by' == 'generalizes'`. |
+| FND-007 | fixed | Round 3 (70385d2). FR-007 now says the manifest declares `specializes` with the same category and inverse as spec-objects-business, so that a registry loading both merges one definition, and that no dependency is declared and nothing checks the two agree. No "by reference", "depends on" or "declared exactly as" wording remains in FR-007. The manifest comment at lines 35-37 still says "declared exactly as". That is not a defect: the declaration is currently byte-identical to spec-objects-business `origin/main` (manifest.yaml:34), description included, and the comment lies outside this PR's diff. |
+| FND-008 | fixed | Round 3 (70385d2). FR-012 now reads "which a project enables as stated above". |
 
 ## New findings (disposition pass 1)
 
