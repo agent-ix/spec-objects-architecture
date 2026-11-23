@@ -107,12 +107,13 @@ traceability:
     check: part-delivers-to-sink
     record_keys: [kind, processorAgreement, processor]
   design_relations: [fr-has-design-element, nfr-has-design-element]
-  # FR-012: a requirement must not state a class below the part it is
-  # allocated to; a part's class is held to the vocabulary spec-artifacts-iso
-  # carries; a project that enables `trace:unassigned-class` requires a class.
+  # FR-012: a requirement (FR or NFR) must not state a class below the part it
+  # is allocated to; a part must not state a class below the part that owns it;
+  # a part's class is held to the vocabulary spec-artifacts-iso carries; a
+  # project that enables `trace:unassigned-class` requires a class.
   field_consistency:
   - name: requirement-class-below-allocated-part
-    from: FR
+    from: [FR, NFR]
     field: software_safety_class
     via: {archetype: allocation, edges: [allocates], direction: incoming}
     edges: [allocated_to]
@@ -122,6 +123,16 @@ traceability:
     order_from: {archetype: FR, field: software_safety_class}
     rule: not_below
     check: class-below-part
+  - name: part-class-below-owner
+    from: [part]
+    field: software_safety_class
+    edges: [owned_by]
+    direction: outgoing
+    to: [part]
+    to_field: software_safety_class
+    order_from: {archetype: FR, field: software_safety_class}
+    rule: not_below
+    check: class-below-owner
   vocabulary:
   - name: part-class-in-vocabulary
     from: [part]
