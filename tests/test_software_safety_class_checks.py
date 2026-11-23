@@ -164,3 +164,23 @@ def test_fr012_ac17_part_class_below_its_owner_is_reported_and_none_is_assigned(
     # A child of the same class, and a child stating none, draw no finding:
     # nothing here inherits a class on a part's behalf.
     assert not any("child_same" in ln or "child_none" in ln for ln in found)
+
+
+@pytest.mark.trace("FR-012-AC-18")
+def test_fr012_ac18_classless_child_is_visible_only_when_unassigned_class_is_enabled(
+    tmp_path,
+):
+    assert _findings(_bundle(INHERITANCE), "unassigned-class") == []
+    enabled = _bundle(INHERITANCE, "--severity", "trace:unassigned-class=warning")
+    found = _findings(enabled, "unassigned-class")
+    assert len(found) == 1 and "child_none" in found[0], enabled.stderr
+    assert not any("child_none" in ln for ln in _findings(enabled, "class-below-owner"))
+    # An owner stated only in the `## Part` table is not an edge: not compared.
+    corpus = tmp_path / "table-only"
+    shutil.copytree(INHERITANCE, corpus)
+    child = corpus / "spec/design/child_low.md"
+    text = child.read_text()
+    child.write_text(
+        text[: text.index("relationships:")] + text[text.index("---\n#") :]
+    )
+    assert _findings(_bundle(corpus), "class-below-owner") == []

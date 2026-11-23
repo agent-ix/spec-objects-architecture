@@ -16,4 +16,4 @@ relationships:
 
 | Owner | Declared Type | Multiplicity |
 |---|---|---|
-| search_service | quant_scoring_engine | 1..1 |
+| owner_high | quant_scoring_engine | 1..1 |
