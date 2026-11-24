@@ -42,3 +42,17 @@ consequence is recorded in SR-051 FND-001 and not repeated here.
 | FND-001 | medium | TC-142 (`test_fr010_ac3_manifest_declares_exactly_the_two_relations`) asserts the exact seven-entry `required_relations` list (lines 101-109) and `design_relations == [fr-has-design-element, nfr-has-design-element]` (line 123). The new FR-010-AC-3 says it states no count and only fixes the first two entries, so the bound test now exceeds its criterion and will fail as soon as FR-016's manifest change lands. The code step must change both asserts to a prefix check, drop the full-list assert, and rename the test; FR-016-AC-3 then owns the tail. | tests/test_design_edges.py:99-123 | correct-requirement-no-evidence |
 | FND-002 | low | FR-016-AC-10 does not say the fixture `FR` carries a `software_safety_class` that the class policy lists. Under quoin FR-161 a requirement without a class is listed `unassigned` with no rows, so a classless fixture can show neither `unmet` nor `met`. State the class in the criterion. | spec/functional/FR-016-segregation-design-relation.md:104 | wrong-requirement |
 | FND-003 | low | The Behavior bullet requiring `trace:undeclared-relation-vocabulary` when no loaded module declares `control` (or `ADR`, `FR`, `NFR`) has no criterion. Because tests load spec-objects-security by default, the case needs `security=False`; FR-010-AC-9 is the analogue for `ADR`. Add a criterion or drop the bullet as inherited quire-rs FR-058-AC-35 behaviour. | spec/functional/FR-016-segregation-design-relation.md:91 | missing-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | deferred | This is a spec-only PR, and changing TC-142 belongs to the code step. FR-010 Outputs and the new FR-016 section "Code-step consequence for existing tests" now state that TC-142 becomes a prefix check on `design_relations` and a membership check on `required_relations`. `tests/test_design_edges.py` is unchanged at 1abfa04. |
+| FND-002 | fixed | Round 1 (1abfa04). FR-016-AC-10 now gives the FR a `software_safety_class`, its assigner and its rationale, and states that an FR without the class is listed as unassigned with no rows (quoin FR-161). |
+| FND-003 | fixed | Round 1 (1abfa04). New FR-016-AC-14 covers this: with spec-objects-security off and no `control` document, it yields `trace:undeclared-relation-vocabulary` naming `control` for each relation, and none when security is loaded or a control exists. |
+
+## New findings (disposition pass 1)
+
+| ID | Severity | Summary | Refs | Escape Cause |
+|---|---|---|---|---|
+| FND-004 | low | FR-016-AC-12 says an ADR authoring `segregates_for_requirement` "draws no `disallowed-edge-type` where the `spec-artifacts-process` module lists the verb". The process module on origin/main does not list it, so with the modules the tests load (`module_args`, process on) the code step cannot exercise that clause. It is either vacuous or needs a process change first. Keep the `covered` clause, and either assert the advisory the ADR draws today or drop the conditional clause until process lists the verb. | spec/functional/FR-016-segregation-design-relation.md:133 | wrong-requirement |

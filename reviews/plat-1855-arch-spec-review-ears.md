@@ -32,3 +32,10 @@ assigned by the tool.
 |---|---|---|---|---|
 | FND-001 | low | Three Behavior bullets make "Quire" the subject ("Quire SHALL report ..."), placing an obligation on another system in this module's requirement. FR-010 states the same behaviour with the module's own artifact as subject ("each relation SHALL report"). Rephrase to "Each relation SHALL report ..." so the responsible system is this module's declaration. | spec/functional/FR-016-segregation-design-relation.md:85-87 | wrong-requirement |
 | FND-002 | low | The Scope paragraph carries a normative SHALL ("The relations SHALL NOT be declared without the scope") in Description prose, outside Behavior and Constraints, where it is neither numbered nor bound to a criterion. Move it to Constraints (Inspection) or drop it, since the Behavior bullet already fixes `when_any`. | spec/functional/FR-016-segregation-design-relation.md:56-57 | wrong-requirement |
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (1abfa04). The three bullets now read "Each relation SHALL report ...". |
+| FND-002 | fixed | Round 1 (1abfa04). The Description SHALL NOT is removed. Behavior now has "The manifest SHALL declare each relation of this requirement with the `when_any` above and no relation without it" (bound by AC-3). The part-class SHALL NOT is restated as "The manifest SHALL NOT make a design relation of this requirement depend on the class of any part" (bound by AC-9). |

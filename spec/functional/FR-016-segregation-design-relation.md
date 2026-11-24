@@ -42,8 +42,9 @@ person decides.
   verb says that a design element keeps a requirement's implementation apart. `realizes_requirement` says the element
   realizes the requirement, a different fact; a requirement can be realized by an element that is not segregated.
 - Authored by a `part` or a `connection` toward an `FR` or `NFR`. A `part` states the item it keeps apart; a `connection`
-  states the controlled interface across which the segregation holds. An `ADR` records the decision about segregation for the requirement and is a legitimate source; `spec-artifacts-process` lists the
-  verb for `ADR` as the dependency below states. The requirement may author the inverse toward the element without
+  states the controlled interface across which the segregation holds. An `ADR` records the decision about segregation for the requirement and is a legitimate source; `spec-artifacts-process` must list the
+  verb for `ADR` (the dependency below). Until it does, an ADR authoring the verb, including the "none needed" decision, draws the advisory
+  `disallowed-edge-type`, and the relation counts the edge regardless, being verb-based. The requirement may author the inverse toward the element without
   editing it (`agent-ix/quire-rs` FR-041).
 
 ### Scope
@@ -130,7 +131,7 @@ realization relations, so quire's design join, `quire matrix --strict` and the q
 | FR-016-AC-9 | A part with and a part without `software_safety_class` both satisfy the relation when they author the edge, and no finding or row reads the class. | Test |
 | FR-016-AC-10 | Over the same fixture with the `FR` carrying a `software_safety_class`, its assigner and its rationale, `quoin class obligations` with a `segregation` entry naming `relation: fr-has-segregation` reads the row `unmet` before the edge and `met` after it, and `not-available` for an `FR` no control is linked to; an `FR` without the class is listed as unassigned with no rows (quoin FR-161). | Demonstration |
 | FR-016-AC-11 | A `control` authoring `satisfied_by` toward an `FR` puts that `FR` in scope: it is `uncovered` and yields one `fr-without-segregation` finding until an element segregates it, and a `control` authoring `satisfied_by` toward an `NFR` does the same for `nfr-has-segregation`. | Test |
-| FR-016-AC-12 | An `ADR` authoring `segregates_for_requirement` toward an in-scope `FR` makes it `covered` with the `ADR` linked and draws no `disallowed-edge-type` where the `spec-artifacts-process` module lists the verb. | Test |
+| FR-016-AC-12 | An `ADR` authoring `segregates_for_requirement` toward an in-scope `FR` makes it `covered` with the `ADR` linked, and, while the loaded `spec-artifacts-process` does not list the verb for `ADR`, draws the advisory `disallowed-edge-type` naming the verb; the `FR` authoring `requirement_segregated_by` toward the `ADR` draws none. | Test |
 | FR-016-AC-13 | An `FR` that carries a realizing part but no segregating element is `covered` in `fr-has-design-element` and `uncovered` in `fr-has-segregation`, and `quire matrix --strict` names the check token `fr-without-segregation` for the gap and not `requirement-without-design`. | Test |
 | FR-016-AC-14 | Loading the module with spec-objects-security off and no document of kind `control` yields `trace:undeclared-relation-vocabulary` naming `control` for each relation of this requirement, advisory; with the security module loaded, or a `control` document present, it yields none for that kind. | Test |
 
