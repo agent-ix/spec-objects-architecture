@@ -77,7 +77,7 @@ FR075_TABLE_KEYS = {"Value", "State", "Step", "From", "Term", "Member", "Type"}
 
 EDGE_VERBS = {"owned_by", "typed_by", "connects", "allocates", "allocated_to"}
 # FR-010: the design-realization verb and the requirement archetypes it targets.
-DESIGN_VERB = "realizes_requirement"
+DESIGN_VERBS = {"realizes_requirement", "segregates_for_requirement"}
 REQUIREMENT_KINDS = {"FR", "NFR"}
 SYSTEMS_ROLES = {"systems-part", "systems-port", "systems-interface"}
 
@@ -247,7 +247,7 @@ def test_construct_references_name_only_declared_members_and_roles():
 def test_edge_verbs_and_roles_are_declared_and_used():
     manifest = load_manifest()
     crossing_verb = "crosses"
-    assert EDGE_VERBS | {DESIGN_VERB, crossing_verb} <= set(manifest["edge_types"])
+    assert EDGE_VERBS | DESIGN_VERBS | {crossing_verb} <= set(manifest["edge_types"])
     assert SYSTEMS_ROLES <= set(manifest["roles"])
     assert "systems-interface" in object_type("interface")["roles"]
     used_verbs: set[str] = set()
@@ -257,7 +257,7 @@ def test_edge_verbs_and_roles_are_declared_and_used():
         for verb, targets in ot["allowed_links"].items():
             used_verbs.add(verb)
             for token in targets:
-                if verb == DESIGN_VERB:
+                if verb in DESIGN_VERBS:
                     assert token in REQUIREMENT_KINDS, (kind, token)
                 elif (kind, verb) == ("connection", "carries"):
                     assert targets == ["data_classification"]
@@ -277,9 +277,8 @@ def test_edge_verbs_and_roles_are_declared_and_used():
     assert object_type("connection")["allowed_links"][crossing_verb] == [
         "trust_boundary"
     ]
-    assert used_verbs - {"carries", crossing_verb} == EDGE_VERBS | {
-        DESIGN_VERB,
-        "delivers_to",
+    assert used_verbs - {"carries", crossing_verb} == EDGE_VERBS | DESIGN_VERBS | {
+        "delivers_to"
     }
     for kind in SYSTEMS_TYPES:
         if kind != "connection":
