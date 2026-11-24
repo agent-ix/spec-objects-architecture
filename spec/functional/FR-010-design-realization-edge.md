@@ -47,7 +47,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
   `disallowed-edge-target` naming the source, the target and its kind, and a target that resolves to no
   document is reported as `dangling-reference` naming the file. An edge to a criterion id of an `FR` or
   `NFR` is a dangling reference only where no `obligations:` source mints that id (see Behavior).
-- A `traceability` block with two `required_relations` and a `design_relations` list.
+- Two `required_relations` entries and their names at the start of `traceability.design_relations`. [FR-016](./FR-016-segregation-design-relation.md) appends two further design relations, so this requirement owns the realization pair only and no total.
 
 ## Behavior
 
@@ -58,7 +58,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
   and `to: [part, connection, ADR]`, with distinct `name` and `check` tokens:
   `fr-has-design-element` (`from: FR`, `check: requirement-without-design`) and
   `nfr-has-design-element` (`from: NFR`, `check: nfr-without-design`).
-- The module SHALL list both names, in that order, in `traceability.design_relations`.
+- The module SHALL list both names, in that order, as the first two entries of `traceability.design_relations`.
 - `to` is non-empty, so a dangling edge never satisfies the relation, and an edge from a document of
   another kind does not satisfy it either: the relations are `incoming`, so such a source leaves the
   requirement `uncovered` and yields neither a `kind_mismatch` entry nor a
@@ -87,7 +87,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
 |----|----------|--------------|
 | FR-010-AC-1 | `edge_types` declares `realizes_requirement` with `inverse: requirement_realized_by`, declares no `realizes` key, and merging the manifest with spec-artifacts-iso raises no `DuplicateEdgeType`, leaving the one `realizes` entry iso declares. | Test |
 | FR-010-AC-2 | `part` and `connection` admit `realizes_requirement` with targets `FR` and `NFR`, and a part or connection document authoring it toward an `FR` or `NFR` draws no `disallowed-edge-type` or `disallowed-edge-target` warning. | Test |
-| FR-010-AC-3 | The manifest declares exactly the two design relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and `design_relations` lists those two names in that order. The full `required_relations` list is exactly those two design relations followed by `connection-carries-classification` and `classification-carried-by-connection`; the module loads under quire-rs without error. | Test |
+| FR-010-AC-3 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and the first two entries of `design_relations` are those names in that order. This criterion states no count of `required_relations` or of `design_relations`: the other relations are those of FR-013, FR-014, FR-015 and FR-016, and the module loads under quire-rs without error. | Test |
 | FR-010-AC-4 | Over a fixture corpus, `quire relations --json` (and `quire relations --design --json`, which reports the same rows where the CLI release has it) reports an `FR` with a realizing part as `covered` with that part's id and archetype `part`, and an `FR` with none as `uncovered`. | Test |
 | FR-010-AC-5 | A requirement that authors `requirement_realized_by` toward a connection is `covered` with that connection in the same run, and a pair authored both ways yields one element. | Test |
 | FR-010-AC-6 | An `NFR` realized by an `ADR` is `covered` with the ADR's id and archetype; the same edge authored by a document of an archetype outside `to` leaves the `NFR` `uncovered`, with no `kind_mismatch` entry and no `trace:target-kind-mismatch` finding. | Test |
@@ -106,4 +106,4 @@ that realize it and a gap when there are none. The engine knows no name below; t
 ## Dependencies
 
 - **Upstream**: quire-rs [FR-086](ix://agent-ix/quire-rs/spec/functional/FR-086), [FR-058](ix://agent-ix/quire-rs/spec/functional/FR-058), [FR-041](ix://agent-ix/quire-rs/spec/functional/FR-041), [FR-085](ix://agent-ix/quire-rs/spec/functional/FR-085); quire-rs [FR-084](ix://agent-ix/quire-rs/spec/functional/FR-084); quire-cli [FR-041](ix://agent-ix/quire-cli/spec/functional/FR-041); [FR-007](./FR-007-systems-model-kinds.md)
-- **Downstream**: the matrix design column (PLAT-1529)
+- **Downstream**: the matrix design column (PLAT-1529); [FR-016](./FR-016-segregation-design-relation.md), which appends the segregation design relations
