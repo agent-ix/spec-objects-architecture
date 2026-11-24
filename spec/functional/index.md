@@ -21,3 +21,4 @@ description: "Index of artifacts in this directory."
 * [FR-013: A connection states the data classifications it carries, and an unclassified connection is reported by an opt-in check](./FR-013-connection-carries-data-classification.md)
 * [FR-014: A connection states the trust boundaries it crosses](./FR-014-connection-crosses-trust-boundary.md)
 * [FR-015: A data_sink declares where data lands, with a closed kind and a stated processor agreement, fed by delivers_to edges](./FR-015-data-sink.md)
+* [FR-016: A risk-control requirement is asked for the design element that segregates it](./FR-016-segregation-design-relation.md)
