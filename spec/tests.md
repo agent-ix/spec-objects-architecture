@@ -96,144 +96,143 @@ skipped.
 
 ## Test Case Summary
 
-| Test ID | Title | Type | Priority | Traces To | Status |
-|---|---|---|---|---|---|
-| TC-002 | Activation against a clean filament-core returns 200 | Integration | P1 | FR-001-AC-2, IT-001-SC-01 | 🚧 needs a running filament-core |
-| TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03 | 🚧 needs a running filament-core |
-| TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02 | 🚧 needs a running filament-core |
-| TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1 | 🚧 needs a running filament-core |
-| TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3 | ✅ |
-| TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name | Unit | P0 | FR-002-AC-2 | ✅ |
-| TC-012 | Every `$ref` resolves to a shipped sibling or the declared semantic-core bundle | Unit | P0 | FR-002-AC-3 | ✅ |
-| TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema | Integration | P1 | FR-002-AC-4 | ✅ |
-| TC-015 | The built wheel contains every emitted schema file | Integration | P1 | FR-002-AC-6 | ✅ |
-| TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3 | ✅ |
-| TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1 | ✅ |
-| TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2 | ✅ |
-| TC-019 | `package-lock.json` resolves every package from npmjs, `@agent-ix/semantic-core` included | Unit | P2 | FR-002-CON-4 | ✅ |
-| TC-020 | The `semantic` block equals the eight admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1 | ✅ |
-| TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4 | ✅ |
-| TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4 | ✅ |
-| TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6 | ✅ refusal verified; the naming half is an expected failure blocked on quire-rs#221 and quire-rs#394 |
-| TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` because it writes the operator's global module store |
-| TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1 | ✅ |
-| TC-031 | Api endpoint: a returning operation validates; the return removed fails; `fields` fails | Integration | P0 | FR-004-AC-2 | ✅ |
-| TC-032 | Data schema: one field validates; empty `fields` fails; `operations` fails | Integration | P0 | FR-004-AC-3 | ✅ |
-| TC-033 | Queue: an identity row validates with `delivery` and `carries`; identity removed fails; `operations` fails | Integration | P0 | FR-004-AC-4 | ✅ |
-| TC-034 | Action: exactly one operation validates; two operations fail; `fields` fails | Integration | P0 | FR-004-AC-5 | ✅ |
-| TC-035 | Ui component: a non-identity field validates with `operations`; an identity field fails | Integration | P0 | FR-004-AC-6 | ✅ |
-| TC-036 | Interface: one operation or one field validates with its `featureOrder`, `associated_types` accepted; no `featureOrder` fails; `routes` fails | Integration | P0 | FR-004-AC-7 | ✅ |
-| TC-037 | External contract: a clause plus a post-carrying operation validates; no `clauses` validates (FR-009); no `post` fails | Integration | P0 | FR-004-AC-8 | ✅ |
-| TC-038 | Extension point: an operation and a clause validate with `registration` and `stability`; no `clauses` validates (FR-009); `fields` fails | Integration | P1 | FR-004-AC-9 | ✅ |
-| TC-039 | Binary format: one clause validates with `records` and `endianness`; an empty `RecordLayout.fields` fails; `operations` fails | Integration | P1 | FR-004-AC-10 | ✅ |
-| TC-040 | Rate limit: one clause validates with `thresholds`; a `scope` outside `LimitScope` fails; `fields` fails | Integration | P1 | FR-004-AC-11 | ✅ |
-| TC-041 | The empty record `{}` fails `Interface` and validates against every other type (FR-009) | Integration | P0 | FR-004-AC-12 | ✅ |
-| TC-042 | Placeholder `unresolved` target is accepted by the schema and reported by the extractor; a bare token is refused | Integration | P1 | FR-004-AC-13 | ✅ |
-| TC-043 | Every optional profile key can be removed without invalidating the record, and no profile key is required anywhere | Integration | P1 | FR-004-AC-14, FR-004-CON-3 | ✅ |
-| TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1 | ✅ |
-| TC-045 | No shipped schema declares an observation key, so a declaration record cannot be read as an extraction from running code | Unit | P0 | FR-004-AC-15 | ✅ |
-| TC-046 | `relations` is admitted by six object types and refused by four, both halves asserted | Integration | P1 | FR-004-AC-16 | ✅ |
-| TC-050 | Every skeleton (ten plus three alternates) validates with no error | Integration | P0 | FR-005-AC-1 | ✅ |
-| TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2 | ✅ |
-| TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3 | ✅ |
-| TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4 | ✅ |
-| TC-054 | Every negative fixture fails with its `expect:` code and the named cases exist | Integration | P0 | FR-005-AC-5 | ✅ #431 conditional xfail: the dangling-post fixture only |
-| TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6 | ✅ |
-| TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7 | ✅ |
-| TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2 | ✅ |
-| TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1 | ✅ falsified three ways and restored: a `corpus/` probe, a `fixtures/semantic-module` probe and a `.gitmodules` each turn it red |
-| TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8 | ✅ |
-| TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9 | ✅ #431 conditional xfail: the external contract case only |
-| TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5 | ✅ opt-in behind `QUOIN_INSTALL_ROUNDTRIP=1` |
-| TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7 | ✅ |
-| TC-073 | `make schemas-check` names a stale committed schema with no emitted counterpart and writes nothing | Integration | P1 | FR-002-AC-9 | ✅ |
-| TC-075 | A Node older than 20 fails the generator naming the required version | Integration | P2 | FR-002-AC-4 | ✅ |
-| TC-076 | An unresolvable `@typespec/compiler` fails the generator naming the missing binary | Integration | P2 | FR-002-AC-4 | ✅ |
-| TC-077 | A `tsp compile` failure exits non-zero and leaves the committed schemas and manifest byte-identical | Integration | P1 | FR-002-AC-4 | ✅ |
-| TC-078 | A source emitting no module model exits non-zero naming the base it found nothing under | Integration | P1 | FR-002-AC-4 | ✅ |
-| TC-080 | The interface `## Contract` YAML and its extracted `OperationDecl[]` agree on names, params, and returns | Integration | P0 | FR-006-AC-1 | ✅ |
-| TC-081 | The data-schema `## Schema` fence and its `## Properties` table agree on property names and the required set | Integration | P0 | FR-006-AC-2 | ✅ |
-| TC-082 | The queue `## Message Format` fence and its `## Properties` table agree on the key set | Integration | P1 | FR-006-AC-3 | ✅ |
-| TC-083 | Every non-kernel `type.target` of the api-endpoint record resolves to a shipped data_schema title with zero unresolved findings | Integration | P0 | FR-006-AC-4 | ✅ |
-| TC-084 | An api-endpoint fixture returning an undeclared token yields exactly one `semantic.unresolved-type` finding and the `unresolved` placeholder target | Integration | P1 | FR-006-AC-5 | ✅ |
-| TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1 | ✅ |
-| TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2 | ✅ |
-| TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10 | ✅ |
-| TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8 | ✅ |
-| TC-091 | The bundle index holds one entry per declaration id; a per-file index raises no `semantic.ambiguous-type` for a declaration against itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3 | ✅ |
-| TC-100 | Each systems kind is an exported object type whose `data_schema` names its model file | Unit | P0 | FR-007-AC-1 | ✅ |
-| TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; a connection end admits a multiplicity and refuses a missing port or unknown key; direction enums are closed | Unit | P0 | FR-007-AC-2 | ✅ |
-| TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3 | ✅ |
-| TC-103 | FR-035 violations name no `construct` path; a `*` reference and an unknown member state are refused; each construct binds its FR-208 meaning; references name declared members and roles only | Integration | P0 | FR-007-AC-4 | ✅ |
-| TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5, FR-014-AC-1 | ✅ |
-| TC-105 | Each systems skeleton has an underscore id and extracts one row with one cell per column, each reference cell an artifact id or `<artifact id>/<member>` | Integration | P1 | FR-007-AC-6 | ✅ |
-| TC-106 | Each systems skeleton validates with zero errors, its record carrying every FR-152 member | Integration | P1 | FR-007-AC-7 | ✅ |
-| TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8 | ✅ |
-| TC-108 | No systems schema or construct, `interface` included, declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1 | ✅ |
-| TC-109 | An interface with only fields, only operations, or both validates with its `featureOrder`; none without it; the construct makes both features optional and has no rule | Unit | P0 | FR-007-AC-9 | ✅ |
-| TC-110 | An interface declares supertypes: the manifest declares `specializes`, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10 | ✅ |
-| TC-111 | `ObjectId` states the frontmatter id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; underscore and hyphenated ids validate, while a doubled hyphen is refused because its `id` does not match the pattern | Integration | P0 | FR-003-AC-9 | ✅ |
-| TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11 | ✅ |
-| TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12 | ✅ |
-| TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2 | ✅ |
-| TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1 | ✅ |
-| TC-120 | `semantic.mappings` names `relationships` and `record-sections` | Unit | P0 | FR-008-AC-1 | ✅ |
-| TC-121 | Each skeleton that authors a record key extracts exactly that key under the manifest's mappings, `available`, valid against its model, with zero errors; the values are the ones the skeleton states | Integration | P0 | FR-008-AC-2 | ✅ |
-| TC-122 | A route naming an undeclared operation is refused as `route-operation-unknown` | Integration | P1 | FR-008-AC-3 | ✅ |
-| TC-123 | `associated_types` comes from the `## Associated Types` table and never from the `## Contract` fence | Integration | P1 | FR-008-AC-4 | ✅ |
-| TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5 | ✅ |
-| TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6 | ✅ |
-| TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 | ✅ |
-| TC-140 | `edge_types` declares `realizes_requirement` with inverse `requirement_realized_by` and no `realizes` key; merging with spec-artifacts-iso raises no `DuplicateEdgeType` | Unit | P0 | FR-010-AC-1 | ✅ |
-| TC-141 | `part` and `connection` admit `realizes_requirement`; a part authoring it toward an `FR` extracts with no `disallowed-edge-type` | Integration | P0 | FR-010-AC-2 | ✅ |
-| TC-142 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the stated fields, and the first two entries of `design_relations` are those names in that order; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1 | ✅ |
-| TC-143 | `quire relations --json` (the design join, `--design`, where the CLI release has it) over a fixture reports an `FR` with a realizing part `covered` with the part's id and archetype, and an `FR` with none `uncovered` | Integration | P0 | FR-010-AC-4 | ✅ |
-| TC-144 | A requirement authoring `requirement_realized_by` toward a connection is `covered` with it; a pair authored both ways yields one element | Integration | P1 | FR-010-AC-5 | ✅ |
-| TC-145 | An `NFR` realized by an `ADR` is `covered`; the same edge authored by a document outside `to` leaves the `NFR` `uncovered` with no `kind_mismatch` and no `trace:target-kind-mismatch` | Integration | P1 | FR-010-AC-6 | ✅ |
-| TC-146 | With the architecture and requirements repositories loaded through `--repo`, an `FR` is `covered` by a part in the other; with the part's repository not loaded an edge authored by the part leaves the `FR` `uncovered` with no `dangling` entry, and an `FR` authoring `requirement_realized_by` toward it has the reference dangling as authored | Integration | P1 | FR-010-AC-7 | ✅ |
-| TC-147 | The `requirement-without-design` and `nfr-without-design` findings are advisory, and mapping a key `off` drops it | Integration | P1 | FR-010-AC-8 | ✅ |
-| TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9 | ✅ |
-| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10 | ✅ |
-| TC-150 | A dangling `realizes_requirement` target and a wrong-kind target fail `quire validate --okf --strict` naming the file; the valid corpus draws neither | Integration | P0 | FR-010-AC-11 | ✅ |
-| TC-151 | A connection carrying a valid classification validates without disallowed-edge findings (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-1 | ✅ |
-| TC-152 | Wrong-kind and dangling `carries` targets fail with their target ids (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-2 | ✅ |
-| TC-153 | Opted-in forward and reverse completeness checks report their gaps (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-3 | ✅ |
-| TC-154 | Shipped default severities produce no forward or reverse completeness finding (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4 | ✅ |
-| TC-155 | Relations report both views and selected record values, omit invalid or unselected values, and never expose `level` (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-5, FR-013-AC-9 | ✅ |
-| TC-156 | Default severities produce no finding for an unclassified connection or an uncarried classification (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4 | ✅ |
-| TC-157 | A carried health classification crossing an untrusted boundary appears in relations without a denial (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-6 | ✅ |
-| TC-158 | Only connection among systems kinds admits `carries`; connection schema and skeleton are consistent (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-7 | ✅ |
-| TC-159 | Both required relations and default severities match the exact declarations (`test_data_flow_edges.py`) | Unit | P0 | FR-013-AC-8 | ✅ |
-| TC-163 | The architecture manifest declares the `crosses` edge and target kind, and the connection skeleton documents the optional relationship (`test_trust_crossings.py`) | Unit | P0 | FR-014-AC-1, FR-014-AC-6 | ✅ |
-| TC-164 | A valid crossing to a trust boundary passes, while a connection with no crossing passes without a crossing finding (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-2, FR-014-AC-4 | ✅ |
-| TC-165 | A crossing to an asset is refused as wrong-kind and a crossing to a missing id is dangling (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-3 | ✅ |
-| TC-166 | The JSON relation report includes the crossing trust level beside the carried regulated categories for `CONN-PORTAL-LAB`, with no finding or denial (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-5, FR-014-AC-7 | ✅ |
-| TC-160 | `Part.json` and `PartFrontmatter.json` carry the three plain optional class fields; the `part` locators read them; an assigned part validates and extracts, an unassigned one extracts no key, an incomplete assignment fails naming the key (`test_software_safety_class.py`) | Integration | P0 | FR-012-AC-1..8, FR-012-AC-11 | ✅ |
-| TC-161 | The `vocabulary` entry is declared and lists no class value; an out-of-vocabulary or wrong-case part value yields one `trace:undeclared-class-value` naming part and value; an all-unassigned corpus draws no `undeclared-relation-vocabulary` for the three entries, and `PartFrontmatter` is self-contained and open (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-9, FR-012-AC-10, FR-012-AC-12 | ✅ |
-| TC-162 | A requirement stating a lower class than its allocated part yields `trace:class-below-part`, a higher one nothing; an unassigned part yields `trace:unassigned-class` only when the key is enabled; the module loads on its own (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-13..15 | ✅ |
-| TC-167 | Every sink kind validates, including authored agreement and valid region examples (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
-| TC-168 | Invalid sink kind, missing or invalid agreement, and invalid region are refused with diagnostics naming the field/value (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
-| TC-169 | Connection and part delivery edges and sink classification links validate; wrong-kind and dangling targets fail (`test_data_sink.py`) | Integration | P0 | FR-015-AC-3..5 | ✅ |
-| TC-170 | The JSON relation report includes every delivered sink and its kind and agreement, including authored processors (`test_data_sink.py`) | Integration | P0 | FR-015-AC-6 | 🚧 Does not cover the flow-rule fact fixture in full |
-| TC-171 | The data sink record schema is closed and validates declared optional values while refusing invalid values (`test_data_sink.py`) | Unit | P0 | FR-015-AC-2, FR-015-AC-12 | ✅ |
-| TC-172 | The sink export and allowed-link declarations match the supported edge vocabulary (`test_data_sink.py`) | Unit | P0 | FR-015-AC-5, FR-015-AC-12 | ✅ |
-| TC-173 | DataSinkFrontmatter is open, accepts authored optional processor/audience/region/purpose fields, and uses the declared closed kind and agreement vocabularies (`test_data_sink.py`) | Unit | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
-| TC-174 | The flow-rule loader accepts declared sink enum values and rejects an out-of-enum condition (`test_data_sink.py`) | Integration | P0 | FR-015-AC-8 | ✅ |
-| TC-175 | The segregation verb is declared with its inverse and no `DuplicateEdgeType` is raised against spec-artifacts-iso (`test_segregation.py`) | Integration | P0 | FR-016-AC-1 | ✅ |
-| TC-176 | `part` and `connection` admit the verb toward `FR` and `NFR` without a disallowed-edge warning, and a part authoring it toward a part is `disallowed-edge-target` (`test_segregation.py`) | Integration | P0 | FR-016-AC-2 | ✅ |
-| TC-177 | The two segregation relations are declared with the stated fields and two-condition `when_any`, and follow the realization pair in `design_relations` (`test_segregation.py`) | Unit | P0 | FR-016-AC-3 | ✅ |
-| TC-178 | A requirement linked to a control with no segregating element is `uncovered` and yields one `fr-without-segregation` finding (`test_segregation.py`) | Integration | P0 | FR-016-AC-4 | ✅ |
-| TC-179 | A part, connection or ADR authoring the verb, or the requirement authoring the inverse, covers the requirement once (`test_segregation.py`) | Integration | P0 | FR-016-AC-5 | ✅ |
-| TC-180 | A requirement no control is linked to has no row and no finding, and an edge from an archetype outside `to` leaves a scoped requirement `uncovered` (`test_segregation.py`) | Integration | P0 | FR-016-AC-6 | ✅ |
-| TC-181 | Realization and segregation edges cover only their own relation, and both together cover both (`test_segregation.py`) | Integration | P0 | FR-016-AC-7 | ✅ |
-| TC-182 | The finding is a warning, promoted by `--severity` and dropped by `off` (`test_segregation.py`) | Integration | P0 | FR-016-AC-8 | ✅ |
-| TC-183 | Parts with and without a `software_safety_class` both cover the relation and no relation names a class (`test_segregation.py`) | Integration | P0 | FR-016-AC-9 | ✅ |
-| TC-184 | A classed requirement's relation row is `uncovered` before the edge and `covered` after it, and an unlinked requirement has no row; the quoin command is not run (`test_segregation.py`) | Integration | P1 | FR-016-AC-10 | 🚧 `quoin class obligations` with `relation` is not run: the installed quoin refuses the key |
-| TC-185 | A control authoring `satisfied_by` toward an `FR` or `NFR` puts it in scope until an element segregates it (`test_segregation.py`) | Integration | P0 | FR-016-AC-11 | ✅ |
-| TC-186 | An ADR-authored edge covers the requirement, and the `disallowed-edge-type` advisory appears exactly while the loaded spec-artifacts-process does not list the verb for `ADR` (`test_segregation.py`) | Integration | P0 | FR-016-AC-12 | ✅ |
-| TC-187 | A realized but unsegregated requirement is a design gap in `quire matrix --strict` named `fr-without-segregation` and not `requirement-without-design` (`test_segregation.py`) | Integration | P0 | FR-016-AC-13 | ✅ |
-| TC-188 | While spec-objects-security is loaded no finding names `control`, for the `ADR`-naming findings of both relations; with security off the same report is an expected failure until PLAT-1856 is fixed: quire silently drops every relation when a `record_keys` relation names a kind no loaded module declares (`test_segregation.py`) | Integration | P1 | FR-016-AC-14 | 🚧 PLAT-1856 |
-
+| Test ID | Title | Type | Priority | Traces To |
+|---|---|---|---|---|
+| TC-002 | Activation against a clean filament-core returns 200 | Integration | P1 | FR-001-AC-2, IT-001-SC-01
+| TC-003 | Re-activation is a content-hash no-op | Integration | P1 | FR-001-AC-3, IT-001-SC-03
+| TC-004 | Every declared contribution appears in the registry tables | Integration | P1 | FR-001-AC-4, IT-001-SC-02
+| TC-005 | Module activation registers the declared contents | Manual | P2 | StR-001-VC-1
+| TC-007 | Every object type ships a typed schema a fixture reader can consume; an api-endpoint and a rate-limit record are distinguishable by schema alone | Unit | P2 | StR-001-VC-3
+| TC-011 | Every shipped schema declares the 2020-12 `$schema` and the `$id` matching its file name | Unit | P0 | FR-002-AC-2
+| TC-012 | Every `$ref` resolves to a shipped sibling or the declared semantic-core bundle | Unit | P0 | FR-002-AC-3
+| TC-013 | `make schemas-check` exits zero on the committed tree and non-zero naming a mutated schema | Integration | P1 | FR-002-AC-4
+| TC-015 | The built wheel contains every emitted schema file | Integration | P1 | FR-002-AC-6
+| TC-016 | Two generator runs over one source are byte-identical | Integration | P1 | FR-002-CON-3
+| TC-017 | The build uses the official `@typespec/json-schema` emitter only and no emitted file is hand-edited | Static | P2 | FR-002-CON-1
+| TC-018 | No `.npmrc`, no `file:`/`link:` dependency | Static | P2 | FR-002-CON-2
+| TC-019 | `package-lock.json` resolves every package from npmjs, `@agent-ix/semantic-core` included | Unit | P2 | FR-002-CON-4
+| TC-020 | The `semantic` block equals the eight admitted keys and `exports` equals the fourteen types | Unit | P0 | FR-003-AC-1, FR-003-CON-1
+| TC-024 | `quire.Registry.load_from` lists all fourteen archetypes | Integration | P0 | FR-003-AC-4
+| TC-025 | `validate_document` on every skeleton reports no `semantic.*` load failure | Integration | P0 | FR-003-AC-4
+| TC-026 | An unknown `semantic` key is refused by the loader; the refusal names the key | Integration | P1 | FR-003-AC-6
+| TC-027 | `quoin module install path:` succeeds, lists the module, and the prior entry is restored | Integration | P1 | FR-003-AC-5
+| TC-030 | Each of the ten schemas differs from every other in a required, forbidden, or item rule; none is `type: object` only | Unit | P0 | FR-004-AC-1
+| TC-031 | Api endpoint: a returning operation validates; the return removed fails; `fields` fails | Integration | P0 | FR-004-AC-2
+| TC-032 | Data schema: one field validates; empty `fields` fails; `operations` fails | Integration | P0 | FR-004-AC-3
+| TC-033 | Queue: an identity row validates with `delivery` and `carries`; identity removed fails; `operations` fails | Integration | P0 | FR-004-AC-4
+| TC-034 | Action: exactly one operation validates; two operations fail; `fields` fails | Integration | P0 | FR-004-AC-5
+| TC-035 | Ui component: a non-identity field validates with `operations`; an identity field fails | Integration | P0 | FR-004-AC-6
+| TC-036 | Interface: one operation or one field validates with its `featureOrder`, `associated_types` accepted; no `featureOrder` fails; `routes` fails | Integration | P0 | FR-004-AC-7
+| TC-037 | External contract: a clause plus a post-carrying operation validates; no `clauses` validates (FR-009); no `post` fails | Integration | P0 | FR-004-AC-8
+| TC-038 | Extension point: an operation and a clause validate with `registration` and `stability`; no `clauses` validates (FR-009); `fields` fails | Integration | P1 | FR-004-AC-9
+| TC-039 | Binary format: one clause validates with `records` and `endianness`; an empty `RecordLayout.fields` fails; `operations` fails | Integration | P1 | FR-004-AC-10
+| TC-040 | Rate limit: one clause validates with `thresholds`; a `scope` outside `LimitScope` fails; `fields` fails | Integration | P1 | FR-004-AC-11
+| TC-041 | The empty record `{}` fails `Interface` and validates against every other type (FR-009) | Integration | P0 | FR-004-AC-12
+| TC-042 | Placeholder `unresolved` target is accepted by the schema and reported by the extractor; a bare token is refused | Integration | P1 | FR-004-AC-13
+| TC-043 | Every optional profile key can be removed without invalidating the record, and no profile key is required anywhere | Integration | P1 | FR-004-AC-14, FR-004-CON-3
+| TC-044 | No module schema redeclares a semantic-core model; every grammar item is a `$ref` to semantic-core | Unit | P1 | FR-004-CON-1
+| TC-045 | No shipped schema declares an observation key, so a declaration record cannot be read as an extraction from running code | Unit | P0 | FR-004-AC-15
+| TC-046 | `relations` is admitted by six object types and refused by four, both halves asserted | Integration | P1 | FR-004-AC-16
+| TC-050 | Every skeleton (ten plus three alternates) validates with no error | Integration | P0 | FR-005-AC-1
+| TC-051 | Table and `sysml` skeletons extract to identical normalized fields with the recorded forms | Integration | P0 | FR-005-AC-2, FR-005-CON-2
+| TC-052 | Under the skeleton bundle index every skeleton extracts with zero errors and zero unresolved tokens | Integration | P0 | FR-005-AC-3
+| TC-053 | Availability states per skeleton (fields, clauses, operations) match the type's declared set | Integration | P1 | FR-005-AC-4
+| TC-054 | Every negative fixture fails with its `expect:` code and the named cases exist | Integration | P0 | FR-005-AC-5
+| TC-055 | Every skeleton's H2 set is asserted by the manifest and includes every required heading | Unit | P1 | FR-005-AC-6
+| TC-056 | Every skeleton is placeholder-free with non-empty asserted sections | Unit | P2 | FR-005-AC-7
+| TC-057 | A Properties section holding both a table and a fence is refused at the second form | Integration | P1 | FR-005-CON-2
+| TC-058 | The repository carries no corpus path, no vendored neighbour fixture, no `/vendor/` path and no submodule, and every tracked path is part of the module's own surface (tree assertion over `git ls-files`, not a diff against a moving ref) | Unit | P2 | FR-005-CON-1
+| TC-059 | Skeleton titles are distinct `Identifier`s outside `KernelScalar`, and `object` equals `type` in every skeleton frontmatter | Unit | P1 | FR-005-AC-8
+| TC-065 | The action skeleton extracts one operation, the api endpoint at least one returning operation, the external contract at least one post-carrying operation | Integration | P1 | FR-005-AC-9
+| TC-070 | Quoin install roundtrip with state restore | Integration | P1 | IT-002-SC-01, IT-002-SC-02, IT-002-SC-03, IT-002-SC-04, IT-002-SC-05, IT-002-SC-06, FR-003-AC-5
+| TC-071 | The packed npm tarball contains `manifest.yaml` and a sibling `schemas/<Model>.json` per export | Integration | P1 | FR-002-AC-7
+| TC-073 | `make schemas-check` names a stale committed schema with no emitted counterpart and writes nothing | Integration | P1 | FR-002-AC-9
+| TC-075 | A Node older than 20 fails the generator naming the required version | Integration | P2 | FR-002-AC-4
+| TC-076 | An unresolvable `@typespec/compiler` fails the generator naming the missing binary | Integration | P2 | FR-002-AC-4
+| TC-077 | A `tsp compile` failure exits non-zero and leaves the committed schemas and manifest byte-identical | Integration | P1 | FR-002-AC-4
+| TC-078 | A source emitting no module model exits non-zero naming the base it found nothing under | Integration | P1 | FR-002-AC-4
+| TC-080 | The interface `## Contract` YAML and its extracted `OperationDecl[]` agree on names, params, and returns | Integration | P0 | FR-006-AC-1
+| TC-081 | The data-schema `## Schema` fence and its `## Properties` table agree on property names and the required set | Integration | P0 | FR-006-AC-2
+| TC-082 | The queue `## Message Format` fence and its `## Properties` table agree on the key set | Integration | P1 | FR-006-AC-3
+| TC-083 | Every non-kernel `type.target` of the api-endpoint record resolves to a shipped data_schema title with zero unresolved findings | Integration | P0 | FR-006-AC-4
+| TC-084 | An api-endpoint fixture returning an undeclared token yields exactly one `semantic.unresolved-type` finding and the `unresolved` placeholder target | Integration | P1 | FR-006-AC-5
+| TC-085 | The `contract_yaml`, `schema_json`, and `message_schema` locators are still yield their fence text | Integration | P1 | FR-006-AC-6, FR-006-CON-1
+| TC-086 | Every FR-006 agreement assertion reads two sections of one authored artifact and no engine lowering | Static | P2 | FR-006-CON-2
+| TC-087 | An unrecognised generator argument exits non-zero and writes nothing | Integration | P2 | FR-002-AC-10
+| TC-090 | The Filament snapshot path refuses all fourteen reference-form `data_schema` values and accepts the same schemas resolved | Integration | P1 | FR-003-AC-8
+| TC-091 | The bundle index holds one entry per declaration id; a per-file index raises no `semantic.ambiguous-type` for a declaration against itself | Integration | P1 | FR-005-AC-10, FR-005-CON-3
+| TC-100 | Each systems kind is an exported object type whose `data_schema` names its model file | Unit | P0 | FR-007-AC-1
+| TC-101 | Each systems schema accepts the FR-152 record, refuses a missing member, `fields`, `operations`, `identityFields` and `{}`; a connection end admits a multiplicity and refuses a missing port or unknown key; direction enums are closed | Unit | P0 | FR-007-AC-2
+| TC-102 | Each systems kind has one required `table_row` locator asserting its columns, first column not an FR-075 key | Unit | P0 | FR-007-AC-3
+| TC-103 | FR-035 violations name no `construct` path; a `*` reference and an unknown member state are refused; each construct binds its FR-208 meaning; references name declared members and roles only | Integration | P0 | FR-007-AC-4
+| TC-104 | The systems edge verbs and roles are declared and are exactly the ones the systems kinds use | Unit | P1 | FR-007-AC-5, FR-014-AC-1
+| TC-105 | Each systems skeleton has an underscore id and extracts one row with one cell per column, each reference cell an artifact id or `<artifact id>/<member>` | Integration | P1 | FR-007-AC-6
+| TC-106 | Each systems skeleton validates with zero errors, its record carrying every FR-152 member | Integration | P1 | FR-007-AC-7
+| TC-107 | A renamed systems H2 fails as missing; reordered columns fail as a column mismatch | Integration | P1 | FR-007-AC-8
+| TC-108 | No systems schema or construct, `interface` included, declares a member beyond QSpec FR-152 | Unit | P0 | FR-007-CON-1
+| TC-109 | An interface with only fields, only operations, or both validates with its `featureOrder`; none without it; the construct makes both features optional and has no rule | Unit | P0 | FR-007-AC-9
+| TC-110 | An interface declares supertypes: the manifest declares `specializes`, `interface` admits it to `interface`, the construct names `supertypes` optional, every construct's `references` entry names an FCD FR-142 reference member, the edge extracts and is not disallowed, and a disallowed verb warns | Integration | P0 | FR-007-AC-10
+| TC-111 | `ObjectId` states the frontmatter id pattern once and every object type's `id` locator carries it as `regex`; `ObjectFrontmatter.json` requires `id`, `title` and `type`; every shipped skeleton and fixture frontmatter validates; underscore and hyphenated ids validate, while a doubled hyphen is refused because its `id` does not match the pattern | Integration | P0 | FR-003-AC-9
+| TC-112 | The interface `features` locator is the required `Feature \| Kind` table under `Features`; the skeleton's rows name its operations in order; removing the section is refused as missing; the skeleton validates and its record's `featureOrder` follows the rows | Integration | P0 | FR-007-AC-11
+| TC-113 | `semantic.mappings` declares `generalization`; an interface with a `specializes` relationship extracts the edge and draws no `feature-not-extractable` diagnostic; a manifest copy with the token dropped reproduces that diagnostic | Integration | P0 | FR-007-AC-12
+| TC-130 | A record lacking the optional section key validates against each schema that requires no key, and a document without the optional section validates; a present key is still checked by its item rules | Unit | P0 | FR-009-AC-1, FR-009-AC-2
+| TC-131 | Each schema requires a key exactly when the manifest locator that feeds it (`operations` from `## Operations`, `fields` from `## Properties`, `clauses` from `## Invariants`, `featureOrder` from `## Features`) is required | Unit | P0 | FR-009-AC-3, FR-009-CON-1
+| TC-120 | `semantic.mappings` names `relationships` and `record-sections` | Unit | P0 | FR-008-AC-1
+| TC-121 | Each skeleton that authors a record key extracts exactly that key under the manifest's mappings, `available`, valid against its model, with zero errors; the values are the ones the skeleton states | Integration | P0 | FR-008-AC-2
+| TC-122 | A route naming an undeclared operation is refused as `route-operation-unknown` | Integration | P1 | FR-008-AC-3
+| TC-123 | `associated_types` comes from the `## Associated Types` table and never from the `## Contract` fence | Integration | P1 | FR-008-AC-4
+| TC-124 | The `## Layout` fence lowers to `records` and `endianness`; a `size` must name exactly one field; `## Endianness` is prose | Integration | P1 | FR-008-AC-5
+| TC-125 | A threshold without a `Status` is refused; a 429 row extracts its `on_exceeded`; a bullet-list `## Registration` is refused | Integration | P1 | FR-008-AC-6
+| TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7
+| TC-140 | `edge_types` declares `realizes_requirement` with inverse `requirement_realized_by` and no `realizes` key; merging with spec-artifacts-iso raises no `DuplicateEdgeType` | Unit | P0 | FR-010-AC-1
+| TC-141 | `part` and `connection` admit `realizes_requirement`; a part authoring it toward an `FR` extracts with no `disallowed-edge-type` | Integration | P0 | FR-010-AC-2
+| TC-142 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the stated fields, and the first two entries of `design_relations` are those names in that order; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1
+| TC-143 | `quire relations --json` (the design join, `--design`, where the CLI release has it) over a fixture reports an `FR` with a realizing part `covered` with the part's id and archetype, and an `FR` with none `uncovered` | Integration | P0 | FR-010-AC-4
+| TC-144 | A requirement authoring `requirement_realized_by` toward a connection is `covered` with it; a pair authored both ways yields one element | Integration | P1 | FR-010-AC-5
+| TC-145 | An `NFR` realized by an `ADR` is `covered`; the same edge authored by a document outside `to` leaves the `NFR` `uncovered` with no `kind_mismatch` and no `trace:target-kind-mismatch` | Integration | P1 | FR-010-AC-6
+| TC-146 | With the architecture and requirements repositories loaded through `--repo`, an `FR` is `covered` by a part in the other; with the part's repository not loaded an edge authored by the part leaves the `FR` `uncovered` with no `dangling` entry, and an `FR` authoring `requirement_realized_by` toward it has the reference dangling as authored | Integration | P1 | FR-010-AC-7
+| TC-147 | The `requirement-without-design` and `nfr-without-design` findings are advisory, and mapping a key `off` drops it | Integration | P1 | FR-010-AC-8
+| TC-148 | Where no loaded module declares `ADR` and no `ADR` document exists, `trace:undeclared-relation-vocabulary` is reported for each relation naming it, advisory under both postures | Integration | P1 | FR-010-AC-9
+| TC-149 | With an `obligations:` source minting the criterion ids, a part edge to a criterion id makes its `FR` `covered` with `realized_criteria`; without the source the `FR` is `uncovered` with no `dangling` entry and the part's edge stays an FR-026 dangling reference | Integration | P1 | FR-010-AC-10
+| TC-150 | A dangling `realizes_requirement` target and a wrong-kind target fail `quire validate --okf --strict` naming the file; the valid corpus draws neither | Integration | P0 | FR-010-AC-11
+| TC-151 | A connection carrying a valid classification validates without disallowed-edge findings (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-1
+| TC-152 | Wrong-kind and dangling `carries` targets fail with their target ids (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-2
+| TC-153 | Opted-in forward and reverse completeness checks report their gaps (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-3
+| TC-154 | Shipped default severities produce no forward or reverse completeness finding (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4
+| TC-155 | Relations report both views and selected record values, omit invalid or unselected values, and never expose `level` (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-5, FR-013-AC-9
+| TC-156 | Default severities produce no finding for an unclassified connection or an uncarried classification (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-4
+| TC-157 | A carried health classification crossing an untrusted boundary appears in relations without a denial (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-6
+| TC-158 | Only connection among systems kinds admits `carries`; connection schema and skeleton are consistent (`test_data_flow_edges.py`) | Integration | P0 | FR-013-AC-7
+| TC-159 | Both required relations and default severities match the exact declarations (`test_data_flow_edges.py`) | Unit | P0 | FR-013-AC-8
+| TC-163 | The architecture manifest declares the `crosses` edge and target kind, and the connection skeleton documents the optional relationship (`test_trust_crossings.py`) | Unit | P0 | FR-014-AC-1, FR-014-AC-6
+| TC-164 | A valid crossing to a trust boundary passes, while a connection with no crossing passes without a crossing finding (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-2, FR-014-AC-4
+| TC-165 | A crossing to an asset is refused as wrong-kind and a crossing to a missing id is dangling (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-3
+| TC-166 | The JSON relation report includes the crossing trust level beside the carried regulated categories for `CONN-PORTAL-LAB`, with no finding or denial (`test_trust_crossings.py`) | Integration | P0 | FR-014-AC-5, FR-014-AC-7
+| TC-160 | `Part.json` and `PartFrontmatter.json` carry the three plain optional class fields; the `part` locators read them; an assigned part validates and extracts, an unassigned one extracts no key, an incomplete assignment fails naming the key (`test_software_safety_class.py`) | Integration | P0 | FR-012-AC-1..8, FR-012-AC-11
+| TC-161 | The `vocabulary` entry is declared and lists no class value; an out-of-vocabulary or wrong-case part value yields one `trace:undeclared-class-value` naming part and value; an all-unassigned corpus draws no `undeclared-relation-vocabulary` for the three entries, and `PartFrontmatter` is self-contained and open (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-9, FR-012-AC-10, FR-012-AC-12
+| TC-162 | A requirement stating a lower class than its allocated part yields `trace:class-below-part`, a higher one nothing; an unassigned part yields `trace:unassigned-class` only when the key is enabled; the module loads on its own (`test_software_safety_class_checks.py`) | Integration | P1 | FR-012-AC-13..15
+| TC-167 | Every sink kind validates, including authored agreement and valid region examples (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2
+| TC-168 | Invalid sink kind, missing or invalid agreement, and invalid region are refused with diagnostics naming the field/value (`test_data_sink.py`) | Integration | P0 | FR-015-AC-1, FR-015-AC-2
+| TC-169 | Connection and part delivery edges and sink classification links validate; wrong-kind and dangling targets fail (`test_data_sink.py`) | Integration | P0 | FR-015-AC-3..5
+| TC-170 | The JSON relation report includes every delivered sink and its kind and agreement, including authored processors (`test_data_sink.py`) | Integration | P0 | FR-015-AC-6
+| TC-171 | The data sink record schema is closed and validates declared optional values while refusing invalid values (`test_data_sink.py`) | Unit | P0 | FR-015-AC-2, FR-015-AC-12
+| TC-172 | The sink export and allowed-link declarations match the supported edge vocabulary (`test_data_sink.py`) | Unit | P0 | FR-015-AC-5, FR-015-AC-12
+| TC-173 | DataSinkFrontmatter is open, accepts authored optional processor/audience/region/purpose fields, and uses the declared closed kind and agreement vocabularies (`test_data_sink.py`) | Unit | P0 | FR-015-AC-1, FR-015-AC-2
+| TC-174 | The flow-rule loader accepts declared sink enum values and rejects an out-of-enum condition (`test_data_sink.py`) | Integration | P0 | FR-015-AC-8
+| TC-175 | The segregation verb is declared with its inverse and no `DuplicateEdgeType` is raised against spec-artifacts-iso (`test_segregation.py`) | Integration | P0 | FR-016-AC-1
+| TC-176 | `part` and `connection` admit the verb toward `FR` and `NFR` without a disallowed-edge warning, and a part authoring it toward a part is `disallowed-edge-target` (`test_segregation.py`) | Integration | P0 | FR-016-AC-2
+| TC-177 | The two segregation relations are declared with the stated fields and two-condition `when_any`, and follow the realization pair in `design_relations` (`test_segregation.py`) | Unit | P0 | FR-016-AC-3
+| TC-178 | A requirement linked to a control with no segregating element is `uncovered` and yields one `fr-without-segregation` finding (`test_segregation.py`) | Integration | P0 | FR-016-AC-4
+| TC-179 | A part, connection or ADR authoring the verb, or the requirement authoring the inverse, covers the requirement once (`test_segregation.py`) | Integration | P0 | FR-016-AC-5
+| TC-180 | A requirement no control is linked to has no row and no finding, and an edge from an archetype outside `to` leaves a scoped requirement `uncovered` (`test_segregation.py`) | Integration | P0 | FR-016-AC-6
+| TC-181 | Realization and segregation edges cover only their own relation, and both together cover both (`test_segregation.py`) | Integration | P0 | FR-016-AC-7
+| TC-182 | The finding is a warning, promoted by `--severity` and dropped by `off` (`test_segregation.py`) | Integration | P0 | FR-016-AC-8
+| TC-183 | Parts with and without a `software_safety_class` both cover the relation and no relation names a class (`test_segregation.py`) | Integration | P0 | FR-016-AC-9
+| TC-184 | A classed requirement's relation row is `uncovered` before the edge and `covered` after it, and an unlinked requirement has no row; the quoin command is not run (`test_segregation.py`) | Integration | P1 | FR-016-AC-10
+| TC-185 | A control authoring `satisfied_by` toward an `FR` or `NFR` puts it in scope until an element segregates it (`test_segregation.py`) | Integration | P0 | FR-016-AC-11
+| TC-186 | An ADR-authored edge covers the requirement, and the `disallowed-edge-type` advisory appears exactly while the loaded spec-artifacts-process does not list the verb for `ADR` (`test_segregation.py`) | Integration | P0 | FR-016-AC-12
+| TC-187 | A realized but unsegregated requirement is a design gap in `quire matrix --strict` named `fr-without-segregation` and not `requirement-without-design` (`test_segregation.py`) | Integration | P0 | FR-016-AC-13
+| TC-188 | While spec-objects-security is loaded no finding names `control`, for the `ADR`-naming findings of both relations; with security off the same report is an expected failure until PLAT-1856 is fixed: quire silently drops every relation when a `record_keys` relation names a kind no loaded module declares (`test_segregation.py`) | Integration | P1 | FR-016-AC-14
 ## Test Environment
 
 Every `Integration` row that names Quire runs against the Quire wheel FR-005
@@ -295,7 +294,6 @@ skipped and complete-but-unbacked rows are not machine-checked here.
 figure is unaffected: it counts trace-tag binding, which is measured
 independently of the status column.
 
-Four rows stay `🚧` and none of them is a coverage claim: TC-002, TC-003, TC-004 and TC-005, which need a running
-`filament-core-service`, which
-this repository cannot provision one. That is issue #1's debt, carried
+TC-002, TC-003, TC-004 and TC-005 need a running `filament-core-service`,
+which this repository cannot provision. That is issue #1's debt, carried
 forward.
