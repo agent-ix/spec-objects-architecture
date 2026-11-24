@@ -50,6 +50,7 @@ consequence is recorded in SR-051 FND-001 and not repeated here.
 | FND-001 | deferred | This is a spec-only PR, and changing TC-142 belongs to the code step. FR-010 Outputs and the new FR-016 section "Code-step consequence for existing tests" now state that TC-142 becomes a prefix check on `design_relations` and a membership check on `required_relations`. `tests/test_design_edges.py` is unchanged at 1abfa04. |
 | FND-002 | fixed | Round 1 (1abfa04). FR-016-AC-10 now gives the FR a `software_safety_class`, its assigner and its rationale, and states that an FR without the class is listed as unassigned with no rows (quoin FR-161). |
 | FND-003 | fixed | Round 1 (1abfa04). New FR-016-AC-14 covers this: with spec-objects-security off and no `control` document, it yields `trace:undeclared-relation-vocabulary` naming `control` for each relation, and none when security is loaded or a control exists. |
+| FND-004 | fixed | Round 2 (35c4ae7). FR-016-AC-12 now asserts today's behaviour. The ADR makes the FR `covered`. While the loaded process module does not list the verb (true on origin/main), the ADR draws the advisory `disallowed-edge-type` naming it. The FR authoring `requirement_segregated_by` toward the ADR draws none. I checked this against quire-rs origin/main: FR-041-AC-2 Tier-1 treats an inverse label as type-allowed, and `validate_edge_targets` in `src/corpus/validate.rs` skips the Tier-2 target check when the forward verb is absent from the ADR's resolved `allowed_links`. |
 
 ## New findings (disposition pass 1)
 

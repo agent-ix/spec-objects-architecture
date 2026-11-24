@@ -65,6 +65,7 @@ settle is neither settled nor stated) and two medium scope findings; two low.
 | FND-003 | fixed | Round 1 (1abfa04). `when_any` now has both conditions, `satisfies` outgoing to `control` and `satisfied_by` incoming from `control`. They are in the FR Behavior bullet and inherited by NFR ("same fields"). AC-11 covers FR and NFR. |
 | FND-004 | fixed | Round 1 (1abfa04). FR-010-AC-3 now names no other FR and pins no list or count. |
 | FND-005 | fixed | Round 1 (1abfa04). The FR-010 ADR bullet now says process lists `realizes_requirement` with targets FR and NFR, which matches spec-artifacts-process origin/main. |
+| FND-006 | fixed | Round 2 (35c4ae7). The FR-016 edge section now says spec-artifacts-process "must list" the verb for `ADR`, and that until it does, an ADR authoring it draws the advisory `disallowed-edge-type`. That covers the "none needed" decision too, and the relation still counts the edge. This matches Dependencies, and process origin/main still does not list `segregates_for_requirement`. |
 
 ## New findings (disposition pass 1)
 
