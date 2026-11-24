@@ -23,6 +23,8 @@ relationships:
     type: covers
   - target: "ix://agent-ix/spec-objects-architecture/FR-015"
     type: covers
+  - target: "ix://agent-ix/spec-objects-architecture/FR-016"
+    type: covers
 ---
 # Test Matrix
 
@@ -184,7 +186,7 @@ skipped.
 | TC-126 | A typed relation comes from a `## Relationships` row, and a `## Requires` list is prose | Integration | P1 | FR-008-AC-7 | ✅ |
 | TC-140 | `edge_types` declares `realizes_requirement` with inverse `requirement_realized_by` and no `realizes` key; merging with spec-artifacts-iso raises no `DuplicateEdgeType` | Unit | P0 | FR-010-AC-1 | ✅ |
 | TC-141 | `part` and `connection` admit `realizes_requirement`; a part authoring it toward an `FR` extracts with no `disallowed-edge-type` | Integration | P0 | FR-010-AC-2 | ✅ |
-| TC-142 | The manifest declares exactly `fr-has-design-element` and `nfr-has-design-element` with the stated fields and lists them in `design_relations`; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1 | ✅ |
+| TC-142 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the stated fields, and the first two entries of `design_relations` are those names in that order; the module loads under quire-rs | Unit | P0 | FR-010-AC-3, FR-010-CON-1 | ✅ |
 | TC-143 | `quire relations --json` (the design join, `--design`, where the CLI release has it) over a fixture reports an `FR` with a realizing part `covered` with the part's id and archetype, and an `FR` with none `uncovered` | Integration | P0 | FR-010-AC-4 | ✅ |
 | TC-144 | A requirement authoring `requirement_realized_by` toward a connection is `covered` with it; a pair authored both ways yields one element | Integration | P1 | FR-010-AC-5 | ✅ |
 | TC-145 | An `NFR` realized by an `ADR` is `covered`; the same edge authored by a document outside `to` leaves the `NFR` `uncovered` with no `kind_mismatch` and no `trace:target-kind-mismatch` | Integration | P1 | FR-010-AC-6 | ✅ |
@@ -217,6 +219,20 @@ skipped.
 | TC-172 | The sink export and allowed-link declarations match the supported edge vocabulary (`test_data_sink.py`) | Unit | P0 | FR-015-AC-5, FR-015-AC-12 | ✅ |
 | TC-173 | DataSinkFrontmatter is open, accepts authored optional processor/audience/region/purpose fields, and uses the declared closed kind and agreement vocabularies (`test_data_sink.py`) | Unit | P0 | FR-015-AC-1, FR-015-AC-2 | ✅ |
 | TC-174 | The flow-rule loader accepts declared sink enum values and rejects an out-of-enum condition (`test_data_sink.py`) | Integration | P0 | FR-015-AC-8 | ✅ |
+| TC-175 | The segregation verb is declared with its inverse and no `DuplicateEdgeType` is raised against spec-artifacts-iso (`test_segregation.py`) | Integration | P0 | FR-016-AC-1 | ✅ |
+| TC-176 | `part` and `connection` admit the verb toward `FR` and `NFR` without a disallowed-edge warning, and a part authoring it toward a part is `disallowed-edge-target` (`test_segregation.py`) | Integration | P0 | FR-016-AC-2 | ✅ |
+| TC-177 | The two segregation relations are declared with the stated fields and two-condition `when_any`, and follow the realization pair in `design_relations` (`test_segregation.py`) | Unit | P0 | FR-016-AC-3 | ✅ |
+| TC-178 | A requirement linked to a control with no segregating element is `uncovered` and yields one `fr-without-segregation` finding (`test_segregation.py`) | Integration | P0 | FR-016-AC-4 | ✅ |
+| TC-179 | A part, connection or ADR authoring the verb, or the requirement authoring the inverse, covers the requirement once (`test_segregation.py`) | Integration | P0 | FR-016-AC-5 | ✅ |
+| TC-180 | A requirement no control is linked to has no row and no finding, and an edge from an archetype outside `to` leaves a scoped requirement `uncovered` (`test_segregation.py`) | Integration | P0 | FR-016-AC-6 | ✅ |
+| TC-181 | Realization and segregation edges cover only their own relation, and both together cover both (`test_segregation.py`) | Integration | P0 | FR-016-AC-7 | ✅ |
+| TC-182 | The finding is a warning, promoted by `--severity` and dropped by `off` (`test_segregation.py`) | Integration | P0 | FR-016-AC-8 | ✅ |
+| TC-183 | Parts with and without a `software_safety_class` both cover the relation and no relation names a class (`test_segregation.py`) | Integration | P0 | FR-016-AC-9 | ✅ |
+| TC-184 | A classed requirement's relation row is `uncovered` before the edge and `covered` after it, and an unlinked requirement has no row; the quoin command is not run (`test_segregation.py`) | Integration | P1 | FR-016-AC-10 | 🚧 `quoin class obligations` with `relation` is not run: the installed quoin refuses the key |
+| TC-185 | A control authoring `satisfied_by` toward an `FR` or `NFR` puts it in scope until an element segregates it (`test_segregation.py`) | Integration | P0 | FR-016-AC-11 | ✅ |
+| TC-186 | An ADR-authored edge covers the requirement, and the `disallowed-edge-type` advisory appears exactly while the loaded spec-artifacts-process does not list the verb for `ADR` (`test_segregation.py`) | Integration | P0 | FR-016-AC-12 | ✅ |
+| TC-187 | A realized but unsegregated requirement is a design gap in `quire matrix --strict` named `fr-without-segregation` and not `requirement-without-design` (`test_segregation.py`) | Integration | P0 | FR-016-AC-13 | ✅ |
+| TC-188 | While spec-objects-security is loaded no finding names `control`, for the `ADR`-naming findings of both relations; with security off the same report is an expected failure until PLAT-1856 is fixed: quire silently drops every relation when a `record_keys` relation names a kind no loaded module declares (`test_segregation.py`) | Integration | P1 | FR-016-AC-14 | 🚧 PLAT-1856 |
 
 ## Test Environment
 

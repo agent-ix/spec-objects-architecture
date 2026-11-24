@@ -47,6 +47,10 @@ edge_types:
   # FR-010: a design element realizes a requirement. `realizes` stays the
   # enterprise-capability verb spec-artifacts-iso declares.
   realizes_requirement: { description: "A design element (part, connection or decision record) realizes the requirement at the target.", category: traceability, inverse: requirement_realized_by }
+  # FR-016: a design element keeps the implementation of a requirement apart from
+  # other items. A different fact from realization: an element can realize a
+  # requirement without being segregated.
+  segregates_for_requirement: { description: "A design element (part, connection or decision record) states how the software item that carries the requirement at the target is kept apart from other items.", category: traceability, inverse: requirement_segregated_by }
   crosses: { description: "A connection crosses the trust boundary at the target.", category: dataflow }
   delivers_to: { description: "A connection or part delivers data to the sink at the target.", category: dataflow }
 roles:
@@ -71,6 +75,30 @@ traceability:
     to: [part, connection, ADR]
     direction: incoming
     check: nfr-without-design
+  # FR-016: a requirement a control is linked to (`satisfies` from the requirement,
+  # or `satisfied_by` from the control) is asked for the element that segregates
+  # it. `when_any` (quire-rs FR-058) is an OR over the existence of an edge to a
+  # control; it cannot say the control is a risk control, so an ADR stating "no
+  # segregation needed" is the remedy that keeps the trace. No relation reads a
+  # class, score or acceptability value.
+  - name: fr-has-segregation
+    from: FR
+    edges: [segregates_for_requirement]
+    to: [part, connection, ADR]
+    direction: incoming
+    check: fr-without-segregation
+    when_any:
+    - {verb: satisfies, direction: outgoing, other: [control]}
+    - {verb: satisfied_by, direction: incoming, other: [control]}
+  - name: nfr-has-segregation
+    from: NFR
+    edges: [segregates_for_requirement]
+    to: [part, connection, ADR]
+    direction: incoming
+    check: nfr-without-segregation
+    when_any:
+    - {verb: satisfies, direction: outgoing, other: [control]}
+    - {verb: satisfied_by, direction: incoming, other: [control]}
   - name: connection-carries-classification
     from: connection
     edges: [carries]
@@ -106,7 +134,7 @@ traceability:
     direction: outgoing
     check: part-delivers-to-sink
     record_keys: [kind, processorAgreement, processor]
-  design_relations: [fr-has-design-element, nfr-has-design-element]
+  design_relations: [fr-has-design-element, nfr-has-design-element, fr-has-segregation, nfr-has-segregation]
   # FR-012: a requirement (FR or NFR) must not state a class below the part it
   # is allocated to; a part must not state a class below the part that owns it;
   # a part's class is held to the vocabulary spec-artifacts-iso carries; a
@@ -545,6 +573,7 @@ object_types:
     typed_by: ["*"]
     delivers_to: [data_sink]
     realizes_requirement: [FR, NFR]
+    segregates_for_requirement: [FR, NFR]
   construct:
     identity: none
     shape: record
@@ -626,6 +655,7 @@ object_types:
     crosses: [trust_boundary]
     delivers_to: [data_sink]
     realizes_requirement: [FR, NFR]
+    segregates_for_requirement: [FR, NFR]
   construct:
     identity: none
     shape: record
