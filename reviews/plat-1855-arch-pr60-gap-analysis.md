@@ -62,3 +62,10 @@ required edit. FND-002 is low.
   loaded.
 - Semantic review: skipped (not requested); intent was checked per AC by hand above.
 - Plan completion: not assessed
+
+## Dispositions
+
+| FND | outcome | reason |
+|---|---|---|
+| FND-001 | fixed | Round 1 (d035469). The security-off half is a probe-conditional strict xfail tied to PLAT-1856 (the engine defect), with the measured cause. It runs as a plain test once the engine reports, and passes against a module copy without the triggering `record_keys`. FR-016-AC-14 is unchanged, as recommended. |
+| FND-002 | fixed | Round 1 (d035469). The security-loaded AC-14 test now also asserts the `ADR` advisory for `nfr-has-segregation`. Mutation: removing `ADR` from `nfr-has-segregation.to` fails it at that assertion. |
