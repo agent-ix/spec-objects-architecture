@@ -47,7 +47,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
   `disallowed-edge-target` naming the source, the target and its kind, and a target that resolves to no
   document is reported as `dangling-reference` naming the file. An edge to a criterion id of an `FR` or
   `NFR` is a dangling reference only where no `obligations:` source mints that id (see Behavior).
-- Two `required_relations` entries and their names at the start of `traceability.design_relations`. [FR-016](./FR-016-segregation-design-relation.md) appends two further design relations, so this requirement owns the realization pair only and no total.
+- Two `required_relations` entries and their names at the start of `traceability.design_relations`. [FR-016](./FR-016-segregation-design-relation.md) appends further design relations, so this requirement owns the realization pair only and no total or complete list. The test of FR-010-AC-3 (`tests/test_design_edges.py`, TC-142) must therefore check a prefix of `design_relations` and the membership and fields of the two relations, not an exact list; changing it belongs to the code step.
 
 ## Behavior
 
@@ -76,10 +76,9 @@ that realize it and a gap when there are none. The engine knows no name below; t
   quire-rs FR-058-AC-11), and the finding says so. It is advisory and a repository may map the key
   `off` or load the module that declares the kind.
 - The relations ship advisory like every FR-058 relation; this module sets no severity.
-- The `ADR` archetype is declared by `spec-artifacts-process`, which does not list the verb in its
-  `allowed_links`; an ADR authoring the verb draws the advisory `disallowed-edge-type` until that
-  module lists it, and the relation counts the edge regardless, being verb-based. Authoring the
-  inverse from the requirement avoids the warning (quire-rs FR-041-AC-2).
+- The `ADR` archetype is declared by `spec-artifacts-process`, which lists the verb in its
+  `allowed_links` with targets `FR` and `NFR`, so an ADR authoring it draws no `disallowed-edge-type`. The
+  relation counts the edge by verb, whichever module lists it.
 
 ## Acceptance Criteria
 
@@ -87,7 +86,7 @@ that realize it and a gap when there are none. The engine knows no name below; t
 |----|----------|--------------|
 | FR-010-AC-1 | `edge_types` declares `realizes_requirement` with `inverse: requirement_realized_by`, declares no `realizes` key, and merging the manifest with spec-artifacts-iso raises no `DuplicateEdgeType`, leaving the one `realizes` entry iso declares. | Test |
 | FR-010-AC-2 | `part` and `connection` admit `realizes_requirement` with targets `FR` and `NFR`, and a part or connection document authoring it toward an `FR` or `NFR` draws no `disallowed-edge-type` or `disallowed-edge-target` warning. | Test |
-| FR-010-AC-3 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and the first two entries of `design_relations` are those names in that order. This criterion states no count of `required_relations` or of `design_relations`: the other relations are those of FR-013, FR-014, FR-015 and FR-016, and the module loads under quire-rs without error. | Test |
+| FR-010-AC-3 | The manifest declares the two design relations `fr-has-design-element` and `nfr-has-design-element` with the fields stated above, and the first two entries of `design_relations` are those names in that order. The criterion pins no complete list and no count of `required_relations` or of `design_relations`: it holds for any other relation the module declares, so a test of it is a prefix check on `design_relations` and a membership check on `required_relations`, and the module loads under quire-rs without error. | Test |
 | FR-010-AC-4 | Over a fixture corpus, `quire relations --json` (and `quire relations --design --json`, which reports the same rows where the CLI release has it) reports an `FR` with a realizing part as `covered` with that part's id and archetype `part`, and an `FR` with none as `uncovered`. | Test |
 | FR-010-AC-5 | A requirement that authors `requirement_realized_by` toward a connection is `covered` with that connection in the same run, and a pair authored both ways yields one element. | Test |
 | FR-010-AC-6 | An `NFR` realized by an `ADR` is `covered` with the ADR's id and archetype; the same edge authored by a document of an archetype outside `to` leaves the `NFR` `uncovered`, with no `kind_mismatch` entry and no `trace:target-kind-mismatch` finding. | Test |
