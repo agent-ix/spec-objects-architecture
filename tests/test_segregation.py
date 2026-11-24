@@ -13,9 +13,11 @@ module, so they hold both before and after it lists `segregates_for_requirement`
 
 from __future__ import annotations
 
+import functools
 import json
 import pathlib
 import re
+import tempfile
 
 import pytest
 import yaml
@@ -392,19 +394,38 @@ def test_fr016_ac14_control_vocabulary_is_declared_while_security_is_loaded(
     # for each relation of this requirement, as advisories.
     adr = [ln for ln in named if "'ADR'" in ln]
     assert any(FR_REL in ln for ln in adr), result.stderr
+    assert any(NFR_REL in ln for ln in adr), result.stderr
     assert all(ln.startswith("warning:") for ln in named)
     # `control` is declared by the loaded security module: no finding names it.
     assert not [ln for ln in named if "'control'" in ln], named
 
 
+SECURITY_OFF_REASON = (
+    "PLAT-1856: quire silently drops every loaded relation when a relation with "
+    "`record_keys` names a kind no loaded module declares. With spec-objects-security "
+    "off this module's `connection-carries-classification`, "
+    "`classification-carried-by-connection` (data_classification) and "
+    "`connection-crosses-trust-boundary` (trust_boundary) do that, so the report "
+    "is empty and no `undeclared-relation-vocabulary` naming `control` appears"
+)
+
+
+@functools.cache
+def _engine_reports_undeclared_vocabulary_without_security() -> bool:
+    """PLAT-1856 probe: with security off, does the engine still report an
+    undeclared kind (the `ADR` relations name one when no process module loads)?"""
+    with tempfile.TemporaryDirectory() as tmp:
+        root = pathlib.Path(tmp)
+        _write(root, "FR", "FR-100")
+        result = validate_bundle(MEMBER, root, process=False, security=False)
+    return "undeclared-relation-vocabulary" in result.stderr
+
+
 @pytest.mark.trace("TC-188", "FR-016-AC-14")
 @pytest.mark.xfail(
+    condition=not _engine_reports_undeclared_vocabulary_without_security(),
     strict=True,
-    reason="quire cannot load this module without spec-objects-security (its "
-    "`connection` and `data_sink` types name security's roles), so with the "
-    "security module off no relation of this module is declared at all and the "
-    "engine reports `no loaded module declares traceability.required_relations`, "
-    "not `undeclared-relation-vocabulary` naming `control`",
+    reason=SECURITY_OFF_REASON,
 )
 def test_fr016_ac14_security_off_reports_the_undeclared_control_vocabulary(tmp_path):
     _write(tmp_path, "FR", "FR-100")

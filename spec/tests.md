@@ -232,7 +232,7 @@ skipped.
 | TC-185 | A control authoring `satisfied_by` toward an `FR` or `NFR` puts it in scope until an element segregates it (`test_segregation.py`) | Integration | P0 | FR-016-AC-11 | ✅ |
 | TC-186 | An ADR-authored edge covers the requirement, and the `disallowed-edge-type` advisory appears exactly while the loaded spec-artifacts-process does not list the verb for `ADR` (`test_segregation.py`) | Integration | P0 | FR-016-AC-12 | ✅ |
 | TC-187 | A realized but unsegregated requirement is a design gap in `quire matrix --strict` named `fr-without-segregation` and not `requirement-without-design` (`test_segregation.py`) | Integration | P0 | FR-016-AC-13 | ✅ |
-| TC-188 | While spec-objects-security is loaded no finding names `control`; the security-off report is an expected failure because the engine cannot load this module without security's roles (`test_segregation.py`) | Integration | P1 | FR-016-AC-14 | 🚧 Security-off reading is an expected failure |
+| TC-188 | While spec-objects-security is loaded no finding names `control`, for the `ADR`-naming findings of both relations; with security off the same report is an expected failure until PLAT-1856 is fixed: quire silently drops every relation when a `record_keys` relation names a kind no loaded module declares (`test_segregation.py`) | Integration | P1 | FR-016-AC-14 | 🚧 PLAT-1856 |
 
 ## Test Environment
 
