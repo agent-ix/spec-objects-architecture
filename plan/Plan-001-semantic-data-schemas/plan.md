@@ -103,26 +103,3 @@ Task-006 (locators) → Task-013 (gate).
 4. **End-to-end gate** (Task-013): three types — an operation-shaped one, a
    field-shaped one and a clause-shaped one — validate, extract, resolve and refuse
    as specified before the plan is declared done.
-
-## Test Plan
-
-The matrix in `spec/tests.md` is authoritative; this plan owns which task lands
-each row.
-
-| Rows | Task |
-|---|---|
-| TC-010..TC-019, TC-071..TC-074 | Task-001, Task-003 |
-| TC-007, TC-030..TC-044 | Task-002 |
-| TC-020..TC-026, TC-028 | Task-004 |
-| TC-050..TC-059, TC-065 | Task-005 |
-| TC-023 | Task-006 |
-| TC-060..TC-064 | Task-008 |
-| TC-080..TC-086 | Task-009 |
-| TC-090, TC-091 | Task-010 |
-| TC-027, TC-070 | Task-011 |
-| TC-001..TC-006 | Task-012 |
-
-`quire coverage` reports 141/141 rows backed: 71 `TC-` rows plus 59 criterion
-rows minted from the requirements. `make test` reports 163 passed, 7 skipped and
-4 expected failures; the skips are environment-gated and the expected failures
-each name the issue that owns them.
