@@ -153,8 +153,7 @@ human-assigned software safety class, assigner and rationale on a part as frontm
 activation and Quoin-install boundaries; the third external boundary, the
 Quire engine (loader, extraction, record surface), has no IT artifact of its
 own — the FR-003, FR-005 and FR-006 test harness is this module's Quire
-contract test, and the wheel version is pinned once in FR-005 Inputs. The Test
-Matrix in `tests.md` records every criterion's test case.
+contract test, and the wheel version is pinned once in FR-005 Inputs.
 
 ## References
 
