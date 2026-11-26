@@ -73,7 +73,7 @@ skipped.
 | Functional Req | Acceptance Criteria | Test Cases | Coverage Status |
 |---|---|---|---|
 | FR-001 | FR-001-AC-2..4 | TC-002..TC-004 | 🚧 AC-2..AC-4 need a running filament-core |
-| FR-002 | FR-002-AC-1..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-010..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
+| FR-002 | FR-002-AC-2..4, FR-002-AC-6, FR-002-AC-7, FR-002-AC-9, FR-002-AC-10, FR-002-CON-1..4 | TC-011..TC-013, TC-015..TC-019, TC-071, TC-073, TC-075..TC-079, TC-087 | ✅ |
 | FR-003 | FR-003-AC-1..9 except AC-3 and AC-7, FR-003-CON-1 | TC-020, TC-024..TC-027, TC-090, TC-111 | ✅ AC-6's naming half is an expected failure |
 | FR-004 | FR-004-AC-1..16, FR-004-CON-1, FR-004-CON-3 | TC-030..TC-046 | ✅ |
 | FR-005 | FR-005-AC-1..10, FR-005-CON-1..3 | TC-050..TC-059, TC-065, TC-091 | ✅ |
