@@ -187,6 +187,11 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
 
 @pytest.mark.trace("FR-015-AC-7")
 def test_flow_facts_preserve_each_processor_agreement_value(tmp_path):
+    baseline_report = _flow_report(VALID)
+    assert baseline_report.returncode == 0, baseline_report.stderr
+    baseline_facts = json.loads(baseline_report.stdout)["facts"]["data_sink"]
+    baseline = next(item for item in baseline_facts if item["id"] == "SINK-LLM-PROMPT")
+
     for agreement in ("covered", "unknown", "not_applicable"):
         corpus = tmp_path / agreement
         shutil.copytree(VALID, corpus)
@@ -204,12 +209,26 @@ def test_flow_facts_preserve_each_processor_agreement_value(tmp_path):
         prompt = next(item for item in facts if item["id"] == "SINK-LLM-PROMPT")
         assert prompt["fields"]["processor_agreement"] == agreement
 
+        expected = dict(baseline)
+        expected["fields"] = dict(baseline["fields"])
+        del expected["fields"]["processor_agreement"]
+        actual = dict(prompt)
+        actual["fields"] = dict(prompt["fields"])
+        del actual["fields"]["processor_agreement"]
+        assert actual == expected
+
 
 @pytest.mark.trace("FR-015-AC-9")
 def test_flow_facts_do_not_infer_undeclared_sinks_fields_or_edges(tmp_path):
     complete_report = _flow_report(VALID)
     assert complete_report.returncode == 0, complete_report.stderr
-    for item in json.loads(complete_report.stdout)["facts"]["data_sink"]:
+    complete_facts = json.loads(complete_report.stdout)["facts"]["data_sink"]
+    declared_sink_ids = {
+        next(yaml.safe_load_all(path.read_text()))["id"]
+        for path in (VALID / "spec/design/sinks").glob("SINK-*.md")
+    }
+    assert {item["id"] for item in complete_facts} == declared_sink_ids
+    for item in complete_facts:
         document = next(yaml.safe_load_all((VALID / item["path"]).read_text()))
         expected_fields = {
             key: document[key]
