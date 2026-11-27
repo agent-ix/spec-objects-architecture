@@ -3,17 +3,22 @@
 from __future__ import annotations
 
 import json
+import pathlib
 import shutil
+import subprocess
 
 import pytest
 import yaml
 
 from tests.conftest import (
+    DATA_FLOW_MEMBER,
     FIXTURES_DIR,
+    PACKAGE_ROOT,
     SCHEMAS_DIR,
     data_flow_relations,
     diagnostic_lines,
     load_manifest,
+    module_args,
     object_type,
     run_quire,
     validate_data_flow,
@@ -33,6 +38,57 @@ SINK_KINDS = (
     "datastore",
 )
 PROCESSOR_AGREEMENTS = ("covered", "not_covered", "not_applicable", "unknown")
+
+
+def _flow_module(root: pathlib.Path, rules: list[dict]) -> pathlib.Path:
+    module = root / "flow-module"
+    shutil.copytree(PACKAGE_ROOT, module)
+    manifest_path = module / "manifest.yaml"
+    manifest = yaml.safe_load(manifest_path.read_text())
+    manifest.setdefault("traceability", {})["flow_rules"] = rules
+    manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False))
+    return module
+
+
+def _flow_modules(module: pathlib.Path) -> list[str]:
+    args = module_args()
+    args[-1] = str(module)
+    return args
+
+
+def _flow_report(
+    root: pathlib.Path, module: pathlib.Path = PACKAGE_ROOT, *extra: str
+) -> subprocess.CompletedProcess:
+    return run_quire(
+        "relations",
+        "--flow",
+        "--json",
+        *_flow_modules(module),
+        "--repo",
+        f"{DATA_FLOW_MEMBER}={root}",
+        *extra,
+    )
+
+
+def _flow_rule(name: str) -> dict:
+    return {
+        "name": name,
+        "subject": ["data_sink"],
+        "match": [
+            {"path": [], "field": "processor_agreement", "any_of": ["not_covered"]}
+        ],
+        "check": name,
+        "rationale": "A processor agreement must be authored as covered.",
+    }
+
+
+def _single_sink(root: pathlib.Path, agreement: str) -> None:
+    sink_dir = root / "spec/design/sinks"
+    sink_dir.mkdir(parents=True)
+    (sink_dir / "SINK-1.md").write_text(
+        "---\nid: SINK-1\ntitle: Sink\ntype: data_sink\nobject: data_sink\n"
+        f"kind: llm_prompt\nprocessor_agreement: {agreement}\n---\n# Sink\n"
+    )
 
 
 @pytest.mark.trace("TC-167", "FR-015-AC-1", "FR-015-AC-2")
@@ -127,6 +183,138 @@ def test_relation_report_includes_each_sink_kind_and_authored_processor():
     )
     assert prompt["record"]["processor"] == "EXT-MODEL-PROVIDER"
     assert tool_call["record"]["processor"] == "PART-SINK-PROCESSOR"
+
+
+@pytest.mark.trace("FR-015-AC-7")
+def test_flow_facts_preserve_each_processor_agreement_value(tmp_path):
+    for agreement in ("covered", "unknown", "not_applicable"):
+        corpus = tmp_path / agreement
+        shutil.copytree(VALID, corpus)
+        sink = corpus / "spec/design/sinks/SINK-LLM-PROMPT.md"
+        source = sink.read_text()
+        sink.write_text(
+            source.replace(
+                "processor_agreement: not_covered", f"processor_agreement: {agreement}"
+            )
+        )
+
+        result = _flow_report(corpus)
+        assert result.returncode == 0, result.stderr
+        facts = json.loads(result.stdout)["facts"]["data_sink"]
+        prompt = next(item for item in facts if item["id"] == "SINK-LLM-PROMPT")
+        assert prompt["fields"]["processor_agreement"] == agreement
+
+
+@pytest.mark.trace("FR-015-AC-9")
+def test_flow_facts_do_not_infer_undeclared_sinks_fields_or_edges(tmp_path):
+    complete_report = _flow_report(VALID)
+    assert complete_report.returncode == 0, complete_report.stderr
+    for item in json.loads(complete_report.stdout)["facts"]["data_sink"]:
+        document = next(yaml.safe_load_all((VALID / item["path"]).read_text()))
+        expected_fields = {
+            key: document[key]
+            for key in (
+                "id",
+                "kind",
+                "processor_agreement",
+                "processor",
+                "audience_roles",
+                "region",
+                "purpose",
+            )
+            if key in document
+        }
+        assert item["fields"] == expected_fields, item["id"]
+
+    empty = tmp_path / "empty"
+    empty.mkdir()
+    sink_dir = empty / "spec/design/sinks"
+    sink_dir.mkdir(parents=True)
+    (empty / "spec/design/sinks/CONN-1.md").write_text(
+        "---\nid: CONN-1\ntitle: Connection\ntype: connection\nobject: "
+        "connection\n---\n# Connection\n"
+    )
+    report = _flow_report(empty)
+    assert report.returncode == 0, report.stderr
+    facts = json.loads(report.stdout)["facts"]
+    assert facts["data_sink"] == []
+    assert facts["connection"] == [
+        {
+            "id": "CONN-1",
+            "repo": DATA_FLOW_MEMBER,
+            "path": "spec/design/sinks/CONN-1.md",
+            "fields": {"id": "CONN-1"},
+            "edges": [],
+        }
+    ]
+
+    sparse = tmp_path / "sparse"
+    _single_sink(sparse, "unknown")
+    report = _flow_report(sparse)
+    assert report.returncode == 0, report.stderr
+    (sink,) = json.loads(report.stdout)["facts"]["data_sink"]
+    assert sink["fields"] == {
+        "id": "SINK-1",
+        "kind": "llm_prompt",
+        "processor_agreement": "unknown",
+    }
+    assert sink["edges"] == []
+
+
+@pytest.mark.trace("FR-015-AC-10")
+def test_flow_report_is_deterministic_and_strict_tracks_denials(tmp_path):
+    corpus = tmp_path / "corpus"
+    _single_sink(corpus, "not_covered")
+    module = _flow_module(tmp_path, [_flow_rule("sink-agreement")])
+
+    first = _flow_report(corpus, module)
+    second = _flow_report(corpus, module)
+    assert first.returncode == 0, first.stderr
+    assert first.stdout.encode() == second.stdout.encode()
+    assert any(
+        item["rule"] == "sink-agreement" for item in json.loads(first.stdout)["denials"]
+    )
+    assert _flow_report(corpus, module, "--strict").returncode == 1
+
+    (corpus / "spec/design/sinks/SINK-1.md").write_text(
+        (corpus / "spec/design/sinks/SINK-1.md")
+        .read_text()
+        .replace("processor_agreement: not_covered", "processor_agreement: covered")
+    )
+    assert _flow_report(corpus, module, "--strict").returncode == 0
+
+
+@pytest.mark.trace("FR-015-AC-11")
+def test_flow_severity_lowers_only_the_named_rule(tmp_path):
+    corpus = tmp_path / "corpus"
+    _single_sink(corpus, "not_covered")
+    rules = [_flow_rule("sink-agreement-a"), _flow_rule("sink-agreement-b")]
+    module = _flow_module(tmp_path, rules)
+    manifest_path = module / "manifest.yaml"
+    manifest = yaml.safe_load(manifest_path.read_text())
+    manifest["grammar_severity"] = {f"trace:{rule['name']}": "error" for rule in rules}
+    manifest_path.write_text(yaml.safe_dump(manifest, sort_keys=False))
+    command = [
+        "validate",
+        "--okf",
+        *_flow_modules(module),
+        "--repo",
+        f"{DATA_FLOW_MEMBER}={corpus}",
+        "--severity",
+        "trace:sink-agreement-a=warning",
+        "--severity",
+        "trace:sink-agreement-b=warning",
+    ]
+    both_warnings = run_quire(*command)
+    assert both_warnings.returncode == 0, both_warnings.stdout + both_warnings.stderr
+    assert "sink-agreement-a" in both_warnings.stdout + both_warnings.stderr
+    assert "sink-agreement-b" in both_warnings.stdout + both_warnings.stderr
+
+    only_one_warning = run_quire(*command[:-2])
+    assert only_one_warning.returncode != 0, (
+        only_one_warning.stdout + only_one_warning.stderr
+    )
+    assert "sink-agreement-b" in only_one_warning.stdout + only_one_warning.stderr
 
 
 @pytest.mark.trace("TC-171", "FR-015-AC-2", "FR-015-AC-12")
