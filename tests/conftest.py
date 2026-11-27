@@ -414,6 +414,13 @@ MODULES_ROOT = pathlib.Path(
 
 
 def ix_module(name: str) -> str:
+    override = os.environ.get(f"IX_MODULE_{name.upper().replace('-', '_')}_ROOT")
+    if override:
+        path = pathlib.Path(override)
+        assert (
+            path / "manifest.yaml"
+        ).is_file(), f"{name} module override has no manifest.yaml: {path}"
+        return str(path)
     path = MODULES_ROOT / name
     assert (path / "manifest.yaml").is_file(), (
         f"{name} is not installed under {MODULES_ROOT}; the rows that load it "
